@@ -1,0 +1,12 @@
+# The rendered site is generated output. Keep it out of language statistics and
+# out of diffs, so a re-render doesn't bury a one-line source change.
+docs/** linguist-generated=true
+docs/** -diff
+_freeze/** linguist-generated=true
+_freeze/** -diff
+
+*.csv text eol=lf
+*.qmd text eol=lf
+*.R    text eol=lf
+*.scss text eol=lf
+*.png binary

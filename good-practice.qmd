@@ -1,0 +1,269 @@
+# Good practice in a nutshell
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+Most of the time R wastes for beginners has nothing to do with R. It goes on the file that was in the wrong folder, the object left over from an hour ago that quietly poisoned a result, and the package that changed under a script nobody had run in a year. None of those are hard problems. They are habits, and the habits are cheap to acquire now and expensive to retrofit later.
+
+What follows is ten of them. Each one exists because I have been burnt by its absence.
+
+## 1. Work in a project
+
+Make a folder for each piece of work, put a `.Rproj` file in it, and open your work by double-clicking that file.
+
+A `.Rproj` is a small plain-text file. Here is the whole of the one at the root of this book, `r-intro.Rproj`, with nothing removed:
+
+```
+Version: 1.0
+
+RestoreWorkspace: No
+SaveWorkspace: No
+AlwaysSaveHistory: No
+
+EnableCodeIndexing: Yes
+UseSpacesForTab: Yes
+NumSpacesForTab: 2
+Encoding: UTF-8
+
+RnwWeave: knitr
+LaTeX: XeLaTeX
+
+AutoAppendNewline: Yes
+StripTrailingWhitespace: Yes
+```
+
+That is all it is. What it *does* is more than it looks. Opening it starts a fresh R session whose working directory is the folder containing the file, on every machine, every time, without you typing a path. It gives the project its own environment and its own command history, so two projects open at once cannot contaminate each other. It carries the settings above with the folder, so a collaborator who opens it gets your tab width and your encoding rather than their own. And it makes the folder findable: a lot of tooling, including `here` and `renv` and `usethis`, works out where "here" is by looking for a `.Rproj`.
+
+Make one with File, New Project, Existing Directory. It takes about eight seconds and it is the single highest-return habit in this chapter.
+
+## 2. `setwd()` is the one line that guarantees your code runs on exactly one computer
+
+You will see this at the top of scripts, in textbooks, and in code your supervisor sends you:
+
+```{r}
+#| label: setwd-trap
+#| eval: false
+setwd("/Users/swapnil/Documents/GitHub/r-intro")
+
+covid <- read_csv("data/sg_covid_data.csv")
+```
+
+It works. It works on my laptop, and only on my laptop, and only until I reorganise my Documents folder. Send that script to a classmate and the first line fails:
+
+```
+Error in setwd("/Users/swapnil/Documents/GitHub/r-intro") :
+  cannot change working directory
+```
+
+There is no version of that path that is correct on two machines. Windows users get a second problem on top, because Windows paths use backslashes and a backslash starts an escape sequence in an R string:
+
+```
+Error: '\U' used without hex digits in character string
+```
+
+That is R reading `C:\Users\...` and seeing `\U`, which it expects to be followed by a Unicode code point. You can escape the backslashes, or use forward slashes, which work fine on Windows. Better, do not type absolute paths at all.
+
+The fix is `here::here()`. It looks for a project marker, a `.Rproj` file, a `.git` directory, or a file called `.here`, walking up from wherever R happens to be standing, and then builds a path down from that root:
+
+```{r}
+#| label: here-demo
+here::here("data", "sg_covid_data.csv")
+```
+
+On my machine that is what it prints. On yours it prints something else, and that is the entire point. The same line of code resolves to the right file on both. It works from a script in the project root, from a Quarto document two folders down, and from the console, because it never depends on where you currently are.
+
+You give `here()` the path pieces as separate arguments and it joins them with whatever separator the operating system uses. So `here("data", "raw", "file.csv")` is correct on macOS, Linux and Windows, and you never type a slash of either kind.
+
+## 3. Restart R often, and start every session empty
+
+Two settings, once, and then a keyboard shortcut for the rest of your life.
+
+Go to Tools, Global Options, General. Untick **"Restore .RData into workspace at startup"**. Set **"Save workspace to .RData on exit"** to **Never**. Out of the box, restore is ticked and save is set to "Ask", which means that sooner or later, at eleven at night, you will click Yes without reading the dialog. Setting it to Never removes the question. Both defaults date from an era when reloading a workspace was cheaper than recomputing it, and RStudio keeps them for compatibility rather than because anyone thinks they are a good idea.
+
+The `.Rproj` file overrides the global setting for its own project, which is why the one shown above carries `RestoreWorkspace: No` and `SaveWorkspace: No`. Change both in Global Options as well, so that projects you have not configured behave the same way.
+
+Then learn <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> on a Mac, which restarts R. Use it several times an hour. It takes under a second.
+
+Here is the failure this prevents. When R saves your workspace on exit and reloads it on startup, your environment accumulates. Objects created weeks ago sit there, invisible unless you go looking. Your script runs beautifully. You send it to someone and it fails on line 12 because line 12 uses an object your script never creates, and you never noticed because it has been sitting in your workspace since March. The script was never complete. Your environment was propping it up.
+
+The subtler version is worse, and it comes from a real bug in the worksheet this book replaces. The worksheet had a loop that built a monthly subset in order to print a count for each month. Something close to this:
+
+```{r}
+#| label: stale-loop
+covid <- read_covid() %>%
+  arrange(date) %>%
+  mutate(daily_cases = confirmed - lag(confirmed, default = 0))
+
+for (m in 1:12) {
+  month_data <- covid %>% filter(month(date) == m)
+  # the original printed a count for month m here
+}
+```
+
+The loop does its job and finishes. But `m` and `month_data` were created at top level, so they are still in the global environment afterwards, holding whatever the last iteration put there:
+
+```{r}
+#| label: stale-leftovers
+m
+range(month_data$date)
+```
+
+December. Now forty lines further down the worksheet, after several other exercises, there was a plot of `month_data` that was supposed to be showing April, because the reader had been asked to build an April subset in the meantime. If they had skipped that exercise, or run it and then restarted, or run the chunks out of order, `month_data` was still December, and the plot came out looking perfectly reasonable.
+
+```{r}
+#| label: stale-consequence
+# What the reader thought was April's mean daily cases
+mean(month_data$daily_cases)
+```
+
+```{r}
+#| label: stale-truth
+# What April actually was
+covid %>%
+  filter(month(date) == 4) %>%
+  summarise(april_mean = mean(daily_cases))
+```
+
+Twelve, against five hundred and eight. Both are numbers, both print without complaint, and nothing anywhere errors. A stale global is the hardest kind of wrong answer to catch, because the only symptom is that the answer is wrong, and you have no reason to suspect it.
+
+Restarting R and running the script from the top is what catches this. If it runs clean from an empty session, the script is the analysis. If it does not, you have found a dependency you did not know you had, which is worth finding.
+
+## 4. Every `library()` at the top, and `rm(list = ls())` is not a restart
+
+Put every package your script needs in one block at the top of the file. A reader can then see the dependencies in five seconds instead of scrolling. More practically, a script that loads a package halfway down fails differently depending on how far execution got, which makes the failure harder to reproduce than it needs to be.
+
+The thing people reach for instead of restarting is this:
+
+```{r}
+#| label: rm-trap
+#| eval: false
+rm(list = ls())
+```
+
+It feels like a fresh start. It is not one. `ls()` lists the objects in the global environment and `rm()` removes them, and that is the whole of what happens. Consider what is untouched.
+
+Attached packages stay attached. `search()` shows R's chain of environments, and `rm(list = ls())` empties exactly one entry in it, the first:
+
+```{r}
+#| label: search-path
+search()
+```
+
+Everything from `package:scales` down is still attached and still masking whatever it was masking. Session-wide settings survive too: an `options(digits = 3)` you typed an hour ago is still quietly rounding everything you print. Open file connections stay open. And `ls()` hides names that begin with a dot, so anything dot-named is never passed to `rm()` in the first place:
+
+```{r}
+#| label: dot-names
+set.seed(42)
+x <- runif(1)
+rm(list = ls())
+
+ls()
+ls(all.names = TRUE)
+```
+
+`.Random.seed` is still there after the supposed clean-out, which means your "fresh" session is not even at a fresh random state. Restarting R clears all of it, and takes less time than typing the `rm()` call.
+
+## 5. The raw data file is read-only
+
+Whatever arrives from the source goes in `data/` and is never edited again. Not to fix a date format, not to fill in a blank, not to delete the header row someone put in twice.
+
+The dataset in this book is a good argument for the rule. It has 59 missing values at the start of the deaths column, 24 missing days in every one of the six mobility columns, and case counts that are cumulative rather than daily. All three are repaired in this book, and all three are repaired in code, in front of you, in a way you can read and disagree with. If instead I had opened the CSV in Excel and typed zeros over the missing deaths, the file would look tidier and the analysis would be worse, because a zero and a not-yet-reported are different things and nobody downstream would ever know which they were holding.
+
+Every repair belongs in the script. That way the repair has a reason next to it, it survives the arrival of an updated file, and a reviewer can see what you changed. A file edited by hand has none of those properties.
+
+## 6. Name things so that tomorrow's you can read them
+
+Use `snake_case`: lowercase words joined by underscores. `daily_cases`, `monthly_summary`, `covid_april`. R is a language where four naming conventions coexist in the base install alone, and you cannot fix that, but you can be internally consistent.
+
+Name data after what it is, using nouns. Name functions after what they do, using verbs. `severity` is a column; `classify_severity()` is a function. When you read `monthly_report <- summarise_by_month(covid)` you know which is which without looking anything up.
+
+Do not call things `df`, `df2`, `data`, `temp`, or `df_final_v2`. Two reasons. The first is that six weeks later `df2` tells you nothing and you will have to run the code to find out what is in it. The second is that some of those names are already taken. `df` is a real function in base R, the density of the F distribution:
+
+```{r}
+#| label: df-is-a-function
+df(1, 2, 3)
+```
+
+Assign your data frame to `df` and you have masked it. That particular collision is unlikely to hurt you, but `data`, `c`, `mean`, `sum`, `t` and `T` are all things people name variables, and some of those do hurt.
+
+Long names cost nothing, because Tab completes them. `monthly_case_summary` is three keystrokes and a Tab.
+
+## 7. Pin your packages with `renv`
+
+`renv` gives a project its own package library and a lockfile recording the exact version of every package in it. Three commands cover ordinary use:
+
+```{r}
+#| label: renv-commands
+#| eval: false
+renv::init()      # once, when you start the project
+renv::snapshot()  # after you add or update a package
+renv::restore()   # on a new machine, or when you come back to it
+```
+
+The claim is narrow and it is this: this repository, plus `renv.lock`, equals the same numbers in 2029. Without a lockfile, "install the tidyverse and run my script" means whatever the tidyverse happens to be on the day someone tries, and dplyr's behaviour in 2029 is not something either of us can promise.
+
+This book uses `renv`, and `renv.lock` is committed alongside the chapters. If you clone the repository, `renv::restore()` builds the exact library the book was written against.
+
+Be honest about the limits. `renv` pins R packages. It does not pin R itself, or your operating system, or the system libraries a package compiles against. For that you need containers, and that is a different course. Pinning packages is the step that removes most of the risk for most of the work.
+
+## 8. Git, in three commands and one idea
+
+```bash
+git add -A
+git commit -m "Compute daily cases from the cumulative column"
+git push
+```
+
+`add` chooses what goes into the next snapshot, `commit` takes the snapshot with a message attached, `push` sends it somewhere that is not your laptop. That is enough to be useful from day one. Everything else in Git is for when you need it.
+
+The idea underneath is that your repository becomes a lab notebook you cannot rewrite by accident. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it exists on a machine you do not control. You can rewrite Git history if you set out to, but you cannot do it by mistake, and you cannot do it to a commit somebody else has already pulled without it being obvious. That is a much stronger claim than a folder full of `analysis_v3_FINAL_revised.R`.
+
+The everyday benefit is smaller and you will feel it sooner. With commits behind you, you can delete code without hesitating. The half-finished approach and the two hundred lines you replaced can both go, the file stays clean, and if you ever need any of it back it is one command away. Untracked code makes people hoard, and hoarded code makes scripts unreadable.
+
+Commit code, small data files, and your lockfile. Do not commit two gigabytes of intermediate output. That is what `.gitignore` is for.
+
+## 9. Ask for help with a reprex
+
+A **reprex** is a reproducible example: the smallest piece of code that still shows your problem, together with everything someone needs to run it. The `reprex` package will build one for you. Copy your code, run `reprex::reprex()`, and it executes that code in a clean R session and puts the code plus its real output on your clipboard, formatted for GitHub or Slack.
+
+The clean session is the point. A surprising share of the time, the act of writing the reprex fixes the bug, because the bug was an object left over in your environment and the clean session does not have it. That is rule 3 collecting its debt.
+
+What makes a question answerable, in order of how often it is missing:
+
+1. Code the reader can actually run. Not a screenshot. Not a fragment referring to `my_data` that nobody else has. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of `dput(head(your_data, 10))`.
+2. The error message, copied exactly. Not "it says there's an error". Not retyped from memory. The whole thing, including the lines after the first.
+3. What you expected instead. Half of all R questions turn out to be a disagreement about what the function was supposed to do, and stating your expectation surfaces that immediately.
+4. Your versions. `sessionInfo()` prints your R version and every attached package. Paste it at the bottom.
+
+Cut everything that is not needed to reproduce the problem. If your example is forty lines and the error happens on line 4, the other thirty-six lines are asking your reader to do work you could have done yourself.
+
+## 10. Write the report and the analysis in the same file
+
+The classic workflow is: run the script, copy the numbers into Word, write around them. The moment you do that, the document and the analysis are two separate objects that agree by coincidence. Change a filter, re-run, and the number in the document is now wrong and nothing in the world will tell you.
+
+Quarto removes the copy. A `.qmd` file holds your prose and your code together, and rendering it runs the code and drops the real output into the finished document. Change the filter, render again, every number updates. Tables, figures, and numbers written inline in a sentence, all of them.
+
+This book is a Quarto book. Every chapter is a `.qmd` file, every output on every page was produced by the code shown above it, and the whole thing is rebuilt from scratch before it is published. I would not be willing to put numbers under my own name in something a hundred students rely on any other way.
+
+## The checklist
+
+One screen. Print it, or keep it open for a week until it stops being something you have to remember.
+
+| | |
+|---|---|
+| **Project** | One folder per piece of work, with a `.Rproj` in it. Open by double-clicking that file. |
+| **Paths** | No `setwd()`. No absolute paths. `here::here("data", "file.csv")`. |
+| **Session** | Save workspace: **Never**. Restore `.RData`: **never**. Restart R (<kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>) several times an hour. |
+| **Test** | Before you send it: restart R, run the whole script from the top. If it does not run clean, it is not finished. |
+| **Packages** | All `library()` calls in one block at the top. `rm(list = ls())` is not a restart. |
+| **Data** | `data/` is read-only. Every repair happens in code. |
+| **Names** | `snake_case`. Nouns for data, verbs for functions. Never `df2`. |
+| **Versions** | `renv::init()` at the start, `renv::snapshot()` when you add a package, commit `renv.lock`. |
+| **History** | `git add -A`, `git commit -m "..."`, `git push`. Commit early, delete freely. |
+| **Help** | `reprex::reprex()`. Runnable code, the exact error, your expectation, `sessionInfo()`. |
+| **Output** | Report and analysis in one `.qmd`. Never paste a number into Word. |
+
+: Habits worth having before you write anything that matters. {tbl-colwidths="[18,82]"}

@@ -1,0 +1,327 @@
+# Missing values {#sec-missing}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+Every table you have printed so far has had `NA` in it, and so far it has been scenery. This chapter is about reading it. In this file the missing values carry as much information as the numbers: one block of them is a fact about Google's measuring instrument, another is a fact about Singapore's epidemic, and which one you are looking at decides what you are allowed to do about it.
+
+There is also a bug at the end of the chapter, inherited from the worksheet this book replaces, which turns a correct question into an answer 27% too large and leaves no trace that anything went wrong.
+
+```{r}
+covid <- read_covid()
+```
+
+## Where the gaps are
+
+Counting missing values is `sum()` over `is.na()`. `is.na()` returns `TRUE` or `FALSE` for each element, and `sum()` treats `TRUE` as 1.
+
+```{r}
+covid %>%
+  summarise(
+    confirmed   = sum(is.na(confirmed)),
+    deaths      = sum(is.na(deaths)),
+    stringency  = sum(is.na(stringency_index)),
+    retail      = sum(is.na(retail_and_recreation_percent_change_from_baseline)),
+    workplaces  = sum(is.na(workplaces_percent_change_from_baseline)),
+    residential = sum(is.na(residential_percent_change_from_baseline))
+  )
+```
+
+Naming six columns by hand does not scale, and there is a version later in the book that runs the same count across every column at once. For now the answer is stark enough: the case counts and the policy indices are complete for all 345 days, `deaths` is missing on 59 of them, and every mobility column is missing on exactly 24.
+
+Exactly 24, in all six. That is a strong hint that they went missing together, for one shared reason, and they did.
+
+```{r}
+covid %>%
+  filter(is.na(retail_and_recreation_percent_change_from_baseline)) %>%
+  summarise(n = n(), first = min(date), last = max(date))
+
+covid %>%
+  filter(is.na(deaths)) %>%
+  summarise(n = n(), first = min(date), last = max(date))
+```
+
+Two solid blocks at the start of the year, of different lengths, ending on different days. Neither is scattered, and neither is random.
+
+## Two kinds of missing
+
+The mobility gap runs from 22 January to 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline, and that baseline is the median for the corresponding day of the week over the five weeks from 3 January to 6 February 2020. A percentage change from a baseline cannot be computed before the baseline period has closed, and Google's published series begins on 15 February. The missing days are a property of the instrument. Nothing happened in Singapore on 3 February that made mobility unmeasurable; the yardstick did not exist yet.
+
+The `deaths` gap runs from 22 January to 20 March, and it ends because Singapore's first recorded COVID-19 deaths appear in the data on 21 March. Before that there was no death count to report, and the data hub carries nothing rather than a zero. This gap is a property of the epidemic.
+
+That difference decides everything downstream. For `deaths`, you know what the missing value would have been if someone had written it down: zero. Zero deaths had been recorded, so the cumulative count was zero, and substituting a zero is recovering a fact rather than inventing one. For mobility, you have no idea. Substituting a zero would assert that retail activity in early February sat exactly at its baseline, which is a measurement Google never made and you cannot make on their behalf.
+
+A blank in a spreadsheet looks the same in both cases. Only you know which one you have.
+
+Here is what the mobility gap looks like when you plot straight over it:
+
+```{r}
+#| label: fig-retail-gap
+#| fig-cap: "Retail and recreation mobility, plotted without doing anything about the missing days."
+#| fig-alt: "A time series of retail and recreation mobility for 2020. The line starts in mid-February at around minus 15 percent, plunges to below minus 60 in April, recovers sharply in late June, and drifts upward towards zero by December with a strong weekly zigzag."
+ggplot(covid, aes(date, retail_and_recreation_percent_change_from_baseline)) +
+  geom_line() +
+  labs(
+    title = "Retail and recreation mobility",
+    x = NULL, y = "% change from baseline"
+  )
+```
+
+The missing days leave no hole. The line starts later, the x-axis quietly begins in February, and unless you already knew the file covered January you would never ask. The warning printed above the figure is the only thing that tells you, which is a reason to leave warnings switched on in your own work rather than tidying them away.
+
+## What `NA` does to arithmetic
+
+`NA` in R means "there is a value here and I do not know it". Any calculation involving an unknown produces an unknown:
+
+```{r}
+retail_sample <- c(-15, NA, -51, NA, -63)
+
+sum(retail_sample)
+mean(retail_sample)
+```
+
+This is deliberate and it is a feature. R refuses to give you an average that quietly ignores two fifths of your data. If you want it to ignore them, say so:
+
+```{r}
+sum(retail_sample, na.rm = TRUE)
+mean(retail_sample, na.rm = TRUE)
+```
+
+`na.rm = TRUE` means "remove the missing values before doing the sum". What comes back is the mean of the three days you have, and calling it "the mean" without saying so is where a lot of quietly wrong analysis starts.
+
+Comparisons behave the same way, and this is the part that bites:
+
+```{r}
+retail_sample < -30
+```
+
+`NA < -30` is `NA`, not `FALSE`. R does not know what the value is, so it cannot know whether it is below −30. Refusing to guess is the right behaviour and it is about to cause a great deal of trouble.
+
+The same logic explains why you cannot test for missingness with `==`:
+
+```{r}
+NA == NA
+```
+
+Two unknowns are not known to be equal. That is what `is.na()` is for, and it is the only thing that works.
+
+### When `na.rm` runs out of data
+
+Try to average January's retail mobility, where every single value is missing:
+
+```{r}
+january <- covid %>% filter(date < "2020-02-01")
+
+nrow(january)
+sum(is.na(january$retail_and_recreation_percent_change_from_baseline))
+
+mean(january$retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)
+```
+
+`NaN`, not `NA` and not an error. Ten rows, ten missing values. `na.rm = TRUE` removed all ten, leaving a vector of length zero. `mean()` on nothing is the sum of nothing divided by the count of nothing, which is 0 divided by 0, which is `NaN`: not a number.
+
+```{r}
+sum(numeric(0))
+0 / 0
+```
+
+`NaN` stands for a computation that has no meaningful answer, as distinct from `NA`, which stands for a value you do not have. `is.na()` returns `TRUE` for both, so a missing-value check will not distinguish them, and `is.nan()` will:
+
+```{r}
+is.na(NaN)
+is.nan(NA)
+```
+
+If a monthly summary comes back with `NaN` in one row, you have not found a strange bug. You have found a month with no data in it at all, and `na.rm = TRUE` did exactly what you told it to.
+
+## Filling in and dropping out
+
+Two more tools, both from the tidyverse, both easy to reach for too quickly.
+
+`coalesce()` takes the first non-missing value across its arguments, element by element:
+
+```{r}
+coalesce(retail_sample, 0)
+```
+
+This is the right thing to do to `deaths` and the wrong thing to do to mobility, for the reason set out above. The recipe below is defensible because the claim it encodes is true: before 21 March, Singapore's cumulative recorded COVID-19 deaths were zero.
+
+```{r}
+covid %>%
+  arrange(date) %>%
+  mutate(deaths_filled = coalesce(deaths, 0)) %>%
+  filter(date >= "2020-03-19", date <= "2020-03-22") %>%
+  select(date, deaths, deaths_filled)
+```
+
+`drop_na()` removes whole rows. Applied to the entire table it is blunter than people expect:
+
+```{r}
+nrow(covid)
+nrow(drop_na(covid))
+```
+
+Fifty-nine days gone, and not because their mobility or stringency data was bad. They went because `deaths` was missing, and `drop_na()` with no arguments drops a row if *any* column in it is missing. Those 59 days include 35 days of perfectly good mobility readings and 59 days of case counts, all thrown away to fix a problem in a column you might not even have been using.
+
+Name the columns you actually care about and the damage is proportionate:
+
+```{r}
+nrow(drop_na(covid, ends_with("_percent_change_from_baseline")))
+```
+
+## The 112 rows that should have been 88
+
+Now the bug.
+
+A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? The worksheet asked it in base R, which is how most people were taught to subset a data frame, and how most people still write it when they are in a hurry.
+
+::: {.callout-important}
+## Predict before you run
+
+You are about to ask that question twice, once in base R and once with `filter()`. Write down whether you expect the two to agree. If you expect them to differ, write down by how much.
+:::
+
+```{r}
+low_retail <- covid[covid$retail_and_recreation_percent_change_from_baseline < -30, ]
+nrow(low_retail)
+```
+
+112 days. Now the dplyr version of the identical question:
+
+```{r}
+low_retail_tidy <- covid %>%
+  filter(retail_and_recreation_percent_change_from_baseline < -30)
+
+nrow(low_retail_tidy)
+```
+
+88. The two answers differ by 24, which is a number you have already met on this page.
+
+Look at what came back from the first one:
+
+```{r}
+low_retail %>%
+  select(date, confirmed, retail_and_recreation_percent_change_from_baseline)
+```
+
+Twenty-four rows in which every column is missing, including `date`, including `confirmed`, sitting at the top of the result. Those days are not in the data twice. They are not in the result at all, in any meaningful sense. They are artefacts of how base R indexes with a logical vector.
+
+The chain runs like this. The comparison is evaluated first, giving one `TRUE`, `FALSE` or `NA` per row:
+
+```{r}
+head(covid$retail_and_recreation_percent_change_from_baseline, 3)
+head(covid$retail_and_recreation_percent_change_from_baseline < -30, 3)
+```
+
+Twenty-four of those 345 values are `NA`, because `NA < -30` is `NA`. Then that vector goes to `[`, and base R's rule for logical indexing is that `TRUE` returns the element, `FALSE` skips it, and `NA` returns a missing element. On a plain vector this is visible in one line:
+
+```{r}
+retail_sample
+retail_sample[retail_sample < -30]
+```
+
+Four elements out of five, from a condition that only two of them satisfy. Applied to a data frame, "return a missing element" means "return a row of nothing", so each of the 24 unknown days becomes a full row of `NA`. 88 real rows plus 24 phantoms is 112.
+
+The worksheet's next line asked which days those were. A student who had done everything correctly up to that point got this:
+
+```{r}
+head(low_retail$date, 5)
+```
+
+Five missing dates, from a variable that has no missing dates anywhere in the file. Nothing about that output tells you what went wrong, and the natural conclusion is that you broke something.
+
+`filter()` takes the opposite position and documents it in one sentence: it treats `NA` like `FALSE`. A row that might qualify is not a row that does qualify, so it does not come back. What you get is the 88 days `filter()` can vouch for, dates intact:
+
+```{r}
+head(low_retail_tidy$date, 5)
+max(low_retail_tidy$date)
+```
+
+7 April, the first day of the circuit breaker, and the last such day is 13 July, a little over three weeks into Phase 2 reopening.
+
+This is not a base-R-versus-tidyverse argument, and base R gives you two ways to get the right answer. `subset()` drops `NA` rows for the same reason `filter()` does, and wrapping the condition in `which()` converts it from a logical vector into positions, which discards the `NA`s on the way:
+
+```{r}
+nrow(subset(covid, retail_and_recreation_percent_change_from_baseline < -30))
+nrow(covid[which(covid$retail_and_recreation_percent_change_from_baseline < -30), ])
+```
+
+Three functions agree on 88. The single-bracket subscript is the odd one out, and it is the one that beginners are taught first.
+
+```{r}
+#| label: fig-low-retail
+#| fig-cap: "The 88 days on which retail and recreation mobility sat more than 30% below Google's baseline."
+#| fig-alt: "Retail and recreation mobility across 2020 drawn as a grey line, with a dashed horizontal reference line at minus 30 percent. The 88 days falling below that line are marked in red, forming one continuous run from early April to mid-July."
+quiet_days <- covid %>%
+  filter(retail_and_recreation_percent_change_from_baseline < -30)
+
+ggplot(covid, aes(date, retail_and_recreation_percent_change_from_baseline)) +
+  geom_hline(yintercept = -30, colour = nus_colours[["muted"]], linetype = "dashed") +
+  geom_line(colour = nus_colours[["grey"]]) +
+  geom_point(data = quiet_days, colour = nus_colours[["crimson"]], size = 0.9) +
+  labs(
+    title = "88 days more than 30% below baseline",
+    subtitle = "First 7 April, last 13 July",
+    x = NULL, y = "% change from baseline"
+  )
+```
+
+Eighty-eight is a defensible answer to the question that was asked. One hundred and twelve is 27% too large, and the 24 days it added are days on which nobody knows what Singapore's retail mobility was, which is precisely why they should not be counted as days it was low.
+
+## The two deaths that differencing loses
+
+@sec-transform left you with a warning about `deaths`, and now you have the machinery to see it. Difference the cumulative death count exactly as you differenced cases:
+
+```{r}
+deaths_daily <- covid %>%
+  arrange(date) %>%
+  mutate(daily_deaths = deaths - lag(deaths, default = 0))
+
+sum(deaths_daily$daily_deaths, na.rm = TRUE)
+max(deaths_daily$deaths, na.rm = TRUE)
+```
+
+Twenty-seven against a true total of 29. The check from the last chapter fails, and the two missing deaths are both on one row:
+
+```{r}
+deaths_daily %>%
+  filter(date >= "2020-03-19", date <= "2020-03-23") %>%
+  select(date, deaths, daily_deaths)
+```
+
+On 21 March the cumulative count goes from missing to 2. Two and not one, because the record shows both of Singapore's first COVID-19 deaths on the same day. Subtracting the previous row gives `2 - NA`, which is `NA`, and `sum(na.rm = TRUE)` then quietly drops it. Two deaths, lost to a data-processing convention.
+
+Coalescing first fixes it, and now you can say out loud why that is legitimate rather than convenient:
+
+```{r}
+covid %>%
+  arrange(date) %>%
+  mutate(
+    deaths = coalesce(deaths, 0),
+    daily_deaths = deaths - lag(deaths, default = 0)
+  ) %>%
+  summarise(total = sum(daily_deaths))
+```
+
+The `covid_daily()` helper that later chapters open with does *not* do this. It differences `deaths` as it finds them, so its `daily_deaths` column carries `NA` for the first 60 days and sums to 27. That is a choice to stay close to what the file says rather than to what you believe about it, and it is defensible in the other direction. What is not defensible is summing that column with `na.rm = TRUE`, calling the result the 2020 death toll, and never noticing the two you dropped.
+
+## Exercise
+
+::: {#exr-mobility-na}
+## Interrogate the mobility gap
+
+1. Establish whether the 24 missing days are the *same* 24 days in all six mobility columns, or merely the same number of days in each. Counting is not enough here; you need to compare which rows.
+2. Compute the mean parks mobility for February 2020 with `na.rm = TRUE`. Report the number, then report how many days it is actually the mean of, and write one sentence explaining why "February's average parks mobility" would be a misleading label for it.
+3. Ask how many days parks mobility fell below −40, twice: once with the single-bracket subscript and once with `filter()`. Predict the size of the gap between the two answers before you run either, then explain the gap you get in one sentence.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+For part 1, `which(is.na(x))` gives you the row numbers rather than a count, and two sets of row numbers can be compared directly. For part 3, the difference between the two answers is the same number for every mobility column, and you already know what it is.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-mobility-na)

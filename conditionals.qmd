@@ -1,0 +1,345 @@
+# Making decisions {#sec-conditionals}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+Nobody reading a surveillance report sees "1,426" and thinks "1,426". They think "bad day". Most of what routine epidemiological reporting does is turn numbers into labels, and R hands you two entirely different tools for the job. One of them decides what your *script* does next. The other decides what goes in a *column*. Beginners reach for the first when they need the second roughly every time, and the result is either a red error or, worse, an answer that is correct for one row and quietly wrong for the other 344.
+
+This chapter sorts out which is which, and then builds the column the rest of the book leans on: a severity label for every day of 2020.
+
+## Where we are
+
+Everything here starts from the daily counts you built in the previous chapter. The file ships cumulative totals, so a day's new cases is today's total minus yesterday's, and `lag(confirmed, default = 0)` supplies the "yesterday" for the very first row. That default matters: `confirmed` is 0 on 22 January, so day one had a real zero of new cases, not a missing one.
+
+```{r}
+covid <- read_covid() %>%
+  arrange(date) %>%
+  mutate(daily_cases = confirmed - lag(confirmed, default = 0))
+
+covid %>%
+  select(date, confirmed, daily_cases) %>%
+  slice(85:90)
+```
+
+## `if` asks exactly one question
+
+R's `if` is a control-flow statement. It looks at a single TRUE or FALSE and picks which block of code to run. It is the right tool when you are deciding something about your analysis as a whole.
+
+```{r}
+worst <- max(covid$daily_cases)
+worst
+
+if (worst > 1000) {
+  "Singapore recorded a four-figure day."
+} else {
+  "No day reached a thousand."
+}
+```
+
+`worst` is one number. `worst > 1000` is one TRUE. `if` is happy.
+
+Now the mistake. Suppose you want a label on every row, and you write the thing that reads like English:
+
+```{r}
+#| error: true
+if (covid$daily_cases > 300) "High" else "Not high"
+```
+
+`covid$daily_cases > 300` is not one TRUE. It is 345 of them.
+
+```{r}
+length(covid$daily_cases > 300)
+```
+
+`if` has no way to act on 345 answers at once, so it refuses. The message to search for is **the condition has length > 1**.
+
+This error is newer than you might expect. Up to R 4.1, that same code ran: R warned you, silently took the first element, and carried on. A script could label the entire dataset "Not high" because 22 January happened to have zero cases, and the only sign of trouble was a warning most people scroll past. R 4.2 promoted it to an error. If you find an old script or a Stack Overflow answer that relies on the old behaviour, that is why it no longer works, and the change was an improvement.
+
+When you do want a whole-dataset question, collapse the vector to one value first. `any()` and `all()` are built for this.
+
+```{r}
+if (any(covid$daily_cases > 1000)) {
+  "At least one day topped a thousand."
+}
+```
+
+## `if_else()` builds a column
+
+For a label on every row you want a *vectorised* choice: one input vector in, one output vector out, same length. dplyr's `if_else()` does that.
+
+```{r}
+covid %>%
+  mutate(big_day = if_else(daily_cases > 300, "High", "Not high")) %>%
+  count(big_day)
+```
+
+Read the arguments as a sentence: for each row, test `daily_cases > 300`; where it is TRUE use `"High"`, where it is FALSE use `"Not high"`.
+
+`if_else()` is fussy about types, and the fussiness is deliberate:
+
+```{r}
+#| error: true
+covid %>%
+  mutate(big_day = if_else(daily_cases > 300, "High", 0))
+```
+
+**Can't combine `true` <character> and `false` <double>** means you asked for a column that would be text on some rows and a number on others. R will not guess which one you meant. Base R's `ifelse()` will guess, and its guesses are how people lose data. Watch what happens to a date column:
+
+```{r}
+big <- covid %>%
+  filter(daily_cases > 300) %>%
+  slice(1:3)
+
+ifelse(big$daily_cases > 300, big$date, as.Date(NA))
+```
+
+Those five-digit numbers are days since 1 January 1970, which is how R stores a `Date` underneath. `ifelse()` stripped the class and handed back the raw integers. Somebody has spent an evening trying to work out why their outbreak started in 1970.
+
+```{r}
+if_else(big$daily_cases > 300, big$date, as.Date(NA))
+```
+
+Same question, dates intact. Use `if_else()`.
+
+## `case_when()` when there are more than two answers
+
+Two labels is one test. Three labels needs two tests, and nesting `if_else()` inside `if_else()` inside `if_else()` produces code nobody can read six months later. `case_when()` replaces the nesting with a list of conditions, each paired with the value to use when it matches.
+
+The cutoffs the course uses: under 100 new cases is Low, 100 up to and including 300 is Medium, over 300 is High.
+
+```{r}
+covid <- covid %>%
+  mutate(
+    severity = case_when(
+      daily_cases <  100 ~ "Low",
+      daily_cases <= 300 ~ "Medium",
+      daily_cases >  300 ~ "High"
+    )
+  )
+
+covid %>% count(severity)
+```
+
+The `~` separates the test from the result. You will meet that squiggle again in formulas and in ggplot facets; here it means "gives".
+
+`case_when()` works top to bottom and **first match wins**. Once a row matches a line, later lines never see it. That is what lets the second condition be `daily_cases <= 300` and not `daily_cases >= 100 & daily_cases <= 300`: any row still being tested on line two already failed line one, so it already has at least 100 cases.
+
+Which also means the order is load-bearing. Swap the first two lines and the arithmetic is identical but the answer is not:
+
+```{r}
+covid %>%
+  mutate(
+    wrong = case_when(
+      daily_cases <= 300 ~ "Medium",
+      daily_cases <  100 ~ "Low",
+      daily_cases >  300 ~ "High"
+    )
+  ) %>%
+  count(wrong)
+```
+
+Every Low day matched "Medium" on the way past and never reached its own line. No error, no warning, 215 days mislabelled. When a `case_when()` gives you a category with a suspiciously round zero or a suspiciously large count, read the order before you read anything else.
+
+The other failure mode is a row that matches nothing at all. Drop the last line and the 77 High days have nowhere to go:
+
+```{r}
+covid %>%
+  mutate(
+    incomplete = case_when(
+      daily_cases <  100 ~ "Low",
+      daily_cases <= 300 ~ "Medium"
+    )
+  ) %>%
+  count(incomplete)
+```
+
+`case_when()` returns `NA` for unmatched rows rather than complaining, so this only shows up if you look. `.default` catches everything that falls through and is worth using whenever your conditions are meant to be exhaustive:
+
+```{r}
+covid %>%
+  mutate(
+    severity_alt = case_when(
+      daily_cases <  100 ~ "Low",
+      daily_cases <= 300 ~ "Medium",
+      .default = "High"
+    )
+  ) %>%
+  count(severity_alt)
+```
+
+## The boundaries are real days
+
+"100 to 300" is ambiguous in English and unambiguous in code, which is exactly where specifications go wrong. Is a day with exactly 100 cases Low or Medium? Is 300 Medium or High? Somebody has to decide, and in a real outbreak that somebody is you, at half past five, on the phone.
+
+This dataset contains days sitting on both ends of the rule.
+
+::: {.callout-important}
+## Predict before you run
+
+Two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. If you are not sure, that is the point of the exercise.
+:::
+
+```{r}
+covid %>%
+  filter(date %in% as.Date(c("2020-08-06", "2020-08-18"))) %>%
+  select(date, confirmed, daily_cases, severity)
+```
+
+18 August is Medium because `daily_cases < 100` is FALSE at exactly 100, so it fell through to the `<= 300` line. 6 August is High because 301 is one case past `<= 300`. Change `<` to `<=` on the first line and 18 August becomes Low. One character, one day, and if that day is the one in the headline you will hear about it.
+
+Write your thresholds down in prose next to the code, with the inequalities spelled out. "Fewer than 100" and "up to 100" are different rules and they will disagree on real days.
+
+## Missing values fall straight through
+
+Neither `if_else()` nor `case_when()` treats `NA` as FALSE. `NA > 0` is `NA`, which is neither branch, so the result is `NA`. Deaths in this file are missing for the first 59 days, so they show it plainly:
+
+```{r}
+covid %>%
+  mutate(
+    daily_deaths = deaths - lag(deaths, default = 0),
+    death_day = if_else(daily_deaths > 0, "yes", "no")
+  ) %>%
+  count(death_day)
+```
+
+Sixty rows came back `NA`: the 59 days before any death total was published, plus the first day that had one, which has no valid predecessor to difference against. `if_else()` gives you a `missing =` argument to label them explicitly:
+
+```{r}
+covid %>%
+  mutate(
+    daily_deaths = deaths - lag(deaths, default = 0),
+    death_day = if_else(daily_deaths > 0, "yes", "no", missing = "not reported yet")
+  ) %>%
+  count(death_day)
+```
+
+In `case_when()` you do the same thing with an `is.na()` line placed first, so that missing rows are claimed before any comparison gets a chance to return `NA`. "No deaths reported" and "deaths not reported" are different findings and a table that merges them is a table that misleads.
+
+## `table()` sorts alphabetically, and that is wrong here
+
+`count()` is the dplyr way. Base R's `table()` is shorter and you will meet it in other people's code, so look at what it does with the labels:
+
+```{r}
+table(covid$severity)
+```
+
+High, Low, Medium. Alphabetical order, and alphabetical order for an ordered variable is meaningless. It puts the worst category first and the middle category last, and every bar chart, every legend and every summary table you build from that column will inherit the nonsense.
+
+R sorts alphabetically because `severity` is currently plain text:
+
+```{r}
+class(covid$severity)
+```
+
+Text has no order except the dictionary's. Telling R that these three strings are levels of a categorical variable, in a specific order, is what `factor()` is for.
+
+```{r}
+covid <- covid %>%
+  mutate(severity = factor(severity, levels = c("Low", "Medium", "High")))
+
+table(covid$severity)
+```
+
+215 Low, 53 Medium, 77 High. They sum to 345, which is every day of the dataset, so nothing fell through the conditions.
+
+A factor stores small integers plus a lookup table of labels, which is why the ordering sticks:
+
+```{r}
+levels(covid$severity)
+as.integer(head(covid$severity, 5))
+head(covid$severity, 5)
+```
+
+Rows 1 to 5 are stored as `1`, displayed as `Low`, and sorted first because `Low` is level one. ggplot reads exactly the same information, so the same fix that repairs `table()` repairs your axes:
+
+```{r}
+#| label: fig-severity-order
+#| fig-cap: "The same 345 days, counted twice. Only the ordering differs."
+p_chr <- ggplot(covid, aes(x = as.character(severity))) +
+  geom_bar() +
+  labs(title = "Stored as text", x = NULL, y = "Days")
+
+p_fct <- ggplot(covid, aes(x = severity)) +
+  geom_bar() +
+  labs(title = "Stored as a factor", x = NULL, y = "Days")
+
+p_chr + p_fct
+```
+
+You will be doing this for the rest of your career. Age bands, Likert scales, disease stages, income quintiles, WHO regions ordered by anything other than the alphabet: every one of them arrives as text and every one of them needs `factor(levels = ...)` before it plots correctly. It is not a beginner's workaround. It is the fix.
+
+One trap while you are learning it. `factor()` silently converts any value not listed in `levels` to `NA`, including one that differs only in case:
+
+```{r}
+head(factor(as.character(covid$severity), levels = c("low", "Medium", "High")))
+table(factor(as.character(covid$severity), levels = c("low", "Medium", "High")), useNA = "ifany")
+```
+
+A lower-case `l` sent 215 days to `NA` without a word of complaint. After you create a factor, run `table(..., useNA = "ifany")` or `count()` once and check the total still matches your row count. Two seconds, and it catches this every time.
+
+## What the rest of the book starts from
+
+Putting the pieces together, here is the dataset from this point on: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a `month` column produced by rounding each date down to the first of its month.
+
+```{r}
+covid <- read_covid() %>%
+  arrange(date) %>%
+  mutate(
+    daily_cases  = confirmed - lag(confirmed, default = 0),
+    daily_deaths = deaths - lag(deaths, default = 0),
+    severity = case_when(
+      daily_cases <  100 ~ "Low",
+      daily_cases <= 300 ~ "Medium",
+      daily_cases >  300 ~ "High"
+    ),
+    severity = factor(severity, levels = c("Low", "Medium", "High")),
+    month = floor_date(date, "month")
+  )
+
+covid %>%
+  select(date, daily_cases, daily_deaths, severity, month) %>%
+  slice(85:88)
+```
+
+That block is exactly what `covid_daily()` runs. Later chapters open with `covid <- covid_daily()` instead of retyping it, and `_common.R` in the project root holds the definition if you want to read it. Nothing is hidden in there that you have not now built by hand.
+
+## Exercises
+
+::: {#exr-severity}
+## Audit your severity column
+
+Do not trust `severity` because you wrote it. Check it.
+
+1. Confirm the three counts add up to 345 and that no day came back `NA`.
+2. For each label, report the smallest and the largest `daily_cases` it contains.
+3. Look at the numbers from step 2 either side of each cutoff, and say how far you could move the 100 threshold, in either direction, before a single day changed its label.
+
+Step 3 is the one worth thinking about. Write down what it tells you about how much the labelling really depends on the exact number 100.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+`group_by(severity)` followed by a `summarise()` containing `n()`, `min()` and `max()` answers steps 1 and 2 in one call, and grouping is the next chapter so treat this as a preview rather than something you should already know. For the `NA` check, `count()` shows a missing category if one exists.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-severity)
+
+::: {#exr-move-cutoffs}
+## Move the cutoffs and watch the headline move
+
+The 100 and 300 thresholds were chosen by whoever wrote the original worksheet, not by nature. Rebuild `severity` with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).
+
+Report the three counts under the new rule, and compare them with 215 / 53 / 77. Then write two sentences you would be willing to put in a report under each set of cutoffs, describing how severe 2020 was. Both sentences must be true of the same 345 days.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+Copy the `case_when()` block, change the two numbers, and give the new column a different name so you can `count()` both and put the results side by side. Do not forget the `factor()` line, or your new column will sort alphabetically again.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-move-cutoffs)

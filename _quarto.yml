@@ -1,0 +1,138 @@
+# Verified against Quarto 1.4.554. The project: and book: schemas are closed,
+# so an unrecognised key there is a hard render failure — check
+# /Applications/quarto/share/schema/definitions.yml before adding one.
+
+project:
+  type: book
+  output-dir: docs
+  execute-dir: project
+  resources:
+    # Copied into docs/ automatically on every project render. Stops GitHub
+    # Pages handing the site to Jekyll.
+    - .nojekyll
+
+book:
+  title: "An Introduction to R"
+  subtitle: "Working with epidemiological data, using Singapore's 2020 COVID-19 record"
+  author: "Swapnil Mishra"
+  date: today
+  date-format: "D MMMM YYYY"
+  description: >
+    A hands-on introduction to R and the tidyverse for public health students,
+    built around a single real dataset: every day of Singapore's 2020 COVID-19
+    epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.
+  favicon: assets/favicon.png
+  site-url: https://cerm-nus.github.io/r-intro/
+  repo-url: https://github.com/CERM-NUS/r-intro
+  repo-branch: main
+  repo-actions: [edit, issue, source]
+  search: true
+  reader-mode: true
+  page-navigation: true
+  back-to-top-navigation: true
+
+  sidebar:
+    style: docked
+    background: light
+    collapse-level: 1
+    tools:
+      - icon: github
+        href: https://github.com/CERM-NUS/r-intro
+        text: "Source on GitHub"
+      - icon: file-earmark-spreadsheet
+        href: https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv
+        text: "Download the data"
+
+  chapters:
+    - index.qmd
+    - part: "Before you write any code"
+      chapters:
+        - setup.qmd
+        - good-practice.qmd
+    - part: "The R you cannot avoid"
+      chapters:
+        - foundations.qmd
+        - rectangles.qmd
+        - import.qmd
+    - part: "Working with the data"
+      chapters:
+        - transform.qmd
+        - missing.qmd
+        - conditionals.qmd
+        - groups.qmd
+    - part: "Showing it to someone"
+      chapters:
+        - visualise.qmd
+    - part: "Writing your own code"
+      chapters:
+        - functions.qmd
+        - iteration.qmd
+    - part: "Putting it together"
+      chapters:
+        - capstone.qmd
+        - next-steps.qmd
+
+  appendices:
+    - solutions.qmd
+    - data.qmd
+    - build.qmd
+    - colophon.qmd
+
+  page-footer:
+    border: true
+    left: |
+      <div class="footer-logos">
+        <img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health">
+        <img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling">
+        <img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network">
+      </div>
+      Released under the [MIT Licence](https://github.com/CERM-NUS/r-intro/blob/main/LICENSE).
+    right: |
+      Built with [Quarto](https://quarto.org). [Report a problem](https://github.com/CERM-NUS/r-intro/issues).
+
+format:
+  html:
+    theme: [litera, scss/nus.scss]
+    toc: true
+    toc-depth: 3
+    toc-title: "On this page"
+    number-sections: true
+    anchor-sections: true
+    smooth-scroll: true
+    code-copy: true
+    # scroll, not wrap. This dataset's column names run to 49 characters
+    # (retail_and_recreation_percent_change_from_baseline), and wrapping them
+    # either breaks mid-identifier or pushes the whole page wider than a phone.
+    code-overflow: scroll
+    # Turns function calls in code blocks into links to their documentation.
+    # Needs downlit and xml2 in the lockfile.
+    code-link: true
+    code-annotations: hover
+    # Console-style output. `kable` would render data frames as neat HTML
+    # tables that look nothing like what the student sees in their own console.
+    df-print: default
+    fig-width: 7
+    fig-height: 4.2
+    fig-align: center
+    fig-format: svg
+    tbl-cap-location: bottom
+
+execute:
+  freeze: auto
+  echo: true
+  warning: true
+  # Messages stay ON. read_csv()'s column specification, geom_histogram()'s
+  # note about bin width, and summarise()'s .groups notice are all messages,
+  # and the book teaches students to read all three. Suppress per-chunk where
+  # something is genuinely noisy, never globally.
+  message: true
+
+crossref:
+  exr-title: "Exercise"
+  appendix-title: "Appendix"
+
+knitr:
+  opts_chunk:
+    comment: "#>"
+    collapse: true
+    dev: "svg"

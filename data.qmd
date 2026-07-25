@@ -1,0 +1,235 @@
+# The data {#sec-data}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+Everything in this book comes out of one file. `data/sg_covid_data.csv` is 23 kB, 345 rows and 13 columns, which is small enough to open in a text editor and read with your eyes. If you ever doubt what a column contains, that is a legitimate first move.
+
+This appendix is the reference you come back to when a number surprises you. It says where each column came from, what its units are, and where it is missing and why.
+
+```{r}
+#| label: read
+covid <- read_covid()
+dim(covid)
+```
+
+## Where it came from
+
+Three sources, stitched together into one rectangle.
+
+The **case and death counts** come from the [COVID-19 Data Hub](https://covid19datahub.io) (Guidotti and Ardia, 2020), an R package and web service that collects national COVID-19 reporting into a single schema, so that a query for Singapore returns columns with the same names as a query for Italy. The Hub does not generate numbers. It collects what national authorities publish, sometimes by way of an intermediate aggregator, and reshapes it. For Singapore the chain ends at the Ministry of Health's daily reporting. If you need to say exactly which feed the Hub was reading on a given date, that is documented country by country on the Hub's own site, and that documentation, rather than this appendix, is what you should cite.
+
+The three **index columns** are the Oxford COVID-19 Government Response Tracker, usually written OxCGRT (Hale et al., 2021). A team of coders read government announcements and scored each country each day on a fixed list of policy indicators: school closures, workplace closures, restrictions on gatherings, testing policy, contact tracing, income support, and so on. The indices are weighted averages of those indicator scores, rescaled to run from 0 to 100. In this extract they range from `r min(covid$stringency_index)` to `r max(covid$stringency_index)`.
+
+The six **mobility columns** are Google's COVID-19 Community Mobility Reports, built from location history for users who had that setting switched on. Each value is a percentage change against a baseline, and the definition of the baseline is the single most important thing to know about these columns. It is the **median value for that day of the week over the five weeks from 3 January to 6 February 2020**. Not a single day, not the whole of January, and not a rolling window. Google stopped updating the reports in October 2022, so these series will never be revised again.
+
+Google's column names are passed through unchanged, which is why they are 50 characters long and end in `percent_change_from_baseline`. You will be typing them a lot. Tab completion in RStudio exists for exactly this reason.
+
+### Citing the sources
+
+If you use this data in coursework or a paper, cite the sources, not the book.
+
+> Guidotti, E. and Ardia, D. (2020). COVID-19 Data Hub. *Journal of Open Source Software*, 5(51), 2376. <https://doi.org/10.21105/joss.02376>
+
+> Hale, T., Angrist, N., Goldszmidt, R., Kira, B., Petherick, A., Phillips, T., Webster, S., Cameron-Blake, E., Hallas, L., Majumdar, S. and Tatlow, H. (2021). A global panel database of pandemic policies (Oxford COVID-19 Government Response Tracker). *Nature Human Behaviour*, 5, 529–538. <https://doi.org/10.1038/s41562-021-01079-w>
+
+> Google LLC. *Google COVID-19 Community Mobility Reports*. <https://www.google.com/covid19/mobility/>
+
+### Regenerating it
+
+The file in this repository is a frozen snapshot with 13 of the Hub's columns kept. A full query returns a good deal more: testing and vaccination counts, hospital and ICU occupancy where a country reported them, population, and a set of identifier codes. Thirteen is what fits on a screen, and a beginner's first data frame should fit on a screen.
+
+```{r}
+#| label: regenerate
+#| eval: false
+# install.packages("COVID19")
+library(COVID19)
+sg <- covid19(country = "Singapore", level = 1)
+```
+
+Run that today and you will not get this file back byte for byte. Countries revise historical counts long after the fact, and the Hub's own upstream source for a given country has changed over the years. That is normal rather than corruption, and it is a large part of why the snapshot lives in the repository instead of being downloaded at render time. A book whose numbers move under it is not a book you can teach from.
+
+## What one row is
+
+One row is one calendar day in Singapore. Nothing finer, nothing coarser.
+
+```{r}
+#| label: coverage
+range(covid$date)
+n_distinct(covid$date)
+all(diff(covid$date) == 1)
+```
+
+345 rows, 345 distinct dates, and every consecutive difference is exactly one day. No gaps, no duplicates, nothing to reconcile. That is unusual enough in real epidemiological data that it is worth naming: most surveillance extracts you meet later will have missing days, repeated days, or both, and the check above is the one to run first.
+
+The series opens on 22 January 2020, the day before the count moves off zero.
+
+```{r}
+#| label: first-rows
+covid %>%
+  select(date, confirmed, deaths) %>%
+  head(4)
+```
+
+`administrative_area_level_1` is the Hub's name for the top administrative level, which for a city-state is the whole country. It is constant.
+
+```{r}
+#| label: area
+count(covid, administrative_area_level_1)
+```
+
+It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because a student who later pulls three countries and forgets to group by this column will produce a very confident, very wrong national total.
+
+## The counts are cumulative
+
+`confirmed` and `deaths` are running totals, not daily counts. Every day's value includes every previous day's.
+
+```{r}
+#| label: cumulative
+covid %>%
+  select(date, confirmed) %>%
+  tail(3)
+```
+
+58,599 is the total number of confirmed cases in Singapore in 2020, not the number on 31 December. The number on 31 December is 30, and you get it by subtracting the previous row. That subtraction is what `lag()` is for, and it is done in the transform chapter.
+
+Two consequences follow, and both bite people.
+
+The first is that a plot of `confirmed` against `date` is a monotone rising line for any epidemic anywhere. It cannot show you a peak, a wave, or a circuit breaker, because it never goes down. It looks informative and tells you almost nothing about tempo.
+
+The second is arithmetic. `max(confirmed)` is the annual total. `sum(confirmed)` is a number with no meaning at all, and R will compute it for you without a murmur.
+
+## The columns
+
+Meaning, units and source, one row per column. The values in the second table are computed from the file rather than typed, so if the file ever changes they change with it.
+
+| Column | What it is | Units | Source |
+|:---|:---|:---|:---|
+| `administrative_area_level_1` | Country name. Constant here. | text | COVID-19 Data Hub |
+| `confirmed` | Cumulative confirmed cases since the start of the series | people, running total | COVID-19 Data Hub |
+| `deaths` | Cumulative deaths attributed to COVID-19 | people, running total | COVID-19 Data Hub |
+| `date` | Calendar date of the report | date | COVID-19 Data Hub |
+| `stringency_index` | Closure and containment policies plus public information campaigns | 0–100 | OxCGRT |
+| `government_response_index` | All four OxCGRT indicator families, including economic support | 0–100 | OxCGRT |
+| `containment_health_index` | Containment and closure policies plus health-system policies | 0–100 | OxCGRT |
+| `retail_and_recreation_percent_change_from_baseline` | Visitors to restaurants, cafés, shopping centres, cinemas, museums | % change vs baseline | Google |
+| `grocery_and_pharmacy_percent_change_from_baseline` | Visitors to supermarkets, wet markets, food shops, pharmacies | % change vs baseline | Google |
+| `parks_percent_change_from_baseline` | Visitors to parks, beaches, public gardens | % change vs baseline | Google |
+| `transit_stations_percent_change_from_baseline` | Visitors to MRT and bus interchanges and other transit hubs | % change vs baseline | Google |
+| `workplaces_percent_change_from_baseline` | Visitors to places of work | % change vs baseline | Google |
+| `residential_percent_change_from_baseline` | **Time spent** in places of residence | % change vs baseline | Google |
+
+That last row is not a typo. Five of the six mobility series count visitors to a category of place. The residential series measures duration instead, because almost everyone is at home for some part of almost every day, so a visitor count would be flat and useless. The consequence is that residential moves on a much smaller scale than the others: everybody sleeping two hours more at home is a large behavioural change and a small percentage change in total hours. Do not put residential on the same axis as workplaces and read the sizes across.
+
+Now the computed part. Missing counts and observed ranges, straight from the file:
+
+```{r}
+#| label: column-summary
+column_summary <- tibble(
+  column   = names(covid),
+  missing  = map_int(covid, ~ sum(is.na(.x))),
+  smallest = map_chr(covid, ~ if (is.numeric(.x)) format(min(.x, na.rm = TRUE)) else "-"),
+  largest  = map_chr(covid, ~ if (is.numeric(.x)) format(max(.x, na.rm = TRUE)) else "-")
+)
+
+print(column_summary, n = 13)
+```
+
+Read the `deaths` row carefully. Its smallest observed value is 2, not 0 and not 1. That is not a typo, and the next section is about why.
+
+The mobility columns are whole numbers. Google rounds to the nearest percent before publishing, so a change of 0.4 percentage points and a change of 0 look identical in this file. The three indices carry two decimal places.
+
+## Missing values
+
+There are exactly three missingness patterns in this file, and each has a different cause.
+
+**Six columns are complete.** `administrative_area_level_1`, `confirmed`, `date` and the three indices have no `NA` at all. OxCGRT coded Singapore every day of 2020, including the many days when nothing changed, which is why the indices are complete while everything around them has holes.
+
+**`deaths` has 59 missing values, all at the start.** The Hub carries no death figure for Singapore until 21 March 2020.
+
+```{r}
+#| label: deaths-start
+covid %>%
+  select(date, confirmed, deaths) %>%
+  slice(58:62)
+```
+
+The first recorded value is 2, on a day when nothing in the file says whether that 2 arrived as one death plus one death, or as two deaths at once, or as a backfill of earlier events that were never reported daily. Whatever happened, the file cannot tell you. So if you difference `deaths` to recover daily deaths, the first two of Singapore's 29 deaths in 2020 are outside the differencing window and you recover 27.
+
+```{r}
+#| label: deaths-recovered
+sum(diff(na.omit(covid$deaths)))
+max(covid$deaths, na.rm = TRUE)
+```
+
+Twenty-seven against twenty-nine. That gap is small and real, and if you report daily deaths from this file you should say so in a footnote rather than hope nobody adds them up.
+
+**All six mobility columns have 24 missing values, on the same 24 days.**
+
+```{r}
+#| label: mobility-missing
+covid %>%
+  summarise(
+    any_missing = sum(if_any(ends_with("_baseline"), is.na)),
+    all_missing = sum(if_all(ends_with("_baseline"), is.na))
+  )
+```
+
+`any_missing` and `all_missing` are both 24, which tells you the six columns go missing together rather than independently. They are the first 24 rows of the file:
+
+```{r}
+#| label: mobility-window
+covid %>%
+  filter(is.na(parks_percent_change_from_baseline)) %>%
+  summarise(n = n(), first = min(date), last = max(date))
+```
+
+22 January to 14 February 2020. The reason is the baseline definition. Google measures each day against the median for that weekday over 3 January to 6 February, and there is no honest way to publish a comparison for a day that falls inside, or before the end of, the period you are comparing against. The mobility series start after the baseline window closes.
+
+```{r}
+#| label: mobility-boundary
+covid %>%
+  select(date,
+         retail = retail_and_recreation_percent_change_from_baseline,
+         parks  = parks_percent_change_from_baseline,
+         work   = workplaces_percent_change_from_baseline) %>%
+  slice(22:27)
+```
+
+That is the seam. Nothing on 14 February, real numbers on 15 February.
+
+One practical trap follows from it. January is entirely inside the missing window, so any January-only summary of a mobility column has nothing to average, and `na.rm = TRUE` does not save you:
+
+```{r}
+#| label: january-nan
+covid %>%
+  filter(date < as.Date("2020-02-01")) %>%
+  summarise(
+    mean_retail = mean(retail_and_recreation_percent_change_from_baseline, na.rm = TRUE)
+  )
+```
+
+`NaN`, not `NA` and not an error. `na.rm = TRUE` removed every value, `mean()` divided zero by zero, and R returned the IEEE answer for that. It will propagate silently through everything downstream. The missing-data chapter goes into this properly.
+
+## What this file cannot tell you
+
+It has no ages, no sexes, no nationalities, no residency or work-permit status, no clusters, no test counts, no split between imported and locally transmitted cases, and no split between dormitory and community cases. Every question of that shape has to go somewhere else.
+
+That absence shapes what you can honestly say. The migrant-worker dormitory outbreak dominates Singapore's case counts from April to August 2020, and you can see its shape in `confirmed` clearly enough. What you cannot do is quantify it from this file, because there is no column that separates it out.
+
+The mobility columns need the same caution and it is harder to apply. Google built these series from users who had Location History switched on, which is a self-selected slice of everyone in the country. My own reading is that the population living in purpose-built dormitories, roughly 200,000 people across the 43 large dormitories, is likely to be represented differently from the general population in a measure built that way: device ownership and account settings vary, and the categories Google reports are ordinary consumer destinations. Google does not publish these series broken down by nationality or permit status, so there is no way to check any of that from the data. Read the previous sentence but one as my inference with the mechanism stated, not as an established finding.
+
+## Quirks worth knowing before you plot anything
+
+**5 August 2020 shows 908 new cases.** August's median is 91 and the next highest day in August is 313, so this single point rescales any August axis you draw. It came out of dormitory clearance testing. MOH reported that 903 of the 908 were dormitory residents, and that 581 were linked to a single cluster at Acacia Lodge, and its account of the clearance-testing programme was that it was detecting past infections as well as current ones. Treat the day as a reporting event, describe the mechanism the way MOH described it, and stop there.
+
+**The indices are step functions.** OxCGRT scores change on the day a policy changes and then sit flat, sometimes for weeks. `stringency_index` takes only `r n_distinct(covid$stringency_index)` distinct values across the whole year. A line plot of it is a staircase, and any smoothing you apply is inventing intermediate values that never existed.
+
+**Small index movements are not evidence of much.** There are 23 changes in `stringency_index` after 1 July alone, most of them tiny, and the coding of a single indicator being revised looks exactly the same in the data as a real policy shift. A one-day tick is not a policy announcement. If you want to attribute a movement to a decision, go and find the decision.
+
+**The mobility series have a strong weekly cycle.** Workplaces drop every weekend and every public holiday, by a lot. Comparing a Tuesday with a Sunday tells you which day of the week it is. Google's baseline is computed per weekday partly to control for this, but the residual cycle is still the largest signal in several of these columns, and it will drown whatever you were actually looking for unless you handle it.
+
+**The deepest workplace drops in the whole year are holidays, not policy.** The eight lowest days are Good Friday, Labour Day, Vesak Day, the observed Hari Raya Puasa holiday, the observed National Day holiday, polling day for the 2020 general election, Hari Raya Haji, and Christmas Day. If you find yourself explaining one of those troughs with an epidemiological story, check the calendar first.

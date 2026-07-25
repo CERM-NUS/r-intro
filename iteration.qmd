@@ -1,0 +1,398 @@
+# Loops, and when you need them {#sec-iteration}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+```{r}
+#| label: data
+#| include: false
+covid <- covid_daily()
+```
+
+Most introductions to the tidyverse skip loops, or mention them once with an apology. This one does not, and the reason is on your timetable. Later in this course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and there is no dplyr verb that expresses that. If your only tool is `mutate()`, you will be stuck.
+
+So we do it in the awkward order. Write the loop first, watch it work, then see the one-liner that replaces it, and understand what you gained and what you gave up.
+
+## The loop the worksheet asked for
+
+`confirmed` in this dataset is cumulative. On 31 December it reads 58,599, which is every case Singapore recorded in 2020, not the number recorded that day. To get daily cases you take each value and subtract the one before it.
+
+Written as a loop, that is:
+
+```{r}
+#| label: loop-daily
+daily <- numeric(nrow(covid))
+
+for (i in seq_along(daily)) {
+  if (i == 1) {
+    daily[i] <- covid$confirmed[i]
+  } else {
+    daily[i] <- covid$confirmed[i] - covid$confirmed[i - 1]
+  }
+}
+
+head(daily, 8)
+```
+
+Read it slowly, because every piece is doing something.
+
+`daily <- numeric(nrow(covid))` creates the answer *before* filling it: a vector of 345 zeros, ready to be overwritten. `for (i in seq_along(daily))` runs the body once for each position, with `i` taking the values 1, 2, 3 and so on. The `if (i == 1)` branch exists because there is no day before the first one, so `covid$confirmed[0]` would give you nothing at all rather than a zero. And on day one the answer is `confirmed[1]`, which in this dataset is 0, because Singapore's first record on 22 January had a cumulative count of zero. That day really did have no new cases. It is not missing.
+
+The result: 0, 1, 2, 0, 1, 1, 2, 0. Small numbers in a country that had not yet noticed what was coming.
+
+## The one-liner
+
+Everything above is one `mutate()` call:
+
+```{r}
+#| label: vectorised
+vectorised <- covid %>%
+  mutate(daily_cases_v = confirmed - lag(confirmed, default = 0)) %>%
+  pull(daily_cases_v)
+
+head(vectorised, 8)
+```
+
+`lag()` shifts a vector down by one position, so `lag(confirmed)` on day `i` is `confirmed` on day `i - 1`. The whole subtraction happens at once, across all 345 rows, with no index variable anywhere. `default = 0` is what replaces the `if (i == 1)` branch: it says what to use where there is no previous value, and 0 is right here for the reason given above. Leave the default out and day one becomes `NA`, which propagates into every count and every plot downstream.
+
+Same numbers? Do not take my word for it:
+
+```{r}
+#| label: prove-identical
+identical(daily, vectorised)
+```
+
+`identical()` is the strict comparison. It checks length, type and every element, and it returns a single `TRUE` or `FALSE` with no tolerance for rounding and no recycling. Use it when you want a yes-or-no answer about whether two objects are the same thing. (`all.equal()` is its forgiving cousin, which allows tiny floating-point differences and returns a *message* rather than `FALSE` when things differ, which trips people up inside `if`.)
+
+And both agree with the column `covid_daily()` built for you:
+
+```{r}
+#| label: prove-column
+identical(daily, covid$daily_cases)
+```
+
+## Being fair to the loop
+
+The loop is eight lines and the `mutate()` is one. The loop has three places to get an index wrong: `seq_along(daily)`, `covid$confirmed[i]` and `covid$confirmed[i - 1]`. Get the last one wrong by writing `i + 1` and R will happily run it, hand you `NA` in the final position, and say nothing. The vectorised version has no indices at all, so it cannot have index bugs.
+
+That is a real advantage and it is why the tidyverse exists. But the loop buys you two things the one-liner cannot.
+
+The first is that you can see every step. `lag()` is a black box until you have written the shift yourself; once you have, it stops being magic.
+
+The second is that you can stop it and look around. Put `browser()` inside the body and R drops you into an interactive prompt at that iteration, with `i` and every other local variable available to inspect:
+
+```{r}
+#| label: browser-demo
+#| eval: false
+for (i in seq_along(daily)) {
+  if (i == 60) browser()          # stop on the 60th day and look
+  daily[i] <- covid$confirmed[i] - covid$confirmed[max(i - 1, 1)]
+}
+```
+
+Type `n` to run the next line, `c` to continue, `Q` to quit. There is no equivalent for a `mutate()` that is wrong in the middle. When a vectorised calculation gives you a number you cannot explain, rewriting it as a loop and stepping through it is often the fastest way to find out why.
+
+The rule most people settle on: reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.
+
+## Pre-allocate
+
+`daily <- numeric(nrow(covid))` was not decoration. Compare it with the way people write loops when nobody has told them otherwise:
+
+```{r}
+#| label: grow-vs-prealloc
+grow <- function(n) {
+  x <- c()
+  for (i in 1:n) x <- c(x, i)
+  x
+}
+
+prealloc <- function(n) {
+  x <- numeric(n)
+  for (i in seq_len(n)) x[i] <- i
+  x
+}
+
+sizes <- c(10000, 20000, 40000)
+
+tibble(
+  n             = sizes,
+  grow_secs     = map_dbl(sizes, function(n) system.time(grow(n))[["elapsed"]]),
+  prealloc_secs = map_dbl(sizes, function(n) system.time(prealloc(n))[["elapsed"]])
+) %>%
+  mutate(grow_vs_previous_row = round(grow_secs / lag(grow_secs), 1))
+```
+
+The last column is `lag()` again, earning its keep outside a mutate on the COVID data. Each doubling of `n` multiplies the growing version's time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: `x <- c(x, i)` does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of `x` into it, adds the new value, and throws the old one away. Do that `n` times and you have copied roughly `n²/2` values.
+
+`prealloc_secs` barely moves, because `x[i] <- value` writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.
+
+Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations it is the difference between a coffee break and lunch, and it is the single most common performance bug in student R code.
+
+## `seq_along()`, `seq_len()`, and the 1:0 trap
+
+You will see `1:length(x)` and `1:nrow(df)` everywhere, including in code written by people who know better. They are wrong in exactly one case, and it is a case that happens.
+
+`:` counts downwards if it has to.
+
+```{r}
+#| label: one-to-zero
+1:0
+```
+
+Not empty. A vector of length two, counting down. So a loop written as `1:nrow(df)` over a data frame with no rows runs **twice**, with `i` equal to 1 and then 0.
+
+Here is a filter that finds nothing, because Singapore never recorded more than 1,426 cases in a day:
+
+```{r}
+#| label: empty-result
+quiet <- covid %>% filter(daily_cases > 2000)
+
+nrow(quiet)
+```
+
+::: {.callout-important}
+## Predict first
+
+The next chunk loops over `quiet` using `1:nrow(quiet)` and prints one line per row. `quiet` has zero rows. Commit to a number of lines before you scroll.
+:::
+
+```{r}
+#| label: bad-loop
+for (i in 1:nrow(quiet)) {
+  cat("Day", format(quiet$date[i]), "had", quiet$daily_cases[i], "new cases\n")
+}
+```
+
+Two lines, and neither is true. The first is `i = 1`, and asking a zero-row tibble for its first row gives `NA`. The second is `i = 0`, and index zero in R returns a zero-length vector, which `cat()` prints as nothing at all. No error. If that loop had been accumulating a total instead of printing, you would now have `NA` where the right answer was "there were no such days".
+
+`seq_len()` and `seq_along()` never count backwards. They return an empty sequence when there is nothing to iterate over, and a loop over an empty sequence does not run:
+
+```{r}
+#| label: good-loop
+seq_len(nrow(quiet))
+
+for (i in seq_len(nrow(quiet))) {
+  cat("Day", format(quiet$date[i]), "had", quiet$daily_cases[i], "new cases\n")
+}
+
+cat("finished, and printed nothing\n")
+```
+
+Use `seq_along(x)` when you are walking a vector or list, and `seq_len(nrow(df))` when you are walking the rows of a data frame. It costs three extra characters and removes a whole category of bug.
+
+## `while`, when you do not know how many steps
+
+`for` needs to know the number of iterations before it starts. When the stopping condition depends on what you find, use `while`.
+
+Half of Singapore's 2020 cases is 29,300 or thereabouts. Which day did the cumulative count cross that?
+
+```{r}
+#| label: while-loop
+target <- max(covid$confirmed) / 2
+i <- 1
+
+while (covid$confirmed[i] < target) {
+  i <- i + 1
+}
+
+covid$date[i]
+covid$confirmed[i]
+i
+nrow(covid) - i
+```
+
+Half the year's cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry is the dormitory outbreak, and it is worth sitting with for a moment.
+
+Two things about `while`. Something inside the body must change the condition, or it runs forever; here it is `i <- i + 1`, and forgetting that line is the classic way to hang your R session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, `i` would keep climbing past 345 and `covid$confirmed[346]` would be `NA`, at which point R stops with a real error rather than looping forever:
+
+```
+Error in while (covid$confirmed[i] < target) { :
+  missing value where TRUE/FALSE needed
+```
+
+That message is worth memorising. It nearly always means a comparison produced `NA`, and `NA` is neither true nor false, so `while` and `if` refuse to guess.
+
+## `map()` and friends
+
+Loops that build a result one element at a time are common enough that purrr, part of the tidyverse, gives them a shorter form. `map(x, f)` calls `f` on each element of `x` and returns a **list** of the results, always the same length as `x`.
+
+Let me bring `month_summary()` across from @sec-functions. Chapters render in fresh sessions, so it has to be defined again here:
+
+```{r}
+#| label: month-summary
+month_summary <- function(df, which_month) {
+  start <- floor_date(as.Date(which_month), "month")
+
+  if (!start %in% df$month) {
+    stop("No data for ", format(start, "%B %Y"), ". The data covers ",
+         format(min(df$month), "%B %Y"), " to ",
+         format(max(df$month), "%B %Y"), ".", call. = FALSE)
+  }
+
+  df %>%
+    filter(month == start) %>%
+    summarise(
+      month      = start,
+      days       = n(),
+      total      = sum(daily_cases),
+      mean_daily = round(mean(daily_cases), 1),
+      peak       = max(daily_cases),
+      peak_date  = date[which.max(daily_cases)],
+      high_days  = sum(severity == "High")
+    )
+}
+
+all_months <- unique(covid$month)
+all_months
+```
+
+Now the payoff for having made it return a one-row tibble:
+
+```{r}
+#| label: map-list-rbind
+monthly <- all_months %>%
+  map(function(m) month_summary(covid, m)) %>%
+  list_rbind()
+
+monthly
+```
+
+Twelve calls, twelve one-row tibbles, stacked into a table, in three lines. `map()` did the iterating and `list_rbind()` did the stacking. Had `month_summary()` returned a list, `list_rbind()` would have refused, which is the argument made at the end of @sec-functions.
+
+Check the arithmetic against something you already know:
+
+```{r}
+#| label: check-total
+sum(monthly$total) == max(covid$confirmed)
+```
+
+The monthly totals add back to 58,599. May was the worst month by volume, with 18,715 cases and every single one of its 31 days classed High. April held the single worst day, 1,426 on the 20th.
+
+`map()` always returns a list. When you know each result is a single number, `map_dbl()` returns a plain numeric vector instead, which is usually what you want:
+
+```{r}
+#| label: map-dbl
+map_dbl(all_months, function(m) month_summary(covid, m)$mean_daily)
+```
+
+There is a whole family: `map_chr()` for strings, `map_int()` for integers, `map_lgl()` for `TRUE`/`FALSE`. They are stricter than `map()` on purpose. If one of your twelve results comes back as text when you asked for `map_dbl()`, you get an error instead of a silently mixed list.
+
+`walk()` is for when you want the side effect and not the value: printing, saving files, writing plots to disk.
+
+```{r}
+#| label: walk-demo
+walk(all_months, function(m) {
+  s <- month_summary(covid, m)
+  cat(format(s$month, "%B"), "-", s$total, "cases,", s$high_days, "High days\n")
+})
+```
+
+`walk()` returns its input invisibly, so nothing clutters the console except what you asked to print. Using `map()` here would work and would also dump twelve tibbles underneath your report.
+
+## The loop you cannot vectorise
+
+Here is the case that justifies the whole chapter.
+
+A deterministic SIR model splits a closed population into susceptible, infectious and recovered, and steps forward in time. In each step, some susceptibles become infectious at a rate proportional to how many of each there are, and some infectious people recover:
+
+$$
+S_{t+1} = S_t - \beta \frac{S_t I_t}{N}, \qquad
+I_{t+1} = I_t + \beta \frac{S_t I_t}{N} - \gamma I_t, \qquad
+R_{t+1} = R_t + \gamma I_t
+$$
+
+Every quantity on the right has a subscript $t$ and every quantity on the left has $t+1$. You cannot compute day 40 without day 39, which needs day 38, and so on back to the start. `lag()` cannot help, because `lag()` shifts a column that already exists and here the column is what you are creating. This is a loop, and it will always be a loop.
+
+The numbers below are made up. This is not a fit to Singapore and it is not meant to be; it is the smallest thing that shows the mechanism.
+
+```{r}
+#| label: sir-loop
+N     <- 100000    # a closed hypothetical population
+beta  <- 0.3       # transmission rate per day
+gamma <- 0.1       # recovery rate per day, so an average 10 infectious days
+days  <- 150
+
+# Pre-allocate, as above.
+S <- numeric(days)
+I <- numeric(days)
+R <- numeric(days)
+
+# Seed: ten infectious people on day one.
+S[1] <- N - 10
+I[1] <- 10
+R[1] <- 0
+
+for (t in 2:days) {
+  new_infections <- beta * S[t - 1] * I[t - 1] / N
+  new_removals   <- gamma * I[t - 1]
+
+  S[t] <- S[t - 1] - new_infections
+  I[t] <- I[t - 1] + new_infections - new_removals
+  R[t] <- R[t - 1] + new_removals
+}
+
+epidemic <- tibble(day = 1:days, S = S, I = I, R = R)
+
+epidemic %>% slice(c(1, 55, 150))
+```
+
+The loop starts at `t = 2`, not `t = 1`, because day one is the seed and has nothing before it to compute from. That is the same edge case as the `if (i == 1)` branch in the very first loop of this chapter, handled by starting the counter one step in.
+
+```{r}
+#| label: sir-plot
+#| fig-cap: "A deterministic SIR model with $\\beta = 0.3$, $\\gamma = 0.1$ in a closed population of 100,000. Illustrative parameters, not fitted to any data."
+epidemic %>%
+  pivot_longer(c(S, I, R), names_to = "compartment", values_to = "people") %>%
+  mutate(compartment = factor(compartment, levels = c("S", "I", "R"))) %>%
+  ggplot(aes(day, people, colour = compartment)) +
+  geom_line(linewidth = 0.8) +
+  scale_y_continuous(labels = label_comma()) +
+  labs(
+    x = "Day", y = "People", colour = NULL,
+    title = "One epidemic, computed one day at a time",
+    caption = "Illustrative parameters. Not a model of Singapore."
+  )
+```
+
+Susceptibles fall, infections peak around day 55 and then collapse, and recoveries flatten out near the top. The peak is not caused by anything you told the model to do on day 55. It happens because susceptibles run low enough that each infectious person stops replacing themselves, and it falls out of the arithmetic.
+
+Change `beta` to 0.2 and run it again. Then try 0.5. Then push `I[1]` to 1,000 and watch how little the final size moves. Three minutes of that teaches more about $R_0$ than three pages about it.
+
+What you have written is Euler's method with a step of one day, which is the crudest way to integrate a differential equation and is fine at this scale. Later in the course you will hand the same equations to `deSolve` or `odin`, which choose their own step sizes and take the error seriously. Underneath, both are running a loop very like this one.
+
+## Exercises
+
+::: {#exr-loop-vs-lag}
+## Cumulative deaths, both ways
+
+Do for `deaths` what this chapter did for `confirmed`: compute daily deaths with an explicit `for` loop, then again with `lag()`, then check the two against each other with `identical()`.
+
+The deaths column will not behave like the cases column, and finding out how is the exercise. Compare the sum of your daily deaths against the final cumulative figure of 29 and account for any difference before you move on.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+`deaths` starts with a long run of missing values, and the first number that appears is not 1. Look at `head(covid$deaths, 65)` and ask what differencing can possibly recover from a series that begins part-way up.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-loop-vs-lag)
+
+::: {#exr-sir-step}
+## An SIR model with an intervention
+
+Take the SIR loop and add a circuit breaker. From day 40 to day 95, transmission is reduced: use a lower value of `beta` inside that window and the original value outside it.
+
+Run it, plot the infectious compartment against the unmodified version on the same axes, and answer two questions from your own output. Does the peak get smaller, and does it get later? What happens after day 95, and would you have predicted it?
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+`beta` does not have to be a single number. Make it a vector of length `days`, set the intervention window with something like `beta[40:95] <- 0.15`, and use `beta[t - 1]` inside the loop. Keep the two runs in one tibble so you can plot them together.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-sir-step)

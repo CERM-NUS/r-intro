@@ -1,0 +1,86 @@
+# Colophon {#sec-colophon}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+Books used to end with a note about the paper, the press and the typeface. The software equivalent is more useful than the paper one ever was, because a version number is the first thing anybody needs when your code produces a different answer from mine.
+
+## What produced this page
+
+The block below ran while this page was being built, so the versions in it are the ones that produced everything you have read.
+
+```{r}
+#| label: session
+sessioninfo::session_info(pkgs = "attached")
+```
+
+Those are the packages the book attaches directly. The full set, including everything they depend on, is recorded in `renv.lock`, currently `r length(renv::lockfile_read()$Packages)` packages deep. Appendix C explains how the lockfile works and how to install exactly those versions on your own machine.
+
+To print the same thing for yourself, run `sessioninfo::session_info()` in your console. If `sessioninfo` is not installed, `sessionInfo()` with a capital I is in base R and does a rougher version of the same job.
+
+## How it looks
+
+The site theme is bootswatch `litera` with a layer of project SCSS on top. `litera` was picked because it is one of the few bundled themes that does not fetch a web font from Google's servers, so the book renders identically offline and on a network that blocks Google. Appendix C says more about why that mattered.
+
+Figures use a five-colour palette, defined in `R/nus_theme.R` and applied through `theme_set()` so no chapter has to remember it:
+
+```{r}
+#| label: palette
+nus_colours
+```
+
+The first five are the series colours. `ink`, `muted` and `rule` are for text and gridlines.
+
+The palette was tested rather than eyeballed. `scripts/check_palette.py` simulates protanopia, deuteranopia and tritanopia (Machado et al. 2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L\* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.
+
+Five is the ceiling. `nus_pal()` raises an error rather than recycle a sixth colour, because a plot with two indistinguishable series is worse than a plot that refused to be drawn.
+
+Figures are SVG rather than PNG.
+
+## Licence
+
+The text, the code and the figures are MIT licensed. Copyright 2026 Swapnil Mishra. The full text is in `LICENSE` in the repository. In practice: use it, fork it, teach from it, change it. Attribution is appreciated and not demanded.
+
+The logos in `assets/logos/` are excluded. They are the trade marks of the National University of Singapore, the Saw Swee Hock School of Public Health, the Centre for Epidemic Research and Modelling and the Machine Learning and Global Health Network, and a licence on my writing has no authority over somebody else's mark. If you fork the book, take them out.
+
+The data is a third exception. An MIT licence on this repository cannot relicense numbers I did not produce. The cases and deaths, the government-response indices and the mobility series come from three separate third parties, each with its own terms of use. Appendix B names all three and points at their documentation, and that documentation is what governs reuse, not this page.
+
+## Citing it
+
+If a citation is expected of you:
+
+> Mishra, S. (2026). *An Introduction to R: working with epidemiological data, using Singapore's 2020 COVID-19 record*. Saw Swee Hock School of Public Health, National University of Singapore. <https://cerm-nus.github.io/r-intro/>
+
+```bibtex
+@book{mishra2026rintro,
+  author    = {Mishra, Swapnil},
+  title     = {An Introduction to {R}: Working with Epidemiological Data,
+               Using {Singapore}'s 2020 {COVID-19} Record},
+  year      = {2026},
+  publisher = {Saw Swee Hock School of Public Health,
+               National University of Singapore},
+  address   = {Singapore},
+  url       = {https://cerm-nus.github.io/r-intro/}
+}
+```
+
+This is a living document and the date in the page header is the date of the last render, so include an access date if the version you read matters. If it matters a lot, cite the commit: every page has a "View source" link in the right margin that takes you to the exact revision.
+
+For the data, cite the three original sources rather than this book. Appendix B has them formatted.
+
+## Telling me something is wrong
+
+Please do. An error in a textbook propagates into every assignment written from it, which makes it worth more attention than an error in most other places.
+
+The fastest route is the "Report an issue" link in the right-hand margin of the page you are on. It opens a GitHub issue with the page already identified. If you can see the fix, "Edit this page" opens the source file directly and turns your correction into a pull request.
+
+A report that lets me reproduce the problem contains four things: which page and section, the code you ran, the complete error or warning text pasted rather than described, and the output of `sessioninfo::session_info()`. The third one is the one people trim, and it is the one that matters. "It said something about an object not found" and "Error: object 'daily_cases' not found" are different amounts of information.
+
+Reports that a paragraph is confusing are as welcome as reports that a number is wrong, and considerably harder to write. If you read something three times and still had to guess, that is a defect, and it is mine rather than yours.
+
+## Acknowledgements
+
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Fable 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.

@@ -1,0 +1,38 @@
+# ---- R -----------------------------------------------------------------------
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj.user
+.Renviron
+
+# ---- renv --------------------------------------------------------------------
+# renv writes and maintains renv/.gitignore, which excludes library/, sandbox/,
+# staging/ and friends. renv.lock, renv/activate.R and renv/settings.json are
+# tracked on purpose — they are what makes a clean checkout reproducible.
+
+# ---- Quarto ------------------------------------------------------------------
+.quarto/
+
+# The leading slash is load-bearing. An unanchored `*_files/` also matches
+# docs/<chapter>_files/, which is where every rendered figure lives — the site
+# would look right locally and ship with every image broken.
+/*_files/
+
+# _freeze/ and docs/ are COMMITTED on purpose: _freeze/ lets a clean checkout
+# rebuild without re-running R, and GitHub Pages serves docs/ straight off main.
+
+# ---- macOS -------------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# ---- editors -----------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+
+/.quarto/

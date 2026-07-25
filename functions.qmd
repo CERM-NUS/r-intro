@@ -1,0 +1,389 @@
+# Writing functions {#sec-functions}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+```{r}
+#| label: data
+#| include: false
+covid <- covid_daily()
+```
+
+Copy-paste is how most people's analysis scripts grow, and it works fine right up until the day it doesn't. The failure is never dramatic. You change one copy, forget the other two, and the script keeps running and keeps producing a number. That number is now wrong and nothing on your screen says so.
+
+This chapter is about the alternative.
+
+## The rule of three
+
+Here is a question worth asking of the mobility data: on how many days did retail and recreation activity fall more than 30% below its January baseline?
+
+```{r}
+#| label: copy-1
+covid %>%
+  filter(retail_and_recreation_percent_change_from_baseline < -30) %>%
+  nrow()
+```
+
+Eighty-eight days. Your supervisor asks what happens if you use a stricter cut-off. So you copy the block and change the number.
+
+```{r}
+#| label: copy-2
+covid %>%
+  filter(retail_and_recreation_percent_change_from_baseline < -60) %>%
+  nrow()
+```
+
+Then a looser one, because it would be good to know whether the answer is sensitive to where you draw the line.
+
+```{r}
+#| label: copy-3
+covid %>%
+  filter(retail_and_recreation_percent_change_from_baseline < -20) %>%
+  nrow()
+```
+
+Three blocks, 164 days at the loose end and 48 at the strict end, and the analysis is fine. The problem arrives a week later when you decide the dates matter more than the count, and you change `nrow()` to `pull(date)` in the first block. Now block one answers a different question from blocks two and three, and the only record of that decision is in your head.
+
+The rule of thumb most R programmers converge on is: **once you have copied the same block of code a third time, write a function**. Two copies is a coincidence. Three is a pattern, and a pattern that lives in three places will eventually disagree with itself.
+
+## Anatomy
+
+A function has four parts, and R makes all four visible in the definition:
+
+```{r}
+#| label: anatomy
+mobility_alert <- function(df, threshold = -30) {
+  df %>%
+    filter(retail_and_recreation_percent_change_from_baseline < threshold) %>%
+    pull(date)
+}
+```
+
+The **name** is `mobility_alert`. It goes on the left of `<-`, exactly like any other assignment, because in R a function is a value you store in a variable. There is nothing special about the name; you could have called it `f`, and one day at 11pm you will, and three weeks later you will regret it. Name it after what it returns or what it does.
+
+The **arguments** are `df` and `threshold`, in the parentheses after `function`. Inside the body they behave as ordinary variables. `threshold` has a **default value** of `-30`, so a caller who has no opinion can leave it out.
+
+The **body** is everything between the braces. It is ordinary R code, and it can use the arguments freely.
+
+The **return value** is the value of the last expression evaluated. There is no `return` keyword here and it is not needed. R functions return their last expression automatically, so `pull(date)` is the answer. You will see `return()` in other people's code and it is not wrong, but the idiom in R is to reserve it for early exits, which we will use in a moment.
+
+Now use it:
+
+```{r}
+#| label: alert-default
+alert_days <- mobility_alert(covid)
+
+length(alert_days)
+head(alert_days)
+tail(alert_days, 1)
+```
+
+Eighty-eight days, running from 7 April to 13 July. The 7th of April is the first day of the circuit breaker, which is exactly what you would hope to see from a mobility series that is doing its job.
+
+Notice what the function inherited for free. Because the body uses `filter()`, the 24 missing values in the retail column drop out silently and correctly, and you get 88 days rather than the 112 that the base-R subscript would have handed you. That decision was made back in the chapter on missing data and it is now baked into every call.
+
+```{r}
+#| label: alert-plot
+#| fig-cap: "The 88 days flagged by `mobility_alert()` at its default threshold. Marked days run from the first day of the circuit breaker to mid-July."
+ggplot(covid, aes(date, retail_and_recreation_percent_change_from_baseline)) +
+  geom_hline(yintercept = -30, linetype = "dashed", colour = nus_colours[["muted"]]) +
+  geom_line() +
+  geom_point(
+    data = filter(covid, date %in% alert_days),
+    colour = nus_colours[["crimson"]], size = 0.9
+  ) +
+  labs(
+    x = NULL,
+    y = "Retail and recreation (% vs baseline)",
+    title = "Retail mobility against the alert threshold"
+  )
+```
+
+The warning about 24 rows removed is the January and early-February gap in the mobility series, and it should appear every time you plot this column. If it ever stops appearing, something upstream has filled those values in and you want to know about it.
+
+## Default arguments earn their keep
+
+`threshold = -30` looks like a convenience. It is doing more work than that, and the reason is the sign convention in this dataset.
+
+Google's mobility columns are *percentage change from baseline*. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So "a drop of more than 30%" is `< -30`, and a reader who thinks in magnitudes rather than signs will reach for `30`.
+
+::: {.callout-important}
+## Predict first
+
+Before you run the next chunk, write down a number. `mobility_alert(covid, threshold = 30)` asks for the days on which retail mobility was below 30. How many of the 345 days do you think come back?
+:::
+
+```{r}
+#| label: alert-wrong-sign
+wrong_sign <- mobility_alert(covid, threshold = 30)
+
+length(wrong_sign)
+head(wrong_sign, 3)
+```
+
+Three hundred and twenty-one. Retail mobility spends almost the whole year below +30, so the filter keeps nearly everything, and the first "alert day" is 15 February, when nothing was happening. No error, no warning, no red text. Just a plausible-looking vector of dates that answers a question nobody asked.
+
+This is the failure mode that functions are built to reduce. The default value is a decision made once, in the light, by someone who was thinking about signs at the time. Every call that accepts the default inherits that thinking. Only a caller who deliberately overrides it can get it wrong, and a deliberate override is at least visible in the code.
+
+If you want to be stricter than a default, you can check the argument and refuse:
+
+```{r}
+#| label: alert-guard
+#| error: true
+mobility_alert <- function(df, threshold = -30) {
+  if (threshold > 0) {
+    stop("`threshold` should be negative. Mobility is measured as percentage change ",
+         "from baseline, so a drop of 30% is -30, not 30.", call. = FALSE)
+  }
+  df %>%
+    filter(retail_and_recreation_percent_change_from_baseline < threshold) %>%
+    pull(date)
+}
+
+mobility_alert(covid, threshold = 30)
+```
+
+`call. = FALSE` suppresses the "Error in mobility_alert(...)" prefix, which is noise when the message already says everything. Whether to add a check like this is a judgement call. Checks cost lines and they can be wrong themselves. Add them where a wrong answer would be silent, as it is here, and skip them where the code would fall over anyway.
+
+## What happens inside stays inside
+
+A variable created inside a function does not exist after the function returns. R evaluates the body in a fresh environment that is thrown away on the way out.
+
+```{r}
+#| label: scope-define
+peak_day <- function(df) {
+  worst <- df$date[which.max(df$daily_cases)]
+  worst
+}
+
+peak_day(covid)
+```
+
+The function created `worst`, used it, and returned it. Now ask for it at the console:
+
+```{r}
+#| label: scope-error
+#| error: true
+worst
+```
+
+That error is a feature. If every function left its working variables lying around, a script with thirty functions in it would be a minefield of names that might or might not mean what you think. Scope is what lets you call a variable `i` or `tmp` or `worst` inside a function without wondering what else in your session is called that.
+
+The traffic goes one way, though. A function can *read* variables from outside itself. If the body mentions a name it does not define, R looks in the environment where the function was written, which is usually your global environment. That is how `mobility_alert()` can call `filter()` at all. It is also how a function can quietly depend on something you forgot you had.
+
+## Stale globals, and why you restart R
+
+Now the more dangerous version of this, because it does not produce an error at all.
+
+The worksheet this book replaces had an exercise that looped over months, and inside the loop it assigned to a variable at the top level of the script:
+
+```{r}
+#| label: stale-loop
+for (m in c("2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01")) {
+  month_data <- covid %>% filter(month == as.Date(m))
+  cat(format(as.Date(m), "%B"), "mean daily cases:",
+      round(mean(month_data$daily_cases), 1), "\n")
+}
+```
+
+Four correct numbers. The loop is fine. But when it finishes, `month_data` is still sitting in the global environment, holding whatever the last iteration put there, which is December.
+
+Several exercises later came a bonus question about September. It used `month_data`:
+
+```{r}
+#| label: stale-bonus
+cat("September mean daily cases:", round(mean(month_data$daily_cases), 1), "\n")
+
+range(month_data$date)
+```
+
+The heading says September. The number is December's. Nothing errors, nothing warns, and 12.3 is a perfectly believable figure for a quiet month. A student who ran that worksheet top to bottom would have written down the wrong answer with total confidence, and so would I.
+
+Now connect this to the rule from the good practice chapter about never saving your workspace and restarting R often. In a fresh session, `month_data` does not exist, and the bonus question fails like this:
+
+```{r}
+#| label: stale-fresh
+#| eval: false
+month_data
+```
+
+```
+Error: object 'month_data' not found
+```
+
+A loud error that stops you, instead of a quiet number that fools you. That trade is the entire argument for restarting R. You are not trying to keep your session tidy for its own sake. You are trying to convert silent wrong answers into noisy ones, because you can fix a noisy one.
+
+The structural fix is the subject of this chapter. If the calculation lives in a function, there is no top-level `month_data` to go stale, because the variable dies when the function returns.
+
+## Returning more than one thing
+
+`mobility_alert()` returns a vector, which is fine because it has one thing to say. Most summaries have several. Suppose you want, for a given month: how many days, how many cases, the daily mean, the peak and when it happened, and how many days were classed High.
+
+The obvious move is a list, and it works:
+
+```{r}
+#| label: ms-list
+month_summary_list <- function(df, which_month) {
+  start <- floor_date(as.Date(which_month), "month")
+  d <- filter(df, month == start)
+  list(
+    month = start,
+    days  = nrow(d),
+    total = sum(d$daily_cases)
+  )
+}
+
+month_summary_list(covid, "2020-04-01")
+```
+
+Do not do this. Return a one-row tibble instead:
+
+```{r}
+#| label: ms-tibble
+month_summary <- function(df, which_month) {
+  start <- floor_date(as.Date(which_month), "month")
+
+  if (!start %in% df$month) {
+    stop("No data for ", format(start, "%B %Y"), ". The data covers ",
+         format(min(df$month), "%B %Y"), " to ",
+         format(max(df$month), "%B %Y"), ".", call. = FALSE)
+  }
+
+  df %>%
+    filter(month == start) %>%
+    summarise(
+      month      = start,
+      days       = n(),
+      total      = sum(daily_cases),
+      mean_daily = round(mean(daily_cases), 1),
+      peak       = max(daily_cases),
+      peak_date  = date[which.max(daily_cases)],
+      high_days  = sum(severity == "High")
+    )
+}
+
+month_summary(covid, "2020-04-01")
+```
+
+April: 30 days, 15,243 cases, a peak of 1,426 on the 20th, and 18 days classified High.
+
+The reason for the tibble is composition. Sooner or later you will want all twelve months, not one, and a stack of one-row tibbles is a table:
+
+```{r}
+#| label: ms-stack
+list_rbind(list(
+  month_summary(covid, "2020-04-01"),
+  month_summary(covid, "2020-05-01")
+))
+```
+
+The same move with lists does not work:
+
+```{r}
+#| label: ms-stack-fail
+#| error: true
+list_rbind(list(
+  month_summary_list(covid, "2020-04-01"),
+  month_summary_list(covid, "2020-05-01")
+))
+```
+
+`list_rbind()` is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it. In @sec-iteration you will generate all twelve summaries in one line and stack them; writing `month_summary()` to return a tibble today is what makes that line short tomorrow.
+
+## The guard clause
+
+The `if (!start %in% df$month) stop(...)` at the top of `month_summary()` is a **guard clause**: a check that runs before the real work and exits early if the inputs make no sense.
+
+```{r}
+#| label: ms-guard
+#| error: true
+month_summary(covid, "2021-03-01")
+```
+
+Ask yourself what the alternative would have been. `filter()` would have returned zero rows and `summarise()` would have run on nothing. Here is that version, with the guard taken out:
+
+```{r}
+#| label: ms-unguarded
+#| error: true
+month_summary_unguarded <- function(df, which_month) {
+  start <- floor_date(as.Date(which_month), "month")
+  df %>%
+    filter(month == start) %>%
+    summarise(
+      month     = start,
+      days      = n(),
+      total     = sum(daily_cases),
+      peak      = max(daily_cases),
+      peak_date = date[which.max(daily_cases)]
+    )
+}
+
+month_summary_unguarded(covid, "2021-03-01")
+```
+
+R does stop, which is lucky, but look at what it stops on. The message is about `peak_date` being size 0, and `reframe()` is suggested as the fix. Neither has anything to do with what actually went wrong, which is that you asked for a month the data does not contain. A student chasing that message will spend twenty minutes reading about `reframe()`.
+
+Drop `peak_date` from that function and it gets worse, because then nothing is the wrong size and the whole thing succeeds:
+
+```{r}
+#| label: ms-unguarded-worse
+covid %>%
+  filter(month == as.Date("2021-03-01")) %>%
+  summarise(
+    days       = n(),
+    total      = sum(daily_cases),
+    mean_daily = mean(daily_cases),
+    peak       = max(daily_cases)
+  )
+```
+
+Zero days, zero cases, a mean of `NaN` and a peak of `-Inf`, delivered as a one-row tibble that will stack happily alongside eleven real months. The warning about `max()` is the only clue, and warnings scroll past.
+
+That is what the guard buys: a message naming what you asked for, that it isn't there, and what is. When you write an error message, write the one you would want to read at 11pm.
+
+One more thing about `month_summary()`: it demands a full date, `"2020-09-01"` rather than `"2020-09"`. That is `as.Date()`'s rule, not mine, and it fails loudly:
+
+```{r}
+#| label: date-error
+#| error: true
+as.Date("2020-09")
+```
+
+Loudly is the right behaviour. A month string with no day is ambiguous, and R would rather stop than guess.
+
+## Exercises
+
+::: {#exr-mobility-alert}
+## Generalise the alert
+
+`mobility_alert()` only ever looks at the retail and recreation column. Rewrite it so the caller can choose which mobility series to check, keeping retail as the default so that existing calls still work.
+
+Then use your version to answer: how many days did workplace mobility fall below -60, and how many did parks? Look at the deepest workplace days in particular and see whether you can explain them.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+Passing a column name into a dplyr verb from inside a function needs the curly-brace operator, `{{ }}`, around the argument. Search the tidyverse documentation for "programming with dplyr" if you want the full story, or wrap the argument and see what happens.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-mobility-alert)
+
+::: {#exr-month-summary}
+## Add a judgement to the summary
+
+Extend `month_summary()` with one more column, `verdict`, that reads `"Escalate"` when the month had more than five High days and `"All clear"` otherwise.
+
+Run it on September 2020 and on April 2020 and check that both verdicts are what you expect from the case counts. Then decide whether five is a defensible cut-off, and make it an argument if you think it isn't.
+:::
+
+::: {.callout-note collapse="true"}
+## Stuck? Open for a hint (not the answer)
+
+`high_days` is already computed inside the `summarise()` call, but you cannot refer to a column you are creating in the same `summarise()` in all versions of dplyr. Adding a `mutate()` after the `summarise()` is the reliable way, and `if_else()` handles the two-way choice.
+:::
+
+[Worked solution](solutions.qmd#sec-sol-month-summary)
