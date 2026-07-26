@@ -64,7 +64,7 @@
     "href": "index.html#acknowledgement",
     "title": "An Introduction to R",
     "section": "Acknowledgement",
-    "text": "Acknowledgement\nWritten by Swapnil Mishra, working with Claude Code (Anthropic, Fable 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.",
+    "text": "Acknowledgement\nWritten by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.",
     "crumbs": [
       "Welcome"
     ]
@@ -1746,7 +1746,7 @@
     "href": "colophon.html#acknowledgements",
     "title": "Appendix D — Colophon",
     "section": "\nD.6 Acknowledgements",
-    "text": "D.6 Acknowledgements\nWritten by Swapnil Mishra, working with Claude Code (Anthropic, Fable 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.",
+    "text": "D.6 Acknowledgements\nWritten by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.",
     "crumbs": [
       "Appendices",
       "<span class='chapter-number'>D</span>  <span class='chapter-title'>Colophon</span>"

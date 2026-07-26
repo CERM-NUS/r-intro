@@ -82,6 +82,6 @@ be reused without permission from their owners.
 
 ## Acknowledgements
 
-Written by Swapnil Mishra, working with Claude Code (Anthropic, Fable 5 model), which helped
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped
 draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers
 against the data. Responsibility for the result is entirely human.

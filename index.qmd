@@ -78,4 +78,4 @@ Every page has an "Edit this page" link that goes to its source on GitHub, and t
 
 ## Acknowledgement
 
-Written by Swapnil Mishra, working with Claude Code (Anthropic, Fable 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.
