@@ -479,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The Oxford stringency index peaked at 82.41, and three separate days sit at that peak. Sorting does not deduplicate; it puts equal things next to each other and leaves them in the order it found them.</p>
-<p><code>desc()</code> may look like clutter on a numeric column, but the obvious alternative does not work:</p>
+<p>Negating the value is the other way to reverse a sort, and on a <code>Date</code> column it stops:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">arrange</span><span class="op">(</span><span class="va">covid</span>, <span class="op">-</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in `arrange()`:</span></span>
@@ -558,7 +558,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>That column is the string <code>"Singapore"</code> in all 345 rows. It is there because the data hub serves many countries from one schema, and it carries no information once you have filtered down to one of them.</p>
 </section><section id="rename-changes-column-names" class="level3" data-number="6.1.4"><h3 data-number="6.1.4" class="anchored" data-anchor-id="rename-changes-column-names">
 <span class="header-section-number">6.1.4</span> <code>rename()</code> changes column names</h3>
-<p><code>retail_and_recreation_percent_change_from_baseline</code> is fifty characters long. The name comes from Google’s published series and is descriptive rather than convenient to type.</p>
+<p><code>retail_and_recreation_percent_change_from_baseline</code> is fifty characters long. The name comes from Google’s published series, where it spells out the measure in full: the percentage change in visits to retail and recreation venues, relative to the baseline period.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mob</span> <span class="op">&lt;-</span> <span class="fu">rename</span><span class="op">(</span></span>
 <span>  <span class="va">covid</span>,</span>
@@ -611,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; # ℹ 335 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>mutate()</code> works on whole columns at a time. There is no loop over rows; <code>deaths / confirmed</code> divides two vectors of 345 numbers element by element and hands back a third. This is the main habit shift coming from a spreadsheet, where a formula is written for one cell and then copied down.</p>
-<p>The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the reason is demographic before it is clinical: the great majority of Singapore’s 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.</p>
+<p>The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the explanation lies in who was infected: the great majority of Singapore’s 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults with a low expected fatality rate. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.</p>
 </section></section><section id="stringing-verbs-together" class="level2" data-number="6.2"><h2 data-number="6.2" class="anchored" data-anchor-id="stringing-verbs-together">
 <span class="header-section-number">6.2</span> Stringing verbs together</h2>
 <p>That last call nests one verb inside another. To make a column and then choose four columns, the code reads inside out: <code>mutate()</code> sits in the middle, <code>select()</code> wraps around it, and the data frame you started from is in the interior. Adding a <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> and an <code>arrange()</code> makes it harder still to follow:</p>
@@ -662,7 +662,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>R gained a pipe of its own in version 4.1, written <code>|&gt;</code>. It does the same basic thing and needs no packages. It differs in the details: <code>%&gt;%</code> lets you write <code>.</code> to put the incoming value somewhere other than the first argument, while <code>|&gt;</code> has a narrower placeholder with different rules, and the two behave differently with anonymous functions. This book uses <code>%&gt;%</code> throughout, so if you see <code>|&gt;</code> in code you find elsewhere, it is the same idea and not a typo.</p>
+<p>R gained a pipe of its own in version 4.1, written <code>|&gt;</code>. It does the same basic thing and needs no packages. It differs in the details: <code>%&gt;%</code> lets you write <code>.</code> to put the incoming value somewhere other than the first argument, while <code>|&gt;</code> has a narrower placeholder with different rules, and the two behave differently with anonymous functions. This book uses <code>%&gt;%</code> throughout, so <code>|&gt;</code> in code you find elsewhere expresses the same idea in the other spelling.</p>
 </div>
 </div>
 </section><section id="cumulative-counts-are-not-incidence" class="level2" data-number="6.3"><h2 data-number="6.3" class="anchored" data-anchor-id="cumulative-counts-are-not-incidence">
@@ -698,7 +698,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 </div>
 </div>
 </div>
-<p>The top panel is the shape most dashboards showed in 2020. It rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year’s cases had been confirmed by 20 May.</p>
+<p>The top panel rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year’s cases had been confirmed by 20 May.</p>
 <p>The bottom panel shows the shape of the epidemic. It climbs through April to a single highest day of 1,426 on 20 April, stays high through May, then falls unevenly until the week of 5 July, before a second rise carries it back up through late July into early August and it dies away from mid-August onwards. The tall isolated spike is 5 August, which recorded 908 cases against an August median of 91 and a next-highest August day of 313. Singapore’s Ministry of Health attributed that day to clearance testing in the dormitories detecting past infections. On the cumulative curve that day appears only as a slight change of slope, where it would be easy to miss.</p>
 <p>The two presentations also differ in what they allow to be claimed. A cumulative curve continues to rise after an intervention whatever the intervention did, so it can usually be described as flattening. An incidence curve makes the claim checkable: the number either came down or it did not.</p>
 </section><section id="lag-and-row-order" class="level2" data-number="6.4"><h2 data-number="6.4" class="anchored" data-anchor-id="lag-and-row-order">
@@ -742,7 +742,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 <span><span class="co">#&gt; [1] 42</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Eight rows out of 345 are negative, and the median of the wrong answer is 42 against a true value of 40. With the table sorted by something other than date, roughly 97% of the resulting daily counts still look like plausible daily counts, and some are correct by accident, wherever two adjacent rows happened to be adjacent days.</p>
-<p>That is what makes the error hard to catch. A bug that produces obvious nonsense is noticed at once; a bug that produces 337 plausible numbers and 8 impossible ones may not surface until a reviewer asks about a negative value in a figure.</p>
+<p>That is what makes the error hard to catch. A bug that produces obvious nonsense is noticed at once; a bug that produces 337 plausible numbers and 8 impossible ones can survive until the negative values appear in a figure and have to be explained.</p>
 <p>Put <code>arrange(date)</code> in the chain immediately before the <code>mutate()</code>. It costs one line, and it does nothing when the data is already sorted by date, which this file is.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
@@ -767,7 +767,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 </div>
 </section><section id="what-belongs-in-the-first-row" class="level2" data-number="6.5"><h2 data-number="6.5" class="anchored" data-anchor-id="what-belongs-in-the-first-row">
 <span class="header-section-number">6.5</span> What belongs in the first row</h2>
-<p><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> on its own leaves <code>NA</code> at the top, because there is no previous row to subtract. The <code>default = 0</code> argument fills that gap with a zero instead. Whether that is appropriate depends on the data rather than on R.</p>
+<p><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> on its own leaves <code>NA</code> at the top, because there is no previous row to subtract. The <code>default = 0</code> argument fills that gap with a zero instead. Whether the zero is appropriate depends on what the series records; R will insert it either way.</p>
 <p>Here it is appropriate, for a reason visible in the first row of the table:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">daily_cases</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
@@ -780,7 +780,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 </div>
 <p><code>confirmed</code> is 0 on 22 January 2020. Zero cases had been confirmed by the end of that day, so zero cases were confirmed <em>during</em> it. That is an observation, not a gap. Recording it as <code>NA</code> would discard a genuine zero and shorten the series by one day in every count, sum and plot downstream.</p>
 <p>The situation differs if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then <code>default = 0</code> would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the appropriate value is <code>NA</code>, because the data carry no information about how many cases occurred on the first day of a window whose start was not observed.</p>
-<p>The choice therefore depends on the series rather than on a rule to memorise. Look at the first value: if it is zero, <code>default = 0</code> records a true zero; if it is not, plain <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> leaves an <code>NA</code>, which is an accurate statement of what is not known. This file starts at zero, which is why <code>default = 0</code> is used in the code above, and that reason is worth writing in a comment beside it.</p>
+<p>The choice therefore turns on the first value of the series. Look at it: if it is zero, <code>default = 0</code> records a true zero; if it is anything else, plain <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> leaves an <code>NA</code>, which is an accurate statement of what is not known. This file starts at zero, which is why <code>default = 0</code> is used in the code above, and that reason is worth writing in a comment beside it.</p>
 </section><section id="two-checks-on-a-differenced-series" class="level2" data-number="6.6"><h2 data-number="6.6" class="anchored" data-anchor-id="two-checks-on-a-differenced-series">
 <span class="header-section-number">6.6</span> Two checks on a differenced series</h2>
 <p>A derived column looks no different from one that came out of the file, so errors in it are easy to miss. Two inexpensive checks catch most of what can go wrong when differencing a cumulative series.</p>
@@ -796,7 +796,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 <span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Zero rows. What comes back is an empty tibble rather than nothing at all, and the empty tibble still carries its column names and types, so you can see that the check ran rather than failed.</p>
+<p>Zero rows. What comes back is an empty tibble, and it still carries its column names and types, so you can see that the check ran rather than failed.</p>
 <p>The second is that the daily numbers must add back up to the cumulative total. The increments telescope: every intermediate value cancels, leaving the last one.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">confirmed</span><span class="op">)</span></span>

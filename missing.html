@@ -376,7 +376,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </header><p>Every table printed so far has had <code>NA</code> in it, without much comment. This chapter is about reading those gaps. In this file the missing values carry as much information as the numbers: one block of them is a property of Google’s measuring instrument, another is a property of Singapore’s epidemic, and which of the two you are looking at determines what can reasonably be done about it.</p>
-<p>Later in the chapter there is also a bug, inherited from the worksheet this book replaces, which turns a correct question into an answer 27% too large without producing an error or a warning.</p>
+<p>Later in the chapter there is also a bug: one line of base R that turns a correct question into an answer 27% too large, without producing an error or a warning.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -529,7 +529,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; 3 2020-03-21      2             2</span></span>
 <span><span class="co">#&gt; 4 2020-03-22      2             2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>drop_na()</code> removes whole rows. Applied to the entire table it removes more than most people expect:</p>
+<p><code>drop_na()</code> removes whole rows. Compare the row count before and after applying it to the entire table:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 345</span></span>
@@ -545,7 +545,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 </section><section id="logical-subsetting-with-and-filter" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="logical-subsetting-with-and-filter">
 <span class="header-section-number">7.5</span> Logical subsetting with <code>[</code> and <code>filter()</code>
 </h2>
-<p>A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? The worksheet asked it in base R, using the single-bracket subscript that most people meet first when they are taught to subset a data frame.</p>
+<p>A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? In base R the question is put with the single-bracket subscript <code>[</code>, which keeps the rows for which a logical condition holds.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -610,7 +610,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; [1]  NA -51  NA -63</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Four elements out of five, from a condition that only two of them satisfy. Applied to a data frame, “return a missing element” means “return a row of missing values”, so each of the 24 unknown days becomes a full row of <code>NA</code>. 88 matching rows plus 24 all-missing rows is 112.</p>
-<p>The worksheet’s next line asked which days those were:</p>
+<p>The next question to ask of that result is which days it covers:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">low_retail</span><span class="op">$</span><span class="va">date</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] NA NA NA NA NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -624,14 +624,14 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; [1] "2020-07-13"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>7 April, the first day of the circuit breaker, and the last such day is 13 July, a little over three weeks into Phase 2 reopening.</p>
-<p>This is not a base-R-versus-tidyverse argument, and base R gives you two ways to get the right answer. <code><a href="https://rdrr.io/r/base/subset.html">subset()</a></code> drops <code>NA</code> rows for the same reason <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> does, and wrapping the condition in <code><a href="https://rdrr.io/r/base/which.html">which()</a></code> converts it from a logical vector into positions, which discards the <code>NA</code>s on the way:</p>
+<p>This is not an argument about base R against the tidyverse, and base R gives you two ways to reach 88 as well. <code><a href="https://rdrr.io/r/base/subset.html">subset()</a></code> drops <code>NA</code> rows for the same reason <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> does, and wrapping the condition in <code><a href="https://rdrr.io/r/base/which.html">which()</a></code> converts it from a logical vector into positions, which discards the <code>NA</code>s on the way:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">covid</span>, <span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 88</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 88</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Three of the four expressions agree on 88. Single-bracket logical subsetting is the exception, and it is the form most people are taught first.</p>
+<p>Three of the four expressions agree on 88. Single-bracket logical subsetting is the exception, because it alone keeps a row for every <code>NA</code> the condition returns.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">quiet_days</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span></span>
@@ -701,7 +701,7 @@ Figure&nbsp;7.2: The 88 days on which retail and recreation mobility sat more th
 <span><span class="co">#&gt;   &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1    29</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The plain version at the top of this section does <em>not</em> do this. It differences <code>deaths</code> as the file supplies them, so its <code>daily_deaths</code> column carries <code>NA</code> for the first 60 days and sums to 27. That is a choice to stay close to what the file records rather than to what you infer about it, and it is defensible on those grounds. Either convention can be justified provided it is stated. What cannot is summing that column with <code>na.rm = TRUE</code> and reporting the result as the 2020 death toll without noting the two deaths it omits.</p>
+<p>The plain version at the top of this section does <em>not</em> do this. It differences <code>deaths</code> as the file supplies them, so its <code>daily_deaths</code> column carries <code>NA</code> for the first 60 days and sums to 27. That is a choice to stay close to what the file records rather than to what you infer about it, and it is defensible on those grounds. Either convention can be justified provided it is stated. Summing that column with <code>na.rm = TRUE</code> and reporting the result as the 2020 death toll understates the toll by two deaths, and the omission has to be declared alongside the figure.</p>
 </section><section id="exercise" class="level2" data-number="7.7"><h2 data-number="7.7" class="anchored" data-anchor-id="exercise">
 <span class="header-section-number">7.7</span> Exercise</h2>
 <div id="exr-mobility-na" class="theorem exercise">

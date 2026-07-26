@@ -624,7 +624,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Each observation is a row.</li>
 <li>Each value is a cell.</li>
 </ol>
-<p>The rules sound obvious, but they are broken routinely in real spreadsheets: twelve columns named January to December, a column holding both a measurement and its unit, two rows per patient because before and after were recorded side by side.</p>
+<p>The rules are easy to state and are broken routinely in real spreadsheets: twelve columns named January to December, a column holding both a measurement and its unit, two rows per patient because before and after were recorded side by side.</p>
 <p>Tidyverse functions assume tidy input. Once the data are in that shape, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, <code>mutate()</code>, <code>group_by()</code> and <code>ggplot()</code> all work without further reshaping.</p>
 <p>Applying the definition to this file, what is one observation?</p>
 <div class="cell">
@@ -676,7 +676,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;           residential_percent_change_from_baseline </span></span>
 <span><span class="co">#&gt;                                                 47</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>stringency_index</code> takes 13 distinct values over the year, which reflects how it is constructed: it is a score assembled from a handful of policy indicators, so it moves in steps when a policy changes rather than varying continuously. Movements in it correspond to discrete policy changes, not to gradual shifts.</p>
+<p><code>stringency_index</code> takes 13 distinct values over the year, which reflects how it is constructed: it is a score assembled from a handful of policy indicators, so it changes only when one of those indicators changes. The series therefore moves in steps, and each step marks a discrete policy change.</p>
 </section><section id="when-the-file-is-not-tidy" class="level3" data-number="4.4.2"><h3 data-number="4.4.2" class="anchored" data-anchor-id="when-the-file-is-not-tidy">
 <span class="header-section-number">4.4.2</span> When the file is not tidy</h3>
 <p>Untidy files are common. The usual shapes are a header row of dates or months, one column containing two variables combined, and observations split across several rows. <code>tidyr</code> provides <code>pivot_longer()</code> and <code>pivot_wider()</code> for reshaping between wide and long layouts. This book does not devote a chapter to reshaping, because the Singapore file does not require it, and the operations are easier to follow once the material here is familiar.</p>

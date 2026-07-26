@@ -428,8 +428,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><code>read_covid()</code> is a shortcut defined in the book’s setup file so that every chapter starts from the same place. The import chapter unwraps it and shows you the <code>read_csv()</code> call inside.</p>
 </section><section id="exercises-hints-and-solutions" class="level2"><h2 class="anchored" data-anchor-id="exercises-hints-and-solutions">Exercises, hints and solutions</h2>
-<p>Exercises sit inside the chapters, near the material they exercise. They state a goal in words rather than supplying a code skeleton with gaps, so that the work includes deciding on the structure of the answer and not only the missing tokens.</p>
-<p>Under most exercises there is a collapsed hint, which names the function or approach to reach for. Under that is a link to the worked solution in Appendix A. The solutions are complete and commented, and they are one click away rather than printed upside down at the foot of the page. Attempting the exercise first is more useful than reading the solution first, but the choice is yours.</p>
+<p>Exercises sit inside the chapters, near the material they exercise. Each states a goal in words and leaves the structure of the answer to you, so deciding how to build the answer is part of the work.</p>
+<p>Under most exercises there is a collapsed hint, which names the function or approach to reach for. Under that is a link to the worked solution in Appendix A. The solutions are complete and commented, and each is one click away. Attempting the exercise first is more useful than reading the solution first, but the choice is yours.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -445,12 +445,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section><section id="how-to-use-this-book" class="level2"><h2 class="anchored" data-anchor-id="how-to-use-this-book">How to use this book</h2>
-<p>Type the code rather than pasting it. Typing makes the structure visible: that <code>aes()</code> sits inside <code>ggplot()</code> rather than next to it, for instance. It also produces your own typos in a setting where the correct version is on the screen above, so you meet the common error messages while their cause is still obvious. There is a copy button on every code block on this site; it is useful when you are re-running something for the fifth time rather than the first.</p>
+<p>Type the code rather than pasting it. Typing makes the structure visible: that <code>aes()</code> sits inside <code>ggplot()</code> rather than next to it, for instance. It also produces your own typos in a setting where the correct version is on the screen above, so you meet the common error messages while their cause is still obvious. There is a copy button on every code block on this site, which is useful when you are re-running something for the fifth time.</p>
 <p>Read error messages to the end. R’s errors usually run to two or three lines and the useful line is rarely the first. The tidyverse ones put the diagnosis under a bullet several lines down, along with a suggestion for what to do about it. When you search for a message, paste it in exactly as R printed it, but delete your own object and file names first, since those appear nowhere outside your own session.</p>
 <p>Run everything as you read. When a chunk produces something, look at it before scrolling on, then change one thing and run it again. Change the <code>100</code> to <code>50</code>, swap <code>mean</code> for <code>median</code>, remove the <code>na.rm = TRUE</code> and see what changes. Every chunk can be re-run from the top of its chapter, so an experiment that fails costs nothing.</p>
 <p>Chapters render in separate R sessions and each one is self-contained, so you can restart R at any point and pick up at the top of a chapter. The good-practice chapter sets out why restarting frequently is worth doing.</p>
 </section><section id="corrections" class="level2"><h2 class="anchored" data-anchor-id="corrections">Corrections</h2>
-<p>Every page has an “Edit this page” link that goes to its source on GitHub, and there is an issue tracker. A wrong number in a teaching resource propagates into other people’s work, so corrections are welcome and I would rather hear about one than not.</p>
+<p>Every page has an “Edit this page” link that goes to its source on GitHub, and there is an issue tracker. A wrong number in a teaching resource propagates into every analysis built on it, so corrections are welcome, however small.</p>
 </section><section id="acknowledgement" class="level2"><h2 class="anchored" data-anchor-id="acknowledgement">Acknowledgement</h2>
 <p>Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.</p>
 

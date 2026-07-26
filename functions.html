@@ -382,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 88</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Eighty-eight days. Your supervisor asks what happens if you use a stricter cut-off. So you copy the block and change the number.</p>
+<p>Eighty-eight days. What happens at a stricter cut-off? Copy the block and change the number.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">60</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -397,7 +397,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; [1] 164</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Three blocks, 164 days at the loose end and 48 at the strict end, and the analysis is sound as it stands. The problem arrives a week later when you decide the dates matter more than the count and change <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> to <code>pull(date)</code> in the first block. Block one now answers a different question from blocks two and three, and nothing in the script records that they have diverged.</p>
-<p>The rule of thumb most R programmers converge on is: <strong>once you have copied the same block of code a third time, write a function</strong>. Copies that are edited at different times drift apart, and the more copies there are, the more likely that becomes.</p>
+<p><strong>Once you have copied the same block of code a third time, write a function.</strong> Copies that are edited at different times drift apart, and the more copies there are, the more likely that becomes.</p>
 </section><section id="anatomy" class="level2" data-number="11.2"><h2 data-number="11.2" class="anchored" data-anchor-id="anatomy">
 <span class="header-section-number">11.2</span> Anatomy</h2>
 <p>A function has four parts, and R makes all four visible in the definition:</p>
@@ -411,7 +411,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The <strong>name</strong> is <code>mobility_alert</code>. It goes on the left of <code>&lt;-</code>, exactly like any other assignment, because in R a function is a value you store in a variable. There is nothing special about the name as far as R is concerned; <code>f</code> would work equally well. Name it after what it returns or what it does, so that a call to it can be read without looking up the definition.</p>
 <p>The <strong>arguments</strong> are <code>df</code> and <code>threshold</code>, in the parentheses after <code>function</code>. Inside the body they behave as ordinary variables. <code>threshold</code> has a <strong>default value</strong> of <code>-30</code>, so a caller who has no opinion can leave it out.</p>
 <p>The <strong>body</strong> is everything between the braces. It is ordinary R code, and it can use the arguments freely.</p>
-<p>The <strong>return value</strong> is the value of the last expression evaluated. There is no <code>return</code> keyword here and it is not needed. R functions return their last expression automatically, so <code>pull(date)</code> is the answer. You will see <code><a href="https://rdrr.io/r/base/function.html">return()</a></code> in other people’s code and it is not wrong, but the idiom in R is to reserve it for an early exit: a check at the top of a function that refuses nonsense input before any of the real work happens.</p>
+<p>The <strong>return value</strong> is the value of the last expression evaluated. There is no <code>return</code> keyword here and none is needed. R functions return their last expression automatically, so <code>pull(date)</code> is the answer. <code><a href="https://rdrr.io/r/base/function.html">return()</a></code> does exist and works wherever you put it; the idiom in R is to reserve it for an early exit, a check at the top of a function that refuses nonsense input before any of the real work happens.</p>
 <p>Now use it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alert_days</span> <span class="op">&lt;-</span> <span class="fu">mobility_alert</span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
@@ -452,7 +452,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="default-arguments-and-the-sign-convention" class="level2" data-number="11.3"><h2 data-number="11.3" class="anchored" data-anchor-id="default-arguments-and-the-sign-convention">
 <span class="header-section-number">11.3</span> Default arguments and the sign convention</h2>
 <p><code>threshold = -30</code> looks like a convenience. It does more than that here, because of the sign convention in this dataset.</p>
-<p>Google’s mobility columns are <em>percentage change from baseline</em>. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So “a drop of more than 30%” is <code>&lt; -30</code>, and a reader who thinks in magnitudes rather than signs will reach for <code>30</code>.</p>
+<p>Google’s mobility columns are <em>percentage change from baseline</em>. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So “a drop of more than 30%” is <code>&lt; -30</code>, and thinking in magnitudes instead of signs leads you to type <code>30</code>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -516,7 +516,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="stale-globals-and-why-you-restart-r" class="level2" data-number="11.5"><h2 data-number="11.5" class="anchored" data-anchor-id="stale-globals-and-why-you-restart-r">
 <span class="header-section-number">11.5</span> Stale globals, and why you restart R</h2>
 <p>The same mechanism has a version that produces no error at all.</p>
-<p>The worksheet this book replaces had an exercise that looped over months, and inside the loop it assigned to a variable at the top level of the script:</p>
+<p>Consider a loop over four months that assigns to a variable at the top level of the script:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2020-09-01"</span>, <span class="st">"2020-10-01"</span>, <span class="st">"2020-11-01"</span>, <span class="st">"2020-12-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">month_data</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
@@ -529,7 +529,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; December mean daily cases: 12.3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Four correct numbers, and nothing wrong with the loop. When it finishes, though, <code>month_data</code> is still in the global environment, holding whatever the last iteration put there, which is December.</p>
-<p>Several exercises later came a bonus question about September. It used <code>month_data</code>:</p>
+<p>Further down the same script, a separate calculation about September reuses <code>month_data</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"September mean daily cases:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; September mean daily cases: 12.3</span></span>
@@ -537,8 +537,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-12-01" "2020-12-31"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The heading says September; the number is December’s. Nothing errors and nothing warns, and 12.3 is a believable figure for a quiet month, so there is nothing in the output to signal the mistake. Anyone running that worksheet from top to bottom would record the wrong answer.</p>
-<p>This connects to the advice in the good practice chapter about not saving your workspace and restarting R often. In a fresh session, <code>month_data</code> does not exist, and the bonus question fails like this:</p>
+<p>The heading says September; the number is December’s. Nothing errors and nothing warns, and 12.3 is a believable figure for a quiet month, so there is nothing in the output to signal the mistake. A run from top to bottom therefore records December’s figure under September’s label.</p>
+<p>This connects to the advice in the good practice chapter about not saving your workspace and restarting R often. In a fresh session, <code>month_data</code> does not exist, and the second calculation fails like this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>

@@ -423,7 +423,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; [1] 345</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>if</code> has no way to act on 345 answers at once, so it refuses. The message to search for is <strong>the condition has length &gt; 1</strong>.</p>
-<p>The error is recent. Up to R 4.1 the same code ran: R issued a warning, took the first element and carried on. A script could label an entire dataset “Not high” because 22 January happened to have zero cases, with only a warning to indicate it. R 4.2 made it an error. If you find an older script or a Stack Overflow answer that relies on the previous behaviour, that is why it no longer runs.</p>
+<p>The error is recent. Up to R 4.1 the same code ran: R issued a warning, took the first element and carried on. A script could label an entire dataset “Not high” because 22 January happened to have zero cases, with only a warning to indicate it. R 4.2 made it an error, so a script written against the earlier behaviour stops here on any current version of R.</p>
 <p>When you do want a whole-dataset question, collapse the vector to one value first. <code><a href="https://rdrr.io/r/base/any.html">any()</a></code> and <code><a href="https://rdrr.io/r/base/all.html">all()</a></code> are built for this.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -611,7 +611,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="ordering-categories-with-factor" class="level2" data-number="8.7"><h2 data-number="8.7" class="anchored" data-anchor-id="ordering-categories-with-factor">
 <span class="header-section-number">8.7</span> Ordering categories with <code>factor()</code>
 </h2>
-<p><code>count()</code> is the dplyr way of tabulating a column. Base R’s <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> is shorter and appears in a lot of code you will read, so it is worth seeing what it does with the labels:</p>
+<p><code>count()</code> is the dplyr way of tabulating a column. Base R’s <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> does the same job in less typing, and it returns a named vector of counts instead of a data frame. Look at the order it puts the labels in:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -712,7 +712,7 @@ Figure&nbsp;8.1: The same 345 days, counted twice. Only the ordering differs.
 </section><section id="exercises" class="level2" data-number="8.9"><h2 data-number="8.9" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">8.9</span> Exercises</h2>
 <div id="exr-severity" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 8.1 (Audit your severity column)</strong></span> Check the <code>severity</code> column rather than assuming it is right.</p>
+<p><span class="theorem-title"><strong>Exercise 8.1 (Audit your severity column)</strong></span> Check the <code>severity</code> column before relying on it.</p>
 <ol type="1">
 <li>Confirm the three counts add up to 345 and that no day came back <code>NA</code>.</li>
 <li>For each label, report the smallest and the largest <code>daily_cases</code> it contains.</li>
@@ -738,7 +738,7 @@ Figure&nbsp;8.1: The same 345 days, counted twice. Only the ordering differs.
 </div>
 <p><a href="./solutions.html#sec-sol-severity">Worked solution</a></p>
 <div id="exr-move-cutoffs" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 8.2 (Move the cutoffs)</strong></span> The 100 and 300 thresholds were chosen by whoever wrote the original worksheet, not by nature. Rebuild <code>severity</code> with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).</p>
+<p><span class="theorem-title"><strong>Exercise 8.2 (Move the cutoffs)</strong></span> The 100 and 300 thresholds are a convention adopted for this course, and other cutoffs are equally defensible. Rebuild <code>severity</code> with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).</p>
 <p>Report the three counts under the new rule, and compare them with 215 / 53 / 77. Then write two sentences you would be willing to put in a report under each set of cutoffs, describing how severe 2020 was. Both sentences must be true of the same 345 days.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">

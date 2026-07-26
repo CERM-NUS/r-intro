@@ -382,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The request in this chapter is of that kind: pick a month of Singapore’s 2020 and write the report. April is worked through first, to set out what the finished report looks like, and August is left to you.</p>
 <section id="the-brief" class="level2" data-number="13.1"><h2 data-number="13.1" class="anchored" data-anchor-id="the-brief">
 <span class="header-section-number">13.1</span> The brief</h2>
-<p>The report covers one month and occupies one page. That page carries a table that gives the reader the month in numbers, two figures that show something the table cannot, and three sentences of interpretation. Three sentences, not three paragraphs: the limit is deliberate, because choosing which three findings matter takes more work than writing several paragraphs of hedged description.</p>
+<p>The report covers one month and occupies one page. That page carries a table that gives the reader the month in numbers, two figures that show something the table cannot, and three sentences of interpretation. The limit of three is deliberate, because choosing which three findings matter takes more work than writing several paragraphs of hedged description.</p>
 <p>Assume the reader is a public health officer who knows Singapore and does not know R. They will not read your code. They will look at the figures first, the table second, and your sentences only if the figures made them curious.</p>
 </section><section id="what-a-good-report-contains" class="level2" data-number="13.2"><h2 data-number="13.2" class="anchored" data-anchor-id="what-a-good-report-contains">
 <span class="header-section-number">13.2</span> What a good report contains</h2>
@@ -444,7 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>April 2020 has one day far larger than the rest. Write down the date you think it fell on before you read the next output. Most people put it in the first week, on the reasoning that the circuit breaker started on 7 April and things improved from there.</p>
+<p>April 2020 has one day far larger than the rest. Write down the date you think it fell on before you read the next output. The circuit breaker started on 7 April, which makes the first week the intuitive guess: restrictions came in and conditions improved from there.</p>
 </div>
 </div>
 <div class="cell">
@@ -479,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Eighteen of April’s thirty days were over 300 cases. Across the whole year only 77 days were, so April holds nearly a quarter of the year’s highest-count days in a single month.</p>
 </section><section id="the-table" class="level3" data-number="13.3.3"><h3 data-number="13.3.3" class="anchored" data-anchor-id="the-table">
 <span class="header-section-number">13.3.3</span> The table</h3>
-<p>Weeks are the right grain for a monthly table. <code>floor_date(date, "week", week_start = 1)</code> puts each date on its Monday. I set <code>week_start</code> explicitly because lubridate’s default is Sunday and many readers will expect Monday. Setting it explicitly makes the assumption visible at the cost of one argument.</p>
+<p>Weeks are the right grain for a monthly table. <code>floor_date(date, "week", week_start = 1)</code> puts each date on its Monday. I set <code>week_start</code> explicitly because lubridate’s default is Sunday, so without the argument every week in the table would run from Sunday to Saturday. Stating it makes the assumption visible at the cost of one argument.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">april_weeks</span> <span class="op">&lt;-</span> <span class="va">april</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>week <span class="op">=</span> <span class="fu">floor_date</span><span class="op">(</span><span class="va">date</span>, <span class="st">"week"</span>, week_start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -637,7 +637,7 @@ Figure&nbsp;13.2: Retail and workplace mobility in April 2020, as percent change
 <span class="header-section-number">13.5</span> Your turn</h2>
 <div id="exr-sitrep" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 13.1 (Write the August 2020 situation report)</strong></span> Produce the one-page report for August 2020: a table, two figures, three sentences of interpretation, and a short note on what your analysis does not tell you.</p>
-<p>August is a harder month than April, though not because the code is harder; the code is the same. August is harder because the month contains a decision that April does not, and the report has to address that decision explicitly.</p>
+<p>August is a harder month than April, and the code is identical. What makes August harder is that the month contains a decision April does not, and the report has to address that decision explicitly.</p>
 <p>You are done when someone who has never seen the data could read your page and come away with a correct impression of what August 2020 was like.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">

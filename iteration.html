@@ -371,7 +371,7 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#the-loop-the-worksheet-asked-for" id="toc-the-loop-the-worksheet-asked-for" class="nav-link active" data-scroll-target="#the-loop-the-worksheet-asked-for"><span class="header-section-number">12.1</span> The loop the worksheet asked for</a></li>
+<li><a href="#daily-cases-written-as-a-loop" id="toc-daily-cases-written-as-a-loop" class="nav-link active" data-scroll-target="#daily-cases-written-as-a-loop"><span class="header-section-number">12.1</span> Daily cases, written as a loop</a></li>
   <li><a href="#the-one-liner" id="toc-the-one-liner" class="nav-link" data-scroll-target="#the-one-liner"><span class="header-section-number">12.2</span> The one-liner</a></li>
   <li><a href="#what-the-loop-costs-and-what-it-gives" id="toc-what-the-loop-costs-and-what-it-gives" class="nav-link" data-scroll-target="#what-the-loop-costs-and-what-it-gives"><span class="header-section-number">12.3</span> What the loop costs and what it gives</a></li>
   <li><a href="#pre-allocate" id="toc-pre-allocate" class="nav-link" data-scroll-target="#pre-allocate"><span class="header-section-number">12.4</span> Pre-allocate</a></li>
@@ -398,10 +398,10 @@ window.Quarto = {
   
 
 
-</header><p>Most introductions to the tidyverse skip loops, or mention them only in passing. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.</p>
+</header><p>Loops sit outside the tidyverse verbs, and nothing in the previous chapters has needed one. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.</p>
 <p>The order here is loop first, then the vectorised expression that replaces it, then an account of what each of the two gives you.</p>
-<section id="the-loop-the-worksheet-asked-for" class="level2" data-number="12.1"><h2 data-number="12.1" class="anchored" data-anchor-id="the-loop-the-worksheet-asked-for">
-<span class="header-section-number">12.1</span> The loop the worksheet asked for</h2>
+<section id="daily-cases-written-as-a-loop" class="level2" data-number="12.1"><h2 data-number="12.1" class="anchored" data-anchor-id="daily-cases-written-as-a-loop">
+<span class="header-section-number">12.1</span> Daily cases, written as a loop</h2>
 <p><code>confirmed</code> in this dataset is cumulative. On 31 December it reads 58,599, which is every case Singapore recorded in 2020, not the number recorded that day. To get daily cases you take each value and subtract the one before it.</p>
 <p>Written as a loop, that is:</p>
 <div class="cell">
@@ -438,7 +438,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">daily</span>, <span class="va">vectorised</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code><a href="https://rdrr.io/r/base/identical.html">identical()</a></code> is the strict comparison. It checks length, type and every element, and it returns a single <code>TRUE</code> or <code>FALSE</code> with no tolerance for rounding and no recycling. Use it when you want a yes-or-no answer about whether two objects are the same thing. (<code><a href="https://rdrr.io/r/base/all.equal.html">all.equal()</a></code> is its forgiving cousin, which allows tiny floating-point differences and returns a <em>message</em> rather than <code>FALSE</code> when things differ, which trips people up inside <code>if</code>.)</p>
+<p><code><a href="https://rdrr.io/r/base/identical.html">identical()</a></code> is the strict comparison. It checks length, type and every element, and it returns a single <code>TRUE</code> or <code>FALSE</code> with no tolerance for rounding and no recycling. Use it when you want a yes-or-no answer about whether two objects are the same thing. (<code><a href="https://rdrr.io/r/base/all.equal.html">all.equal()</a></code> is its forgiving cousin, which allows tiny floating-point differences and returns a <em>message</em> rather than <code>FALSE</code> when things differ, so it cannot be used directly as the condition of an <code>if</code>.)</p>
 <p>And both agree with the column <code>covid_daily()</code> built for you:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">daily</span>, <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
@@ -457,7 +457,7 @@ window.Quarto = {
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Type <code>n</code> to run the next line, <code>c</code> to continue, <code>Q</code> to quit. There is no equivalent for a <code>mutate()</code> that is wrong in the middle. When a vectorised calculation gives you a number you cannot explain, rewriting it as a loop and stepping through it is often the fastest way to find out why.</p>
-<p>The rule most people settle on: reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.</p>
+<p>Reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.</p>
 </section><section id="pre-allocate" class="level2" data-number="12.4"><h2 data-number="12.4" class="anchored" data-anchor-id="pre-allocate">
 <span class="header-section-number">12.4</span> Pre-allocate</h2>
 <p><code>daily &lt;- numeric(nrow(covid))</code> allocates the answer vector before the loop starts. Compare that with the alternative, which is to grow the vector one element at a time:</p>
@@ -485,16 +485,16 @@ window.Quarto = {
 <span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
 <span><span class="co">#&gt;       n grow_secs prealloc_secs grow_vs_previous_row</span></span>
 <span><span class="co">#&gt;   &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 10000    0.0760      0.00200                  NA  </span></span>
-<span><span class="co">#&gt; 2 20000    0.266       0.001000                  3.5</span></span>
-<span><span class="co">#&gt; 3 40000    1.05        0.00100                   3.9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co">#&gt; 1 10000    0.0780       0.00200                 NA  </span></span>
+<span><span class="co">#&gt; 2 20000    0.27         0                        3.5</span></span>
+<span><span class="co">#&gt; 3 40000    1.05         0.00100                  3.9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The last column uses <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> again, this time outside a <code>mutate()</code> on the COVID data. Each doubling of <code>n</code> multiplies the growing version’s time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: <code>x &lt;- c(x, i)</code> does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of <code>x</code> into it, adds the new value, and throws the old one away. Do that <code>n</code> times and you have copied roughly <code>n²/2</code> values.</p>
 <p><code>prealloc_secs</code> barely moves, because <code>x[i] &lt;- value</code> writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.</p>
 <p>Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations the gap is large enough to be worth avoiding, and growing a vector inside a loop is a common cause of slow R code.</p>
 </section><section id="seq_along-seq_len-and-the-10-trap" class="level2" data-number="12.5"><h2 data-number="12.5" class="anchored" data-anchor-id="seq_along-seq_len-and-the-10-trap">
 <span class="header-section-number">12.5</span> <code>seq_along()</code>, <code>seq_len()</code>, and the 1:0 trap</h2>
-<p>You will see <code>1:length(x)</code> and <code>1:nrow(df)</code> in a great deal of R code, including code written by experienced users. They fail in one case, which does occur in practice: <code>:</code> counts downwards when the second value is smaller than the first.</p>
+<p><code>1:length(x)</code> and <code>1:nrow(df)</code> are the direct way to write a sequence of positions, and they fail in one case, which does occur in practice: <code>:</code> counts downwards when the second value is smaller than the first.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">1</span><span class="op">:</span><span class="fl">0</span></span>
 <span><span class="co">#&gt; [1] 1 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -563,13 +563,13 @@ window.Quarto = {
 <span><span class="co">#&gt; [1] 225</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Half the year’s cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry comes from the dormitory outbreak, which concentrated most of the year’s cases into April to August.</p>
-<p>Two things about <code>while</code>. Something inside the body must change the condition, or it runs forever; here it is <code>i &lt;- i + 1</code>, and forgetting that line is the classic way to hang your R session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, <code>i</code> would keep climbing past 345 and <code>covid$confirmed[346]</code> would be <code>NA</code>, at which point R stops with a real error rather than looping forever:</p>
+<p>Two things about <code>while</code>. Something inside the body must change the condition, or it runs forever; here it is <code>i &lt;- i + 1</code>, and omitting that line hangs the session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, <code>i</code> would keep climbing past 345 and <code>covid$confirmed[346]</code> would be <code>NA</code>, at which point R stops with a real error rather than looping forever:</p>
 <pre><code>Error in while (covid$confirmed[i] &lt; target) { :
   missing value where TRUE/FALSE needed</code></pre>
 <p>That message nearly always means a comparison produced <code>NA</code>, and <code>NA</code> is neither true nor false, so <code>while</code> and <code>if</code> refuse to guess.</p>
 </section><section id="map-and-friends" class="level2" data-number="12.7"><h2 data-number="12.7" class="anchored" data-anchor-id="map-and-friends">
 <span class="header-section-number">12.7</span> <code>map()</code> and friends</h2>
-<p>Loops that build a result one element at a time are common enough that purrr, part of the tidyverse, gives them a shorter form. <code>map(x, f)</code> calls <code>f</code> on each element of <code>x</code> and returns a <strong>list</strong> of the results, always the same length as <code>x</code>.</p>
+<p>purrr, part of the tidyverse, gives a shorter form for loops that build a result one element at a time. <code>map(x, f)</code> calls <code>f</code> on each element of <code>x</code> and returns a <strong>list</strong> of the results, always the same length as <code>x</code>.</p>
 <p>Let me bring <code>month_summary()</code> across from <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a>. Chapters render in fresh sessions, so it has to be defined again here:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">which_month</span><span class="op">)</span> <span class="op">{</span></span>

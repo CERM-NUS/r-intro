@@ -376,7 +376,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>A large share of the time beginners lose in R goes on problems that are not really about R: the file that was in the wrong folder, the object left over from an hour ago that changed a result without any visible sign, and the package that changed under a script nobody had run in a year. None of these are difficult problems, but they are much easier to avoid from the start than to correct in an established project.</p>
+</header><p>A large share of the time beginners lose in R goes on workflow: the file that was in the wrong folder, the object left over from an hour ago that changed a result without any visible sign, and the package that changed under a script nobody had run in a year. None of these are difficult problems, but they are much easier to avoid from the start than to correct in an established project.</p>
 <p>This chapter sets out ten working habits that avoid them.</p>
 <section id="work-in-a-project" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="work-in-a-project">
 <span class="header-section-number">2.1</span> 1. Work in a project</h2>
@@ -403,7 +403,7 @@ StripTrailingWhitespace: Yes</code></pre>
 </section><section id="use-here-rather-than-setwd" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="use-here-rather-than-setwd">
 <span class="header-section-number">2.2</span> 2. Use <code>here()</code> rather than <code>setwd()</code>
 </h2>
-<p>Scripts often open with a call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> and an absolute path:</p>
+<p>A script can be pointed at its data with <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> and an absolute path:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"/Users/swapnil/Documents/GitHub/r-intro"</span><span class="op">)</span></span>
 <span></span>
@@ -468,7 +468,7 @@ StripTrailingWhitespace: Yes</code></pre>
 </section><section id="loading-packages-and-clearing-the-environment" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="loading-packages-and-clearing-the-environment">
 <span class="header-section-number">2.4</span> 4. Loading packages, and clearing the environment</h2>
 <p>Put every package your script needs in one block at the top of the file. A reader can then see the dependencies without reading the whole script. A script that loads a package halfway down also fails differently depending on how far execution reached before the failure, which makes the failure harder to reproduce.</p>
-<p>The usual substitute for restarting R is this:</p>
+<p>There is a one-line alternative to restarting, which empties the global environment:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -511,7 +511,7 @@ StripTrailingWhitespace: Yes</code></pre>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html">df</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.2788548</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Assigning a data frame to <code>df</code> masks that function. This particular collision rarely causes trouble, since few analyses call <code><a href="https://rdrr.io/r/stats/Fdist.html">df()</a></code>. Others are riskier: <code>data</code>, <code>c</code>, <code>mean</code>, <code>sum</code>, <code>t</code> and <code>T</code> are all names people assign to variables, and code that calls the masked function afterwards will fail or, in the case of <code>T</code>, silently change meaning.</p>
+<p>Assigning a data frame to <code>df</code> masks that function. This particular collision rarely causes trouble, since few analyses call <code><a href="https://rdrr.io/r/stats/Fdist.html">df()</a></code>. Others are riskier: <code>data</code>, <code>c</code>, <code>mean</code>, <code>sum</code>, <code>t</code> and <code>T</code> are all short, tempting names that already belong to something in base R, and code that calls the masked function afterwards will fail or, in the case of <code>T</code>, silently change meaning.</p>
 <p>Long names are cheap to type, because Tab completes them. <code>monthly_case_summary</code> is a few keystrokes and a Tab.</p>
 </section><section id="pin-your-packages-with-renv" class="level2" data-number="2.7"><h2 data-number="2.7" class="anchored" data-anchor-id="pin-your-packages-with-renv">
 <span class="header-section-number">2.7</span> 7. Pin your packages with <code>renv</code>
@@ -531,7 +531,7 @@ StripTrailingWhitespace: Yes</code></pre>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Compute daily cases from the cumulative column"</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>add</code> chooses what goes into the next snapshot, <code>commit</code> takes the snapshot with a message attached, and <code>push</code> sends it to a machine that is not your laptop. Those three are enough to be useful from the start; the rest of Git can wait until a situation calls for it.</p>
-<p>The property this gives you is a record of the project that is difficult to alter unintentionally. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a server. History can be rewritten deliberately, but not by accident, and rewriting a commit someone else has already pulled is visible to them. A folder of files named <code>analysis_v3_FINAL_revised.R</code> provides none of this.</p>
+<p>The property this gives you is a record of the project that is difficult to alter unintentionally. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a server. History can be rewritten deliberately, but not by accident, and rewriting a commit someone else has already pulled is visible to them. Saving successive copies of a script under new filenames records none of that: no timestamped author, no message, and no way to tell which copy produced which result.</p>
 <p>The everyday benefit is more immediate. With commits behind you, code can be deleted rather than kept: the half-finished approach and the two hundred lines you replaced can both go, the file stays readable, and any of it can be recovered with one command. Without version control the safer option is to keep everything, and scripts grow accordingly.</p>
 <p>Commit code, small data files, and your lockfile. Do not commit two gigabytes of intermediate output. That is what <code>.gitignore</code> is for.</p>
 </section><section id="ask-for-help-with-a-reprex" class="level2" data-number="2.9"><h2 data-number="2.9" class="anchored" data-anchor-id="ask-for-help-with-a-reprex">
@@ -540,15 +540,15 @@ StripTrailingWhitespace: Yes</code></pre>
 <p>The clean session does useful work here. A fair proportion of the time, writing the reprex resolves the problem without anyone else reading it, because the cause was an object left over in your environment which the clean session does not have. This is the same failure described in rule 3.</p>
 <p>What makes a question answerable, in order of how often it is missing:</p>
 <ol type="1">
-<li>Code the reader can run. Not a screenshot, and not a fragment referring to <code>my_data</code>, which nobody else has. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of <code>dput(head(your_data, 10))</code>.</li>
+<li>Code the reader can run. A screenshot cannot be run, and neither can a fragment referring to <code>my_data</code>, which exists only in your session. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of <code>dput(head(your_data, 10))</code>.</li>
 <li>The error message, copied exactly rather than paraphrased or retyped from memory, including the lines after the first.</li>
-<li>What you expected instead. A large share of R questions turn out to rest on a disagreement about what the function was supposed to do, and stating the expectation makes that visible.</li>
+<li>What you expected instead. Stating the expectation exposes any disagreement about what the function was supposed to do, which is often where the problem actually lies.</li>
 <li>Your versions. <code><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo()</a></code> prints your R version and every attached package. Paste it at the bottom.</li>
 </ol>
 <p>Remove anything not needed to reproduce the problem. If the example is forty lines and the error occurs on line 4, the other thirty-six lines have to be read and discarded by whoever answers.</p>
 </section><section id="write-the-report-and-the-analysis-in-the-same-file" class="level2" data-number="2.10"><h2 data-number="2.10" class="anchored" data-anchor-id="write-the-report-and-the-analysis-in-the-same-file">
 <span class="header-section-number">2.10</span> 10. Write the report and the analysis in the same file</h2>
-<p>The common workflow is to run the script, copy the numbers into Word, and write around them. From that point the document and the analysis are separate artefacts that agree only as long as nobody changes the analysis. Change a filter, re-run the script, and the number in the document is out of date with nothing to indicate it.</p>
+<p>Running the script, copying the numbers into Word and writing around them leaves the document and the analysis as two separate artefacts, and they agree only until the analysis changes. Change a filter, re-run the script, and the number in the document is out of date with nothing to indicate it.</p>
 <p>Quarto removes the copying step. A <code>.qmd</code> file holds prose and code together, and rendering it runs the code and inserts the resulting output into the finished document. Change the filter, render again, and the numbers update: tables, figures, and values written inline in a sentence alike.</p>
 <p>This book is a Quarto book. Every chapter is a <code>.qmd</code> file, every output on every page was produced by the code shown above it, and the book is rebuilt from scratch before publication, so a number in the text cannot drift away from the code that produced it.</p>
 </section><section id="the-checklist" class="level2" data-number="2.11"><h2 data-number="2.11" class="anchored" data-anchor-id="the-checklist">

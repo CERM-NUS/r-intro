@@ -413,8 +413,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Most introductions to R put plotting first. <em>R for Data Science</em> opens with it, and the reasoning is sound: a plot is the quickest visible result a beginner gets, and several chapters of printed tibbles are a hard sell.</p>
-<p>This book puts plotting here, after you have learned to reshape a data frame, because of something specific to the file on your disk. None of its thirteen columns holds the daily case counts you would put on the y axis of an epidemic curve. <code>confirmed</code> is a running total, and a running total of an epidemic looks like this:</p>
+<p>A plot is the quickest visible result a beginner gets from R, which is a good argument for teaching it in the first week. This book puts plotting here instead, after you have learned to reshape a data frame, because of something specific to the file on your disk.</p>
+<p>None of its thirteen columns holds the daily case counts you would put on the y axis of an epidemic curve. <code>confirmed</code> is a running total, and a running total of an epidemic looks like this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> confirmed)) <span class="sc">+</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -492,7 +492,7 @@ Figure&nbsp;10.3: Data, aesthetics, geom. Nothing else is compulsory.
 </div>
 </div>
 </div>
-<p>Almost nobody writes <code>data =</code> and <code>mapping =</code> in practice, because they are the first two arguments and <code>aes()</code> is unmistakable. <code>ggplot(covid, aes(date, daily_cases))</code> is the same call. Write the names out while you are learning and drop them when they stop helping you.</p>
+<p>The names <code>data =</code> and <code>mapping =</code> are conventionally omitted, because they are the first two arguments and <code>aes()</code> is unmistakable. <code>ggplot(covid, aes(date, daily_cases))</code> is the same call. Write the names out while you are learning and drop them when they stop helping you.</p>
 <p>Run <code>ggplot(covid, aes(x = date, y = daily_cases))</code> on its own, with no geom, and you get an empty grey panel with correctly labelled axes. The axes show that the data and the mapping were understood; the empty panel shows that no layer was supplied. Running the call without its geoms is a useful step when a plot comes out wrong, because it separates a broken mapping from a broken geom.</p>
 <section id="why-the-line-is-blue" class="level3" data-number="10.1.1">
 <h3 data-number="10.1.1" class="anchored" data-anchor-id="why-the-line-is-blue"><span class="header-section-number">10.1.1</span> Why the line is blue</h3>
@@ -501,7 +501,7 @@ Figure&nbsp;10.3: Data, aesthetics, geom. Nothing else is compulsory.
 </section>
 <section id="setting-a-colour-versus-mapping-one" class="level3" data-number="10.1.2">
 <h3 data-number="10.1.2" class="anchored" data-anchor-id="setting-a-colour-versus-mapping-one"><span class="header-section-number">10.1.2</span> Setting a colour versus mapping one</h3>
-<p>Inside <code>aes()</code>, you name a column and ggplot2 works out the colours. Outside <code>aes()</code>, you name a colour and ggplot2 uses it. Putting a colour name inside <code>aes()</code> is a common error, and it produces no error message:</p>
+<p>Inside <code>aes()</code>, you name a column and ggplot2 works out the colours. Outside <code>aes()</code>, you name a colour and ggplot2 uses it. Putting a colour name inside <code>aes()</code> draws without complaint and produces no error message:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">colour =</span> <span class="st">"red"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -541,7 +541,7 @@ Figure&nbsp;10.5: Colour set as a constant. No legend, because nothing was mappe
 </section>
 <section id="plus-not-pipe" class="level2" data-number="10.2">
 <h2 data-number="10.2" class="anchored" data-anchor-id="plus-not-pipe"><span class="header-section-number">10.2</span> Plus, not pipe</h2>
-<p><code>+</code> adds a layer to a plot. <code>%&gt;%</code> passes an object to a function as its first argument. They are not interchangeable, and typing the wrong one is a common early mistake.</p>
+<p><code>+</code> adds a layer to a plot. <code>%&gt;%</code> passes an object to a function as its first argument. They are not interchangeable, and swapping one for the other stops the plot from being drawn at all.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span>
@@ -551,9 +551,9 @@ Figure&nbsp;10.5: Colour set as a constant. No legend, because nothing was mappe
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Did you use `%&gt;%` or `|&gt;` instead of `+`?</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The error is worth reading to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.</p>
-<p>Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific, because their authors have watched people get stuck on exactly this. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.</p>
-<p>The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr’s <code>%&gt;%</code> arrived in 2014. By then there were seven years of published code, books and course notes written against <code>+</code>. Changing the operator would have broken all of it at once. So ggplot2 kept <code>+</code>, and R users have been mistyping it ever since.</p>
-<p>The two do combine, and the combination is the normal way to plot a subset:</p>
+<p>Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific about the fix. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.</p>
+<p>The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr’s <code>%&gt;%</code> arrived in 2014. By then there were seven years of published code written against <code>+</code>. Changing the operator would have broken all of it at once, so ggplot2 kept <code>+</code>, and the two operators have coexisted since.</p>
+<p>The two do combine, and combining them is how you plot a subset:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>covid <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2020-08-01"</span>)) <span class="sc">%&gt;%</span></span>
@@ -578,7 +578,7 @@ Figure&nbsp;10.6: August 2020 on its own. The pipe does the filtering, the plus 
 <section id="a-histogram-of-daily_cases" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="a-histogram-of-daily_cases"><span class="header-section-number">10.3</span> A histogram of <code>daily_cases</code></h2>
 <p>Worked examples that already look right give little guidance on what to do when a plot comes out wrong, so this section starts from one that does and works through the available fixes.</p>
-<p>Here is the standard first move for any numeric variable: look at its distribution.</p>
+<p>The first thing to look at for any numeric variable is its distribution.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -610,7 +610,7 @@ Figure&nbsp;10.7: One tall bar, and a long empty tail.
 </div>
 </div>
 <p>Only two bars have any visible height. The rest are too short to read at a scale set by the tallest one.</p>
-<p>The message above the figure, <code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code>, reports a decision ggplot2 made on your behalf. It uses 30 bins because a histogram needs some bin count, and it prints the message on every call so that the value stays visible rather than implicit.</p>
+<p>The message above the figure, <code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code>, reports a decision ggplot2 made on your behalf. It uses 30 bins because a histogram needs some bin count, and it prints the message on every call so that the value it chose stays visible in your output.</p>
 <p>Nothing went wrong in the code. The plot is an accurate picture of a variable that runs from 0 to 1,426 with a median of exactly 40. Bin one, covering roughly 0 to 25 cases, holds 160 of the 345 days. The top third of the range, everything above about 950, holds four days in total. Once one bar is 160 units tall, a bar of height 3 is two pixels.</p>
 <section id="fix-one-more-bins" class="level3" data-number="10.3.1">
 <h3 data-number="10.3.1" class="anchored" data-anchor-id="fix-one-more-bins"><span class="header-section-number">10.3.1</span> Fix one: more bins</h3>
@@ -830,7 +830,7 @@ Figure&nbsp;10.15: 345 bars in 7 inches. Each one is about half a millimetre wid
 </div>
 </div>
 <p>This is defensible and hard to read. The bars are narrower than the gaps between them at this width, so the picket-fence effect carries visual weight that has nothing to do with the data. Bars are arguably the better match to what was measured, because each day’s count is a separate number and nothing was observed between Tuesday and Wednesday, whereas a line implies a continuous quantity sampled daily, which a notification count is not.</p>
-<p>In practice, epidemiologists draw daily case counts as lines once the series gets long, and as bars when the series is short enough that individual days matter. Twenty-nine bars for August works. Three hundred and forty-five does not.</p>
+<p>Lines carry a long daily series better; bars carry a short one, where each day is wide enough to be read on its own. Twenty-nine bars for August works. Three hundred and forty-five does not.</p>
 <p>Aggregate first and bars come back into their own:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>monthly <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span></span>
@@ -878,7 +878,7 @@ Figure&nbsp;10.16: Monthly totals. Each bar is a sum, and area is proportional t
 </section>
 <section id="log-scales-and-zeros" class="level2" data-number="10.6">
 <h2 data-number="10.6" class="anchored" data-anchor-id="log-scales-and-zeros"><span class="header-section-number">10.6</span> Log scales and zeros</h2>
-<p>Case counts spanning three orders of magnitude are the textbook case for a log y axis. Try it:</p>
+<p>Case counts spanning three orders of magnitude are what a log y axis is for. Try it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
@@ -994,7 +994,7 @@ Figure&nbsp;10.20: Twelve months of 2020, in the wrong order.
 </div>
 <p>April, August, December, February. Then January, July, June, March. Then May, November, October, September.</p>
 <p><code>format(date, "%B")</code> returns a character vector, and R sorts character vectors alphabetically. ggplot2 has no way to know that these strings are months, so it does what it does with any character variable: converts to a factor, and <code>factor()</code> on a character vector orders the levels by <code>sort()</code>.</p>
-<p>The fix is not a plotting argument. It is a factor with the levels in the order you want, built before the data reaches <code>ggplot()</code>:</p>
+<p>No argument to <code>facet_wrap()</code> sets the panel order. The fix belongs in the data: a factor whose levels are in the order you want, built before the data reaches <code>ggplot()</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>covid <span class="sc">%&gt;%</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -1016,8 +1016,8 @@ Figure&nbsp;10.21: Same plot, with month_name as a factor whose levels are in ca
 </div>
 </div>
 </div>
-<p><code>month.name</code> is a built-in constant, a character vector of the twelve month names in order, which R has carried since before the tidyverse existed. Type it at the console.</p>
-<p>Order-of-levels problems are worth recognising as a category, because they are common and tend to look like plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The <code>severity</code> column avoids it because <code>covid_daily()</code> builds it with <code>factor(severity, levels = c("Low", "Medium", "High"))</code> rather than letting R sort High, Low, Medium.</p>
+<p><code>month.name</code> is a built-in constant: a character vector of the twelve month names in calendar order, available in any R session without a package. Type it at the console.</p>
+<p>Order-of-levels problems are worth recognising as a category, because they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The <code>severity</code> column avoids it because <code>covid_daily()</code> builds it with <code>factor(severity, levels = c("Low", "Medium", "High"))</code> rather than letting R sort High, Low, Medium.</p>
 <p>Two <code>facet_wrap()</code> arguments do most of the work. <code>ncol</code> (or <code>nrow</code>) sets the layout. <code>scales</code> decides whether panels share axes: <code>"fixed"</code> is the default and is what you want when the point is comparison; <code>"free_x"</code>, used above, gives each month its own date range so the twelve panels do not each show ten days of line and eleven months of blank; <code>"free_y"</code> lets each panel find its own vertical scale, which makes small panels legible at the cost of comparability between panels. Free scales change what the figure can be used for, so choose them deliberately.</p>
 </section>
 <section id="labels" class="level2" data-number="10.8">
@@ -1049,12 +1049,12 @@ Figure&nbsp;10.22: The same curve, with the text a reader needs.
 </div>
 <p><code>x = NULL</code> removes the axis title rather than blanking it, which reclaims the space. Do that when the axis is self-evident, as a row of month names is. <code>x = ""</code> leaves an empty label and its margin behind, which is why plots sometimes have a mysterious gap at the bottom.</p>
 <p>Default axis titles are the column names, so an unlabelled plot shows <code>daily_cases</code> on the y axis. <code>labs()</code> replaces it with wording a reader can interpret without access to the code.</p>
-<p>The subtitle is the place for information the reader would otherwise have to ask for. This series is differenced from a cumulative column, and anyone who has worked with COVID data will want to know that before interpreting the spikes.</p>
+<p>The subtitle is the place for information the reader would otherwise have to ask for. This series is differenced from a cumulative column, and a reader needs to know that before interpreting the spikes.</p>
 </section>
 <section id="two-plots-in-one-figure-patchwork" class="level2" data-number="10.9">
 <h2 data-number="10.9" class="anchored" data-anchor-id="two-plots-in-one-figure-patchwork"><span class="header-section-number">10.9</span> Two plots in one figure: patchwork</h2>
 <p><code>facet_wrap()</code> splits <em>one</em> plot by a variable. Every panel is the same plot with different rows.</p>
-<p>Putting two <em>different</em> plots side by side is a different job, and <code>facet_wrap()</code> cannot do it. The base R answer was <code>par(mfrow = c(2, 1))</code>, which sets a global graphics parameter and stays set until you change it back, which is how people end up with a stray two-panel layout three plots later. The tidyverse answer is patchwork, loaded by <code>_common.R</code>.</p>
+<p>Putting two <em>different</em> plots side by side is a different job, and <code>facet_wrap()</code> cannot do it. The base R answer was <code>par(mfrow = c(2, 1))</code>, which sets a global graphics parameter and stays set until you change it back, so an unrelated plot three commands later is still drawn into a two-panel layout. The tidyverse answer is patchwork, loaded by <code>_common.R</code>.</p>
 <p>Build the plots as ordinary objects, then combine them with operators. <code>/</code> stacks, <code>|</code> puts side by side.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>p_cases <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
@@ -1081,7 +1081,7 @@ Figure&nbsp;10.23: Cases above, policy stringency below, sharing a time axis.
 </div>
 </div>
 </div>
-<p><code>stringency_index</code> is the Oxford Government Response Tracker’s summary of how restrictive a country’s policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41. The worksheet this book replaces did not use it.</p>
+<p><code>stringency_index</code> is the Oxford Government Response Tracker’s summary of how restrictive a country’s policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41.</p>
 <p>Stacked against the case curve, it shows something a single panel cannot. Stringency is a staircase, because policy changes on announced dates and holds until the next announcement, while the case series varies from day to day. The step on 7 April is the circuit breaker, and it is large: stringency goes from 45.37 to 62.04 in one day, retail mobility from -15 to -51, workplaces from -24 to -52. The index reaches its maximum of 82.41 for the first time on 10 April, three days later, and cases keep climbing for another ten days after that.</p>
 <p>The small movements after July do not support interpretation. There are 23 changes in the index after 1 July, several of them one-day blips that cannot be distinguished from encoding artifacts. A single-day rise in a composite index is not evidence of a policy announcement.</p>
 <p>Patchwork’s other operators are worth knowing. <code>+</code> packs plots into a grid and lets patchwork choose the shape, <code>|</code> forces a row, <code>/</code> forces a column, and they nest with brackets: <code>(a | b) / c</code>. <code>plot_layout()</code> controls proportions, and <code>plot_annotation()</code> adds text to the assembly rather than to any one panel:</p>
@@ -1106,7 +1106,7 @@ Figure&nbsp;10.24: plot_layout() gives the case curve twice the height; plot_ann
 </div>
 </div>
 </div>
-<p><code>tag_levels = "A"</code> labels the panels A and B, which is what a journal will ask for.</p>
+<p><code>tag_levels = "A"</code> labels the panels A and B, the labelling convention for multi-panel figures in published work.</p>
 <p>Use <code>facet_wrap()</code> when it is one plot cut into pieces by a variable, and patchwork when it is several plots that belong on the same page. The usual symptom of choosing the wrong one is data reshaped into a long format so that two variables measured on different scales can be faceted against each other. If the panels need different y axes because they show different quantities, patchwork is the tool.</p>
 </section>
 <section id="saving-a-plot" class="level2" data-number="10.10">

@@ -353,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#missing-values-that-are-not-blank" id="toc-missing-values-that-are-not-blank" class="nav-link" data-scroll-target="#missing-values-that-are-not-blank"><span class="header-section-number">5.2.2</span> Missing values that are not blank</a></li>
   </ul>
 </li>
-  <li><a href="#sec-base-read-csv" id="toc-sec-base-read-csv" class="nav-link" data-scroll-target="#sec-base-read-csv"><span class="header-section-number">5.3</span> What <code>read.csv()</code> would have given you</a></li>
+  <li><a href="#sec-base-read-csv" id="toc-sec-base-read-csv" class="nav-link" data-scroll-target="#sec-base-read-csv"><span class="header-section-number">5.3</span> <code>read.csv()</code> and <code>read_csv()</code></a></li>
   <li>
 <a href="#sec-col-types" id="toc-sec-col-types" class="nav-link" data-scroll-target="#sec-col-types"><span class="header-section-number">5.4</span> Pinning the types</a>
   <ul class="collapse">
@@ -386,7 +386,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Import is a common source of errors, and most of them are silent. A date column arrives as text and the time series plots in alphabetical order. A missing value coded as <code>-99</code> arrives as a number and the mean is wrong. A leading zero disappears from a postcode. None of these raise an error. Most are caught by reading the messages R prints at import time, which is why this book leaves those messages switched on.</p>
 <section id="sec-paths" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="sec-paths">
 <span class="header-section-number">5.1</span> Where the file is</h2>
-<p>R has a working directory: the folder it treats as “here” when you hand it a relative path. Scripts often set it explicitly, with a line such as <code>setwd("/Users/swapnil/Documents/GitHub/r-intro")</code>. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.</p>
+<p>R has a working directory: the folder it treats as “here” when you hand it a relative path. It can be set from inside a script, with a line such as <code>setwd("/Users/swapnil/Documents/GitHub/r-intro")</code>. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.</p>
 <p><code><a href="https://here.r-lib.org/reference/here.html">here::here()</a></code> avoids the problem. The <code>here</code> package looks upward from wherever R happens to be until it finds the top of the project, identified by an <code>.Rproj</code> file, a <code>.git</code> directory or a <code>_quarto.yml</code>, and builds paths from there.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">here</span><span class="op">(</span><span class="op">)</span></span>
@@ -486,8 +486,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>With a numeric sentinel such as <code>-99</code>, nothing will appear to be wrong: the minimum will be <code>-99</code>, the mean will be pulled downward, and every graph will still render. Checking the minimum and maximum of each numeric column after import will usually reveal a sentinel of this kind.</p>
 </section></section><section id="sec-base-read-csv" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="sec-base-read-csv">
-<span class="header-section-number">5.3</span> What <code>read.csv()</code> would have given you</h2>
-<p>Base R has its own reader, spelled with a dot instead of an underscore. Older course notes generally use it, so it is worth recognising, and the two names are similar enough to be typed interchangeably by mistake.</p>
+<span class="header-section-number">5.3</span> <code>read.csv()</code> and <code>read_csv()</code>
+</h2>
+<p>Base R has its own reader, <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code>, spelled with a dot rather than an underscore. It returns a data frame rather than a tibble, it prints no column specification, and it does not parse dates, so the date column arrives as character. The two names differ by one character and are easy to type interchangeably by mistake.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="fu">here</span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">old</span><span class="op">)</span></span>
@@ -497,15 +498,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">old</span><span class="op">$</span><span class="va">date</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-01-22" "2020-01-23" "2020-01-24"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>No message at all, a plain <code>data.frame</code> rather than a tibble, and <code>date</code> is a character vector of strings that look like dates. Arithmetic on that column fails:</p>
+<p>All three differences are visible above: no column specification is printed, <code><a href="https://rdrr.io/r/base/class.html">class()</a></code> reports a plain <code>data.frame</code>, and <code>date</code> holds strings that look like dates. Arithmetic on that column fails:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">old</span><span class="op">$</span><span class="va">date</span> <span class="op">-</span> <span class="va">old</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co">#&gt; Error in `old$date - old$date[1]`:</span></span>
 <span><span class="co">#&gt; ! non-numeric argument to binary operator</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>non-numeric argument to binary operator</code> reports that the subtraction was attempted on text. This is why base-R instructions usually include a line such as <code>df$date &lt;- as.Date(df$date)</code> near the top; with <code>read_csv()</code> the conversion has already happened.</p>
+<p><code>non-numeric argument to binary operator</code> reports that the subtraction was attempted on text. The repair is an explicit conversion, <code>old$date &lt;- as.Date(old$date)</code>, written before anything touches the column; with <code>read_csv()</code> the conversion has already happened at import.</p>
 <p>There are two smaller differences. <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> returns <code>int</code> for whole-number columns where <code>read_csv()</code> returns <code>dbl</code>, and before R 4.0.0 it converted character columns into factors, the historical default described in <a href="rectangles.html#sec-tibbles" class="quarto-xref"><span>Section 4.3</span></a>. It is also slower on large files, though at 345 rows the difference is not perceptible.</p>
-<p><code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> works and you may use it. This book uses <code>read_csv()</code> because it reports the column types it assigned, and <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> reports nothing.</p>
+<p>Both readers load the file. This book uses <code>read_csv()</code> because it reports the column types it assigned, and <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> reports nothing.</p>
 </section><section id="sec-col-types" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="sec-col-types">
 <span class="header-section-number">5.4</span> Pinning the types</h2>
 <p>Guessing is convenient when exploring a new file and less suitable for a script that runs every month. readr guesses from the first 1,000 rows by default, so a column that is numeric for a thousand rows and contains the word <code>pending</code> on row 1,500 will be guessed wrong. When the following month’s file differs, the guess differs with it, and the code produces different numbers without reporting the change.</p>

@@ -368,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing anybody needs when your code produces a different answer from mine.</p>
+</header><p>Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing to check when your code produces a different answer from mine.</p>
 <section id="what-produced-this-page" class="level2" data-number="D.1"><h2 data-number="D.1" class="anchored" data-anchor-id="what-produced-this-page">
 <span class="header-section-number">D.1</span> What produced this page</h2>
 <p>The block below ran while this page was being built, so the versions in it are the ones that produced everything you have read.</p>
@@ -424,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; "#003D7C" "#96233F" "#007E96" "#E8720C" "#BFC6CE" "#1F2933" "#5A6672" "#DDE3EA"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The first five are the series colours. <code>ink</code>, <code>muted</code> and <code>rule</code> are for text and gridlines.</p>
-<p>The palette was tested rather than eyeballed. <code>scripts/check_palette.R</code> simulates protanopia, deuteranopia and tritanopia (Machado et al.&nbsp;2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.</p>
+<p>The palette was tested in code. <code>scripts/check_palette.R</code> simulates protanopia, deuteranopia and tritanopia (Machado et al.&nbsp;2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.</p>
 <p>Five is the ceiling. <code>nus_pal()</code> raises an error rather than recycle a sixth colour, since two series drawn in the same colour cannot be told apart in the finished figure.</p>
 <p>Figures are SVG rather than PNG, so plot text stays sharp at any zoom.</p>
 </section><section id="licence" class="level2" data-number="D.3"><h2 data-number="D.3" class="anchored" data-anchor-id="licence">
