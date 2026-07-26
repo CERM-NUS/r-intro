@@ -15,13 +15,17 @@
 # ---- Quarto ------------------------------------------------------------------
 .quarto/
 
-# The leading slash is load-bearing. An unanchored `*_files/` also matches
-# docs/<chapter>_files/, which is where every rendered figure lives — the site
-# would look right locally and ship with every image broken.
+# The rendered site. Not committed to main — `quarto publish gh-pages` builds
+# it and pushes it to the gh-pages branch, which is the branch GitHub serves.
+/_book/
+
+# Chapters render to the project root before Quarto moves them into _book, so
+# a failed render can leave them behind. The leading slash matters: unanchored,
+# `*_files/` would also match the figure directories inside the output.
 /*_files/
 
-# _freeze/ and docs/ are COMMITTED on purpose: _freeze/ lets a clean checkout
-# rebuild without re-running R, and GitHub Pages serves docs/ straight off main.
+# _freeze/ IS committed, on purpose: it lets a clean checkout rebuild the book
+# without re-running every R chunk.
 
 # ---- macOS -------------------------------------------------------------------
 .DS_Store

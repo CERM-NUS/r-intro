@@ -53,7 +53,7 @@ renv::restore()
 That takes a few minutes once and nothing thereafter. You can then work through the chapters in
 your own script, or open any `.qmd` file to see how a page was made.
 
-To rebuild the whole book:
+To rebuild the book and read it locally:
 
 ```bash
 quarto render      # run this from the project root, not from anywhere else
@@ -63,6 +63,18 @@ The "from the project root" is not fussiness. Quarto works out which renv to act
 reading `.Rprofile` relative to the directory you launched it from, so rendering from inside
 another R project silently builds the book against that project's packages. `_common.R` checks
 for this and stops the render if it happens.
+
+That render lands in `_book/`, which is not committed. The published site lives on the
+`gh-pages` branch and gets there through:
+
+```bash
+./scripts/publish.sh
+```
+
+which renders, publishes, and then checks what it sent. It refuses to run from a dirty tree or
+from any branch but `main`. Pushing to `main` no longer updates the live site, so
+`./scripts/check-pages-sync.sh` exists to tell you whether what is published still matches
+`main`. Appendix C explains the whole arrangement.
 
 ## Contributing, or telling me something is wrong
 

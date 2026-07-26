@@ -1,7 +1,7 @@
-# The rendered site is generated output. Keep it out of language statistics and
-# out of diffs, so a re-render doesn't bury a one-line source change.
-docs/** linguist-generated=true
-docs/** -diff
+# Generated output. Keep it out of language statistics and out of diffs, so a
+# re-render doesn't bury a one-line source change. The rendered site itself
+# lives on gh-pages and never appears on this branch; _freeze is the cached
+# chunk output, which is committed.
 _freeze/** linguist-generated=true
 _freeze/** -diff
 

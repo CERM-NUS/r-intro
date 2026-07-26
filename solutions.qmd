@@ -23,6 +23,8 @@ Two objects are set up once at the top of this page and used throughout. `covid`
 
 > From the chapter on objects, vectors and functions: store the first seven cumulative counts, difference them, break the vector with a string, and see what one `NA` does to a mean.
 
+[Back to the exercise](foundations.qmd#exr-vectors)
+
 ```{r}
 #| label: sol-vectors-1
 week_one <- c(0, 1, 3, 3, 4, 5, 7)
@@ -84,6 +86,8 @@ mean(week_na, na.rm = TRUE)
 ## Take a tibble apart {#sec-sol-tibble-anatomy}
 
 > From the chapter on rectangles: show with code that a tibble is a list, get the type of every column, build a small tibble of policy dates, and find a behaviour that a plain data frame does differently.
+
+[Back to the exercise](rectangles.qmd#exr-tibble-anatomy)
 
 Part one. Three functions do the whole job:
 
@@ -150,6 +154,8 @@ The data frame drops to a bare vector when you ask for one column. The tibble st
 ## Land the file yourself {#sec-sol-first-look}
 
 > From the chapter on reading the epidemic in: read the CSV yourself with `read_csv()`, state the types explicitly, count the missing values, then read it with `read.csv()` and find what breaks.
+
+[Back to the exercise](import.qmd#exr-first-look)
 
 Part one. In a fresh session you would need `library(tidyverse)` and `library(here)` first; this page already has them.
 
@@ -233,6 +239,8 @@ raw$date[2] - raw$date[1]
 
 > From the chapter on transforming data: use `filter()`, `select()`, `rename()` and `arrange()` to pull the circuit-breaker period into a small table sorted by the deepest workplace mobility drops.
 
+[Back to the exercise](transform.qmd#exr-verbs)
+
 `select()` renames as it selects, so this is one call rather than two:
 
 ```{r}
@@ -273,6 +281,8 @@ The top three rows are 10 April, 1 May and 7 May, all at 83% below baseline. The
 ## Difference the deaths series {#sec-sol-daily-cases}
 
 > Also from the chapter on transforming data: apply the cases recipe to `deaths`, run both checks on the result, and find the largest single-day rise.
+
+[Back to the exercise](transform.qmd#exr-daily-cases)
 
 ```{r}
 #| label: sol-daily-deaths-1
@@ -342,6 +352,8 @@ Two days tie at two deaths, so `slice_max(n = 1)` returns both. `with_ties = FAL
 ## Interrogate the mobility gap {#sec-sol-mobility-na}
 
 > From the chapter on missing values: check whether the six mobility columns are missing on the same days, take a monthly mean that has almost no data behind it, and count days two ways.
+
+[Back to the exercise](missing.qmd#exr-mobility-na)
 
 Part one. `which(is.na(x))` gives row numbers rather than a count, and row numbers can be compared:
 
@@ -419,6 +431,8 @@ Twenty-four rows in that result have no date and no case count. `filter()` drops
 
 > From the chapter on making decisions: check the three severity counts, find the range of `daily_cases` inside each label, and work out how far the 100 cutoff could move before anything changed.
 
+[Back to the exercise](conditionals.qmd#exr-severity)
+
 Steps one and two in one call. `group_by()` and `summarise()` are the subject of @sec-groups, so treat this as a preview:
 
 ```{r}
@@ -476,6 +490,8 @@ What that tells you is that the exact number 100 is not carrying the classificat
 
 > Also from the chapter on making decisions: rebuild `severity` with cutoffs at 50 and 500, compare the counts with 215 / 53 / 77, and write a defensible sentence under each rule.
 
+[Back to the exercise](conditionals.qmd#exr-move-cutoffs)
+
 ```{r}
 #| label: sol-cutoffs-1
 recut <- covid %>%
@@ -516,6 +532,8 @@ A threshold is an argument, and the place for an argument is your methods sectio
 
 > From the chapter on grouping and summarising: one row per month, counting High, Medium and Low days plus the days of data in the month.
 
+[Back to the exercise](groups.qmd#exr-monthly-high)
+
 Three `sum()` calls inside one `summarise()` put the columns in the order you choose, which `count()` plus `pivot_wider()` does not:
 
 ```{r}
@@ -553,6 +571,8 @@ They can come apart, and August is the near-miss that shows how. August has 4 Hi
 ## A monthly alert table you can defend {#sec-sol-monthly-alert}
 
 > Also from the chapter on grouping and summarising: three statuses instead of two, then the same table under a rate-based rule, and which of the two you would defend.
+
+[Back to the exercise](groups.qmd#exr-monthly-alert)
 
 ```{r}
 #| label: sol-alert-1
@@ -597,6 +617,8 @@ The honest version of the answer is that I would report both columns and let the
 ## Cross-check a month that is not September {#sec-sol-september}
 
 > Also from the chapter on grouping and summarising: compute a month's mean daily cases two ways, then try the same trick on January and fix what breaks.
+
+[Back to the exercise](groups.qmd#exr-september)
 
 October, the differenced way:
 
@@ -688,6 +710,8 @@ Two assumptions are buried in that `if`. The first is that a cumulative series s
 
 > From the chapter on plots: a single figure of daily cases across 2020 that stands on its own, with the circuit breaker marked, saved as a 300 dpi PNG about 3.5 inches wide.
 
+[Back to the exercise](visualise.qmd#exr-epi-curve)
+
 Build it as an object so it can be printed and saved without being drawn twice:
 
 ```{r}
@@ -767,6 +791,8 @@ Shorter title, shorter caption, and four month ticks instead of six. The message
 
 > Also from the chapter on plots: fix the histogram of `daily_cases`, state exactly which days your fix removed, then facet it by month in calendar order.
 
+[Back to the exercise](visualise.qmd#exr-histogram)
+
 The raw version first, so there is something to compare against:
 
 ```{r}
@@ -824,6 +850,8 @@ Which one goes in the report: the faceted one, if the question is about how the 
 
 > Also from the chapter on plots: cases above, stringency below, one shared date axis, panels labelled A and B, then read the date of peak stringency off the figure and check it against the data.
 
+[Back to the exercise](visualise.qmd#exr-stringency)
+
 Two ordinary plots, combined with `/`:
 
 ```{r}
@@ -877,6 +905,8 @@ One thing not to do with panel B: read the small steps after July. There are 23 
 ## Generalise the alert {#sec-sol-mobility-alert}
 
 > From the chapter on writing functions: let the caller choose which mobility series to check, keeping retail as the default, then count the days below −60 for workplaces and for parks.
+
+[Back to the exercise](functions.qmd#exr-mobility-alert)
 
 Passing a column name into a dplyr verb from inside a function needs `{{ }}` around the argument, which tells dplyr to look for the name in the data frame rather than in the calling environment:
 
@@ -936,6 +966,8 @@ The interesting one is 10 July. The other seven are religious or seasonal holida
 
 > Also from the chapter on writing functions: give `month_summary()` a `verdict` column, run it on September and April, and decide whether five High days is a defensible cut-off.
 
+[Back to the exercise](functions.qmd#exr-month-summary)
+
 `summarise()` cannot reliably refer to a column it is creating in the same call, so the verdict goes in a `mutate()` afterwards. I have also made the cut-off an argument, for reasons below:
 
 ```{r}
@@ -993,6 +1025,8 @@ month_summary(covid, "2020-08-01", high_cut = 3) %>%
 ## Cumulative deaths, both ways {#sec-sol-loop-vs-lag}
 
 > From the chapter on loops: difference the `deaths` column with an explicit `for` loop, then with `lag()`, check the two with `identical()`, and account for the gap against 29.
+
+[Back to the exercise](iteration.qmd#exr-loop-vs-lag)
 
 The loop is the same shape as the one the chapter wrote for `confirmed`:
 
@@ -1053,6 +1087,8 @@ None of that is an error in your code. It is what the file says, and the useful 
 ## An SIR model with an intervention {#sec-sol-sir-step}
 
 > Also from the chapter on loops: add a circuit breaker to the SIR model between days 40 and 95, plot the infectious compartment against the unmodified run, and say what happens when the intervention lifts.
+
+[Back to the exercise](iteration.qmd#exr-sir-step)
 
 The trick is that `beta` does not have to be one number. Make it a vector of length `days` and index it inside the loop:
 
@@ -1143,6 +1179,8 @@ Would I have predicted it? The direction, yes, once you look at where the suscep
 ## Write the August 2020 situation report {#sec-sol-sitrep}
 
 > From the capstone chapter: the one-page report for August 2020, with a table, two figures, three sentences and a note on what the analysis cannot tell you.
+
+[Back to the exercise](capstone.qmd#exr-sitrep)
 
 August's decision is 5 August, and everything below turns on how it gets handled. So the maximum, the median and the date of the maximum come out first, before anything else is computed:
 

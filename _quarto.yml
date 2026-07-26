@@ -4,12 +4,18 @@
 
 project:
   type: book
-  output-dir: docs
+  # No output-dir: the default _book is right here, because the rendered site
+  # is not committed to this branch. `quarto publish gh-pages` renders and
+  # pushes the result to the gh-pages branch, which is what GitHub serves.
+  #
+  # No .nojekyll under resources either. Quarto writes that file itself when it
+  # publishes, using its contents as a deploy id to confirm the deploy landed.
+  # Shipping our own would overwrite the id and break that check.
   execute-dir: project
-  resources:
-    # Copied into docs/ automatically on every project render. Stops GitHub
-    # Pages handing the site to Jekyll.
-    - .nojekyll
+  post-render:
+    # Records which commit produced the site, so scripts/check-pages-sync.sh
+    # can tell whether what is published still matches main.
+    - scripts/stamp-build.sh
 
 book:
   title: "An Introduction to R"
