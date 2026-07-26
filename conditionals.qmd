@@ -56,7 +56,7 @@ length(covid$daily_cases > 300)
 
 `if` has no way to act on 345 answers at once, so it refuses. The message to search for is **the condition has length > 1**.
 
-The error is recent. Up to R 4.1 the same code ran: R issued a warning, took the first element and carried on. A script could label an entire dataset "Not high" because 22 January happened to have zero cases, with only a warning to indicate it. R 4.2 made it an error. If you find an older script or a Stack Overflow answer that relies on the previous behaviour, that is why it no longer runs.
+The error is recent. Up to R 4.1 the same code ran: R issued a warning, took the first element and carried on. A script could label an entire dataset "Not high" because 22 January happened to have zero cases, with only a warning to indicate it. R 4.2 made it an error, so a script written against the earlier behaviour stops here on any current version of R.
 
 When you do want a whole-dataset question, collapse the vector to one value first. `any()` and `all()` are built for this.
 
@@ -220,7 +220,7 @@ In `case_when()` you do the same thing with an `is.na()` line placed first, so t
 
 ## Ordering categories with `factor()`
 
-`count()` is the dplyr way of tabulating a column. Base R's `table()` is shorter and appears in a lot of code you will read, so it is worth seeing what it does with the labels:
+`count()` is the dplyr way of tabulating a column. Base R's `table()` does the same job in less typing, and it returns a named vector of counts instead of a data frame. Look at the order it puts the labels in:
 
 ```{r}
 table(covid$severity)
@@ -311,7 +311,7 @@ That block is what `covid_daily()` runs. Its definition sits in `_common.R` in t
 ::: {#exr-severity}
 ## Audit your severity column
 
-Check the `severity` column rather than assuming it is right.
+Check the `severity` column before relying on it.
 
 1. Confirm the three counts add up to 345 and that no day came back `NA`.
 2. For each label, report the smallest and the largest `daily_cases` it contains.
@@ -331,7 +331,7 @@ For step 3, write down what the answer tells you about how far the labelling dep
 ::: {#exr-move-cutoffs}
 ## Move the cutoffs
 
-The 100 and 300 thresholds were chosen by whoever wrote the original worksheet, not by nature. Rebuild `severity` with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).
+The 100 and 300 thresholds are a convention adopted for this course, and other cutoffs are equally defensible. Rebuild `severity` with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).
 
 Report the three counts under the new rule, and compare them with 215 / 53 / 77. Then write two sentences you would be willing to put in a report under each set of cutoffs, describing how severe 2020 was. Both sentences must be true of the same 345 days.
 :::

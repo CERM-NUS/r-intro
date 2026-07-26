@@ -20,11 +20,11 @@ On macOS you will be offered two installers and you have to choose. If your Mac 
 
 On Windows, follow "Download R for Windows", then "base", then the big download link. You may see a mention of Rtools on that page. You do not need it for this book. It is for compiling packages from source, which nothing here asks you to do.
 
-On Linux, CRAN has per-distribution instructions and you should follow those rather than whatever your distribution's default `r-base` package happens to be, because distribution repositories are often several versions behind.
+On Linux, follow CRAN's per-distribution instructions. Distribution repositories carry their own `r-base` package, and it is often several versions behind.
 
 This book needs R 4.1 or newer. Anything from the last few years is fine.
 
-**RStudio** comes from Posit, at <https://posit.co/download/rstudio-desktop/>. You want RStudio Desktop, the free open-source version. There is a paid tier and a server edition. Neither is relevant to you.
+**RStudio** comes from Posit, at <https://posit.co/download/rstudio-desktop/>. You want RStudio Desktop, the free open-source version. Posit also sells a paid tier and hosts a server edition, which run on the same editor and add features this book does not use.
 
 Once both are installed, start your work from RStudio rather than from R. R ships with its own minimal window, RGui on Windows and R.app on macOS, which offers a console and little else; RStudio provides the editor, plot viewer and file browser that the rest of this book assumes.
 
@@ -74,11 +74,11 @@ The `<-` creates an object. The `=` sets an argument. Keeping them visually dist
 
 ## The console and the script
 
-Everything you type in the console runs immediately and is then, for practical purposes, gone. The History tab does keep a record, but it is an undifferentiated stream of everything you tried, wrong attempts and typos included, in the order you happened to type them. It is not a usable account of an analysis.
+Everything you type in the console runs immediately and is then, for practical purposes, gone. The History tab does keep a record, but it is an undifferentiated stream of everything you tried, wrong attempts and typos included, in the order you happened to type them, which leaves you to reconstruct the analysis from it afterwards.
 
 A script is a file. It runs top to bottom in a fixed order. You can open it in six months, send it to a co-author, put it in a repository, and re-run it to get the same numbers.
 
-So: if you are inspecting the data to see what is in it, use the console. `nrow(covid)`, `names(covid)`, checking whether a column is a character or a number. These are questions whose answers you will not need again. If you are doing something you would have to redo, or something you would need to defend, put it in the script. A useful rule of thumb is that any line you had to stop and think about belongs in a file.
+So: if you are inspecting the data to see what is in it, use the console. `nrow(covid)`, `names(covid)`, checking whether a column is a character or a number. These are questions whose answers you will not need again. If you are doing something you would have to redo, or something you would need to defend, put it in the script. Any line you had to stop and think about belongs in a file.
 
 The awkward case is the analysis that lives entirely in the console. It works until R restarts, at which point the objects are gone and there is no record of how they were made.
 
@@ -98,7 +98,7 @@ install.packages("tidyverse")
 
 `library(tidyverse)` loads an already-installed package into your **current R session**, so its functions become available by name. You do this every session, at the top of every script. Restart R and it is undone.
 
-The usual analogy is a bookshelf. `install.packages()` buys the book and puts it on the shelf; `library()` takes it down and opens it. You buy it once and open it whenever you need it.
+Think of a bookshelf. `install.packages()` buys the book and puts it on the shelf; `library()` takes it down and opens it. You buy it once and open it whenever you need it.
 
 The quoting is inconsistent between the two, which is a common source of confusion. `install.packages()` requires quotes, because it takes the package name as a character string. `library()` does not, because it evaluates its argument non-standardly and accepts a bare name. Both accept quotes, so quoting in both places is a safe habit if you would rather not remember which is which.
 
@@ -119,7 +119,7 @@ When you run `library(tidyverse)` in a fresh session, this appears:
 
 Your version numbers will differ. The red crosses are not errors. They report that dplyr has a function called `filter()` and so does base R's stats package, and that since dplyr was loaded second, typing `filter()` now calls dplyr's. That is the version this book uses, and R reports the substitution rather than making it silently. If you need the other one, `stats::filter()` names it explicitly. The `::` means "this function, from that package".
 
-It is worth reading this block rather than scrolling past it. When a function behaves unexpectedly, masking by a later-loaded package is a common explanation.
+Read the block when it appears. When a function behaves unexpectedly, masking by a later-loaded package is a common explanation, and the conflicts list is where it was announced.
 
 ## Getting the data
 
@@ -191,7 +191,7 @@ R is looking in the wrong place. The message reports the directory it searched, 
 getwd()
 ```
 
-Yours will print something else. The fix is not `setwd()` and a path, which is specific to one machine, but a project file. Take the folder you made for this course and use File, New Project, Existing Directory, pointing RStudio at that folder. From then on you open your work by double-clicking the `.Rproj` file that appears, R starts with that folder as its working directory, and `data/sg_covid_data.csv` resolves without a path. The good-practice chapter goes into this in more detail.
+Yours will print something else. The fix is a project file rather than a call to `setwd()`, whose path is specific to one machine and to the current arrangement of its folders. Take the folder you made for this course and use File, New Project, Existing Directory, pointing RStudio at that folder. From then on you open your work by double-clicking the `.Rproj` file that appears, R starts with that folder as its working directory, and `data/sg_covid_data.csv` resolves without a path. The good-practice chapter goes into this in more detail.
 
 ```
 Error: unexpected input in "covid <- read_csv(“"

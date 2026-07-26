@@ -6,7 +6,7 @@
 source("_common.R")
 ```
 
-Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing anybody needs when your code produces a different answer from mine.
+Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing to check when your code produces a different answer from mine.
 
 ## What produced this page
 
@@ -34,7 +34,7 @@ nus_colours
 
 The first five are the series colours. `ink`, `muted` and `rule` are for text and gridlines.
 
-The palette was tested rather than eyeballed. `scripts/check_palette.R` simulates protanopia, deuteranopia and tritanopia (Machado et al. 2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L\* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.
+The palette was tested in code. `scripts/check_palette.R` simulates protanopia, deuteranopia and tritanopia (Machado et al. 2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L\* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.
 
 Five is the ceiling. `nus_pal()` raises an error rather than recycle a sixth colour, since two series drawn in the same colour cannot be told apart in the finished figure.
 

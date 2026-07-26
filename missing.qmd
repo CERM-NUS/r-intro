@@ -8,7 +8,7 @@ source("_common.R")
 
 Every table printed so far has had `NA` in it, without much comment. This chapter is about reading those gaps. In this file the missing values carry as much information as the numbers: one block of them is a property of Google's measuring instrument, another is a property of Singapore's epidemic, and which of the two you are looking at determines what can reasonably be done about it.
 
-Later in the chapter there is also a bug, inherited from the worksheet this book replaces, which turns a correct question into an answer 27% too large without producing an error or a warning.
+Later in the chapter there is also a bug: one line of base R that turns a correct question into an answer 27% too large, without producing an error or a warning.
 
 ```{r}
 covid <- read_covid()
@@ -157,7 +157,7 @@ covid %>%
   select(date, deaths, deaths_filled)
 ```
 
-`drop_na()` removes whole rows. Applied to the entire table it removes more than most people expect:
+`drop_na()` removes whole rows. Compare the row count before and after applying it to the entire table:
 
 ```{r}
 nrow(covid)
@@ -174,7 +174,7 @@ nrow(drop_na(covid, ends_with("_percent_change_from_baseline")))
 
 ## Logical subsetting with `[` and `filter()`
 
-A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? The worksheet asked it in base R, using the single-bracket subscript that most people meet first when they are taught to subset a data frame.
+A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? In base R the question is put with the single-bracket subscript `[`, which keeps the rows for which a logical condition holds.
 
 ::: {.callout-important}
 ## Predict before you run
@@ -223,7 +223,7 @@ retail_sample[retail_sample < -30]
 
 Four elements out of five, from a condition that only two of them satisfy. Applied to a data frame, "return a missing element" means "return a row of missing values", so each of the 24 unknown days becomes a full row of `NA`. 88 matching rows plus 24 all-missing rows is 112.
 
-The worksheet's next line asked which days those were:
+The next question to ask of that result is which days it covers:
 
 ```{r}
 head(low_retail$date, 5)
@@ -240,14 +240,14 @@ max(low_retail_tidy$date)
 
 7 April, the first day of the circuit breaker, and the last such day is 13 July, a little over three weeks into Phase 2 reopening.
 
-This is not a base-R-versus-tidyverse argument, and base R gives you two ways to get the right answer. `subset()` drops `NA` rows for the same reason `filter()` does, and wrapping the condition in `which()` converts it from a logical vector into positions, which discards the `NA`s on the way:
+This is not an argument about base R against the tidyverse, and base R gives you two ways to reach 88 as well. `subset()` drops `NA` rows for the same reason `filter()` does, and wrapping the condition in `which()` converts it from a logical vector into positions, which discards the `NA`s on the way:
 
 ```{r}
 nrow(subset(covid, retail_and_recreation_percent_change_from_baseline < -30))
 nrow(covid[which(covid$retail_and_recreation_percent_change_from_baseline < -30), ])
 ```
 
-Three of the four expressions agree on 88. Single-bracket logical subsetting is the exception, and it is the form most people are taught first.
+Three of the four expressions agree on 88. Single-bracket logical subsetting is the exception, because it alone keeps a row for every `NA` the condition returns.
 
 ```{r}
 #| label: fig-low-retail
@@ -304,7 +304,7 @@ covid %>%
   summarise(total = sum(daily_deaths))
 ```
 
-The plain version at the top of this section does *not* do this. It differences `deaths` as the file supplies them, so its `daily_deaths` column carries `NA` for the first 60 days and sums to 27. That is a choice to stay close to what the file records rather than to what you infer about it, and it is defensible on those grounds. Either convention can be justified provided it is stated. What cannot is summing that column with `na.rm = TRUE` and reporting the result as the 2020 death toll without noting the two deaths it omits.
+The plain version at the top of this section does *not* do this. It differences `deaths` as the file supplies them, so its `daily_deaths` column carries `NA` for the first 60 days and sums to 27. That is a choice to stay close to what the file records rather than to what you infer about it, and it is defensible on those grounds. Either convention can be justified provided it is stated. Summing that column with `na.rm = TRUE` and reporting the result as the 2020 death toll understates the toll by two deaths, and the omission has to be declared alongside the figure.
 
 ## Exercise
 

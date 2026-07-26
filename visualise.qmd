@@ -12,9 +12,9 @@ source("_common.R")
 covid <- covid_daily()
 ```
 
-Most introductions to R put plotting first. *R for Data Science* opens with it, and the reasoning is sound: a plot is the quickest visible result a beginner gets, and several chapters of printed tibbles are a hard sell.
+A plot is the quickest visible result a beginner gets from R, which is a good argument for teaching it in the first week. This book puts plotting here instead, after you have learned to reshape a data frame, because of something specific to the file on your disk.
 
-This book puts plotting here, after you have learned to reshape a data frame, because of something specific to the file on your disk. None of its thirteen columns holds the daily case counts you would put on the y axis of an epidemic curve. `confirmed` is a running total, and a running total of an epidemic looks like this:
+None of its thirteen columns holds the daily case counts you would put on the y axis of an epidemic curve. `confirmed` is a running total, and a running total of an epidemic looks like this:
 
 ```{r}
 #| label: fig-cumulative
@@ -62,7 +62,7 @@ ggplot(
 2. The mapping. `date` drives horizontal position, `daily_cases` drives vertical position.
 3. The geom. Draw a line through the points, in date order.
 
-Almost nobody writes `data =` and `mapping =` in practice, because they are the first two arguments and `aes()` is unmistakable. `ggplot(covid, aes(date, daily_cases))` is the same call. Write the names out while you are learning and drop them when they stop helping you.
+The names `data =` and `mapping =` are conventionally omitted, because they are the first two arguments and `aes()` is unmistakable. `ggplot(covid, aes(date, daily_cases))` is the same call. Write the names out while you are learning and drop them when they stop helping you.
 
 Run `ggplot(covid, aes(x = date, y = daily_cases))` on its own, with no geom, and you get an empty grey panel with correctly labelled axes. The axes show that the data and the mapping were understood; the empty panel shows that no layer was supplied. Running the call without its geoms is a useful step when a plot comes out wrong, because it separates a broken mapping from a broken geom.
 
@@ -74,7 +74,7 @@ This matters for one practical reason. When you copy a chunk out of this book in
 
 ### Setting a colour versus mapping one
 
-Inside `aes()`, you name a column and ggplot2 works out the colours. Outside `aes()`, you name a colour and ggplot2 uses it. Putting a colour name inside `aes()` is a common error, and it produces no error message:
+Inside `aes()`, you name a column and ggplot2 works out the colours. Outside `aes()`, you name a colour and ggplot2 uses it. Putting a colour name inside `aes()` draws without complaint and produces no error message:
 
 ```{r}
 #| label: fig-aes-trap
@@ -98,7 +98,7 @@ The rule: if the value should change from row to row, it goes inside `aes()`. If
 
 ## Plus, not pipe
 
-`+` adds a layer to a plot. `%>%` passes an object to a function as its first argument. They are not interchangeable, and typing the wrong one is a common early mistake.
+`+` adds a layer to a plot. `%>%` passes an object to a function as its first argument. They are not interchangeable, and swapping one for the other stops the plot from being drawn at all.
 
 ```{r}
 #| label: pipe-error
@@ -109,11 +109,11 @@ ggplot(covid, aes(x = date, y = daily_cases)) %>%
 
 The error is worth reading to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.
 
-Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific, because their authors have watched people get stuck on exactly this. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.
+Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific about the fix. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.
 
-The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr's `%>%` arrived in 2014. By then there were seven years of published code, books and course notes written against `+`. Changing the operator would have broken all of it at once. So ggplot2 kept `+`, and R users have been mistyping it ever since.
+The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr's `%>%` arrived in 2014. By then there were seven years of published code written against `+`. Changing the operator would have broken all of it at once, so ggplot2 kept `+`, and the two operators have coexisted since.
 
-The two do combine, and the combination is the normal way to plot a subset:
+The two do combine, and combining them is how you plot a subset:
 
 ```{r}
 #| label: fig-pipe-into-ggplot
@@ -132,7 +132,7 @@ That figure also shows why 5 August carries a caveat throughout this book. The 9
 
 Worked examples that already look right give little guidance on what to do when a plot comes out wrong, so this section starts from one that does and works through the available fixes.
 
-Here is the standard first move for any numeric variable: look at its distribution.
+The first thing to look at for any numeric variable is its distribution.
 
 ::: {.callout-important}
 ## Predict first
@@ -149,7 +149,7 @@ ggplot(covid, aes(x = daily_cases)) +
 
 Only two bars have any visible height. The rest are too short to read at a scale set by the tallest one.
 
-The message above the figure, ``` `stat_bin()` using `bins = 30`. Pick better value `binwidth`. ```, reports a decision ggplot2 made on your behalf. It uses 30 bins because a histogram needs some bin count, and it prints the message on every call so that the value stays visible rather than implicit.
+The message above the figure, ``` `stat_bin()` using `bins = 30`. Pick better value `binwidth`. ```, reports a decision ggplot2 made on your behalf. It uses 30 bins because a histogram needs some bin count, and it prints the message on every call so that the value it chose stays visible in your output.
 
 Nothing went wrong in the code. The plot is an accurate picture of a variable that runs from 0 to 1,426 with a median of exactly 40. Bin one, covering roughly 0 to 25 cases, holds 160 of the 345 days. The top third of the range, everything above about 950, holds four days in total. Once one bar is 160 units tall, a bar of height 3 is two pixels.
 
@@ -310,7 +310,7 @@ ggplot(covid, aes(x = date, y = daily_cases)) +
 
 This is defensible and hard to read. The bars are narrower than the gaps between them at this width, so the picket-fence effect carries visual weight that has nothing to do with the data. Bars are arguably the better match to what was measured, because each day's count is a separate number and nothing was observed between Tuesday and Wednesday, whereas a line implies a continuous quantity sampled daily, which a notification count is not.
 
-In practice, epidemiologists draw daily case counts as lines once the series gets long, and as bars when the series is short enough that individual days matter. Twenty-nine bars for August works. Three hundred and forty-five does not.
+Lines carry a long daily series better; bars carry a short one, where each day is wide enough to be read on its own. Twenty-nine bars for August works. Three hundred and forty-five does not.
 
 Aggregate first and bars come back into their own:
 
@@ -338,7 +338,7 @@ Bar charts need a y axis that starts at zero. What the reader compares is the le
 
 ## Log scales and zeros
 
-Case counts spanning three orders of magnitude are the textbook case for a log y axis. Try it:
+Case counts spanning three orders of magnitude are what a log y axis is for. Try it:
 
 ```{r}
 #| label: fig-log-broken
@@ -422,7 +422,7 @@ April, August, December, February. Then January, July, June, March. Then May, No
 
 `format(date, "%B")` returns a character vector, and R sorts character vectors alphabetically. ggplot2 has no way to know that these strings are months, so it does what it does with any character variable: converts to a factor, and `factor()` on a character vector orders the levels by `sort()`.
 
-The fix is not a plotting argument. It is a factor with the levels in the order you want, built before the data reaches `ggplot()`:
+No argument to `facet_wrap()` sets the panel order. The fix belongs in the data: a factor whose levels are in the order you want, built before the data reaches `ggplot()`:
 
 ```{r}
 #| label: fig-facet-fixed
@@ -437,9 +437,9 @@ covid %>%
   facet_wrap(~ month_name, scales = "free_x")
 ```
 
-`month.name` is a built-in constant, a character vector of the twelve month names in order, which R has carried since before the tidyverse existed. Type it at the console.
+`month.name` is a built-in constant: a character vector of the twelve month names in calendar order, available in any R session without a package. Type it at the console.
 
-Order-of-levels problems are worth recognising as a category, because they are common and tend to look like plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The `severity` column avoids it because `covid_daily()` builds it with `factor(severity, levels = c("Low", "Medium", "High"))` rather than letting R sort High, Low, Medium.
+Order-of-levels problems are worth recognising as a category, because they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The `severity` column avoids it because `covid_daily()` builds it with `factor(severity, levels = c("Low", "Medium", "High"))` rather than letting R sort High, Low, Medium.
 
 Two `facet_wrap()` arguments do most of the work. `ncol` (or `nrow`) sets the layout. `scales` decides whether panels share axes: `"fixed"` is the default and is what you want when the point is comparison; `"free_x"`, used above, gives each month its own date range so the twelve panels do not each show ten days of line and eleven months of blank; `"free_y"` lets each panel find its own vertical scale, which makes small panels legible at the cost of comparability between panels. Free scales change what the figure can be used for, so choose them deliberately.
 
@@ -466,13 +466,13 @@ ggplot(covid, aes(x = date, y = daily_cases)) +
 
 Default axis titles are the column names, so an unlabelled plot shows `daily_cases` on the y axis. `labs()` replaces it with wording a reader can interpret without access to the code.
 
-The subtitle is the place for information the reader would otherwise have to ask for. This series is differenced from a cumulative column, and anyone who has worked with COVID data will want to know that before interpreting the spikes.
+The subtitle is the place for information the reader would otherwise have to ask for. This series is differenced from a cumulative column, and a reader needs to know that before interpreting the spikes.
 
 ## Two plots in one figure: patchwork
 
 `facet_wrap()` splits *one* plot by a variable. Every panel is the same plot with different rows.
 
-Putting two *different* plots side by side is a different job, and `facet_wrap()` cannot do it. The base R answer was `par(mfrow = c(2, 1))`, which sets a global graphics parameter and stays set until you change it back, which is how people end up with a stray two-panel layout three plots later. The tidyverse answer is patchwork, loaded by `_common.R`.
+Putting two *different* plots side by side is a different job, and `facet_wrap()` cannot do it. The base R answer was `par(mfrow = c(2, 1))`, which sets a global graphics parameter and stays set until you change it back, so an unrelated plot three commands later is still drawn into a two-panel layout. The tidyverse answer is patchwork, loaded by `_common.R`.
 
 Build the plots as ordinary objects, then combine them with operators. `/` stacks, `|` puts side by side.
 
@@ -493,7 +493,7 @@ p_stringency <- ggplot(covid, aes(x = date, y = stringency_index)) +
 p_cases / p_stringency
 ```
 
-`stringency_index` is the Oxford Government Response Tracker's summary of how restrictive a country's policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41. The worksheet this book replaces did not use it.
+`stringency_index` is the Oxford Government Response Tracker's summary of how restrictive a country's policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41.
 
 Stacked against the case curve, it shows something a single panel cannot. Stringency is a staircase, because policy changes on announced dates and holds until the next announcement, while the case series varies from day to day. The step on 7 April is the circuit breaker, and it is large: stringency goes from 45.37 to 62.04 in one day, retail mobility from -15 to -51, workplaces from -24 to -52. The index reaches its maximum of 82.41 for the first time on 10 April, three days later, and cases keep climbing for another ten days after that.
 
@@ -514,7 +514,7 @@ Patchwork's other operators are worth knowing. `+` packs plots into a grid and l
   )
 ```
 
-`tag_levels = "A"` labels the panels A and B, which is what a journal will ask for.
+`tag_levels = "A"` labels the panels A and B, the labelling convention for multi-panel figures in published work.
 
 Use `facet_wrap()` when it is one plot cut into pieces by a variable, and patchwork when it is several plots that belong on the same page. The usual symptom of choosing the wrong one is data reshaped into a long format so that two variables measured on different scales can be faceted against each other. If the panels need different y axes because they show different quantities, patchwork is the tool.
 

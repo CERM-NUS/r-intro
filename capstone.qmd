@@ -25,9 +25,8 @@ is left to you.
 
 The report covers one month and occupies one page. That page carries a table that gives the
 reader the month in numbers, two figures that show something the table cannot, and three
-sentences of interpretation. Three sentences, not three paragraphs: the limit is deliberate,
-because choosing which three findings matter takes more work than writing several paragraphs of
-hedged description.
+sentences of interpretation. The limit of three is deliberate, because choosing which three
+findings matter takes more work than writing several paragraphs of hedged description.
 
 Assume the reader is a public health officer who knows Singapore and does not know R. They will
 not read your code. They will look at the figures first, the table second, and your sentences
@@ -107,8 +106,8 @@ before anything is computed from it.
 ## Predict before you run this
 
 April 2020 has one day far larger than the rest. Write down the date you think it fell on before
-you read the next output. Most people put it in the first week, on the reasoning that the circuit
-breaker started on 7 April and things improved from there.
+you read the next output. The circuit breaker started on 7 April, which makes the first week the
+intuitive guess: restrictions came in and conditions improved from there.
 :::
 
 ```{r}
@@ -154,9 +153,9 @@ so April holds nearly a quarter of the year's highest-count days in a single mon
 ### The table
 
 Weeks are the right grain for a monthly table. `floor_date(date, "week", week_start = 1)` puts
-each date on its Monday. I set `week_start` explicitly because lubridate's default is Sunday and
-many readers will expect Monday. Setting it explicitly makes the assumption visible at the cost
-of one argument.
+each date on its Monday. I set `week_start` explicitly because lubridate's default is Sunday, so
+without the argument every week in the table would run from Sunday to Saturday. Stating it makes
+the assumption visible at the cost of one argument.
 
 ```{r}
 #| label: weekly-table
@@ -369,9 +368,9 @@ of any column it is given; whether the column supports the question is a separat
 Produce the one-page report for August 2020: a table, two figures, three sentences of
 interpretation, and a short note on what your analysis does not tell you.
 
-August is a harder month than April, though not because the code is harder; the code is the same.
-August is harder because the month contains a decision that April does not, and the report has to
-address that decision explicitly.
+August is a harder month than April, and the code is identical. What makes August harder is that
+the month contains a decision April does not, and the report has to address that decision
+explicitly.
 
 You are done when someone who has never seen the data could read your page and come away with a
 correct impression of what August 2020 was like.

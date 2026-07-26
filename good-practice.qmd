@@ -6,7 +6,7 @@
 source("_common.R")
 ```
 
-A large share of the time beginners lose in R goes on problems that are not really about R: the file that was in the wrong folder, the object left over from an hour ago that changed a result without any visible sign, and the package that changed under a script nobody had run in a year. None of these are difficult problems, but they are much easier to avoid from the start than to correct in an established project.
+A large share of the time beginners lose in R goes on workflow: the file that was in the wrong folder, the object left over from an hour ago that changed a result without any visible sign, and the package that changed under a script nobody had run in a year. None of these are difficult problems, but they are much easier to avoid from the start than to correct in an established project.
 
 This chapter sets out ten working habits that avoid them.
 
@@ -41,7 +41,7 @@ Make one with File, New Project, Existing Directory. It takes a few seconds and 
 
 ## 2. Use `here()` rather than `setwd()`
 
-Scripts often open with a call to `setwd()` and an absolute path:
+A script can be pointed at its data with `setwd()` and an absolute path:
 
 ```{r}
 #| label: setwd-trap
@@ -135,7 +135,7 @@ Restarting R and running the script from the top detects this. If the script run
 
 Put every package your script needs in one block at the top of the file. A reader can then see the dependencies without reading the whole script. A script that loads a package halfway down also fails differently depending on how far execution reached before the failure, which makes the failure harder to reproduce.
 
-The usual substitute for restarting R is this:
+There is a one-line alternative to restarting, which empties the global environment:
 
 ```{r}
 #| label: rm-trap
@@ -187,7 +187,7 @@ Avoid `df`, `df2`, `data`, `temp` and `df_final_v2`, for two reasons. The first 
 df(1, 2, 3)
 ```
 
-Assigning a data frame to `df` masks that function. This particular collision rarely causes trouble, since few analyses call `df()`. Others are riskier: `data`, `c`, `mean`, `sum`, `t` and `T` are all names people assign to variables, and code that calls the masked function afterwards will fail or, in the case of `T`, silently change meaning.
+Assigning a data frame to `df` masks that function. This particular collision rarely causes trouble, since few analyses call `df()`. Others are riskier: `data`, `c`, `mean`, `sum`, `t` and `T` are all short, tempting names that already belong to something in base R, and code that calls the masked function afterwards will fail or, in the case of `T`, silently change meaning.
 
 Long names are cheap to type, because Tab completes them. `monthly_case_summary` is a few keystrokes and a Tab.
 
@@ -219,7 +219,7 @@ git push
 
 `add` chooses what goes into the next snapshot, `commit` takes the snapshot with a message attached, and `push` sends it to a machine that is not your laptop. Those three are enough to be useful from the start; the rest of Git can wait until a situation calls for it.
 
-The property this gives you is a record of the project that is difficult to alter unintentionally. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a server. History can be rewritten deliberately, but not by accident, and rewriting a commit someone else has already pulled is visible to them. A folder of files named `analysis_v3_FINAL_revised.R` provides none of this.
+The property this gives you is a record of the project that is difficult to alter unintentionally. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a server. History can be rewritten deliberately, but not by accident, and rewriting a commit someone else has already pulled is visible to them. Saving successive copies of a script under new filenames records none of that: no timestamped author, no message, and no way to tell which copy produced which result.
 
 The everyday benefit is more immediate. With commits behind you, code can be deleted rather than kept: the half-finished approach and the two hundred lines you replaced can both go, the file stays readable, and any of it can be recovered with one command. Without version control the safer option is to keep everything, and scripts grow accordingly.
 
@@ -233,16 +233,16 @@ The clean session does useful work here. A fair proportion of the time, writing 
 
 What makes a question answerable, in order of how often it is missing:
 
-1. Code the reader can run. Not a screenshot, and not a fragment referring to `my_data`, which nobody else has. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of `dput(head(your_data, 10))`.
+1. Code the reader can run. A screenshot cannot be run, and neither can a fragment referring to `my_data`, which exists only in your session. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of `dput(head(your_data, 10))`.
 2. The error message, copied exactly rather than paraphrased or retyped from memory, including the lines after the first.
-3. What you expected instead. A large share of R questions turn out to rest on a disagreement about what the function was supposed to do, and stating the expectation makes that visible.
+3. What you expected instead. Stating the expectation exposes any disagreement about what the function was supposed to do, which is often where the problem actually lies.
 4. Your versions. `sessionInfo()` prints your R version and every attached package. Paste it at the bottom.
 
 Remove anything not needed to reproduce the problem. If the example is forty lines and the error occurs on line 4, the other thirty-six lines have to be read and discarded by whoever answers.
 
 ## 10. Write the report and the analysis in the same file
 
-The common workflow is to run the script, copy the numbers into Word, and write around them. From that point the document and the analysis are separate artefacts that agree only as long as nobody changes the analysis. Change a filter, re-run the script, and the number in the document is out of date with nothing to indicate it.
+Running the script, copying the numbers into Word and writing around them leaves the document and the analysis as two separate artefacts, and they agree only until the analysis changes. Change a filter, re-run the script, and the number in the document is out of date with nothing to indicate it.
 
 Quarto removes the copying step. A `.qmd` file holds prose and code together, and rendering it runs the code and inserts the resulting output into the finished document. Change the filter, render again, and the numbers update: tables, figures, and values written inline in a sentence alike.
 

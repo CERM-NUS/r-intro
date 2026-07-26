@@ -12,11 +12,11 @@ source("_common.R")
 covid <- covid_daily()
 ```
 
-Most introductions to the tidyverse skip loops, or mention them only in passing. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.
+Loops sit outside the tidyverse verbs, and nothing in the previous chapters has needed one. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.
 
 The order here is loop first, then the vectorised expression that replaces it, then an account of what each of the two gives you.
 
-## The loop the worksheet asked for
+## Daily cases, written as a loop
 
 `confirmed` in this dataset is cumulative. On 31 December it reads 58,599, which is every case Singapore recorded in 2020, not the number recorded that day. To get daily cases you take each value and subtract the one before it.
 
@@ -65,7 +65,7 @@ The two results can be compared directly:
 identical(daily, vectorised)
 ```
 
-`identical()` is the strict comparison. It checks length, type and every element, and it returns a single `TRUE` or `FALSE` with no tolerance for rounding and no recycling. Use it when you want a yes-or-no answer about whether two objects are the same thing. (`all.equal()` is its forgiving cousin, which allows tiny floating-point differences and returns a *message* rather than `FALSE` when things differ, which trips people up inside `if`.)
+`identical()` is the strict comparison. It checks length, type and every element, and it returns a single `TRUE` or `FALSE` with no tolerance for rounding and no recycling. Use it when you want a yes-or-no answer about whether two objects are the same thing. (`all.equal()` is its forgiving cousin, which allows tiny floating-point differences and returns a *message* rather than `FALSE` when things differ, so it cannot be used directly as the condition of an `if`.)
 
 And both agree with the column `covid_daily()` built for you:
 
@@ -95,7 +95,7 @@ for (i in seq_along(daily)) {
 
 Type `n` to run the next line, `c` to continue, `Q` to quit. There is no equivalent for a `mutate()` that is wrong in the middle. When a vectorised calculation gives you a number you cannot explain, rewriting it as a loop and stepping through it is often the fastest way to find out why.
 
-The rule most people settle on: reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.
+Reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.
 
 ## Pre-allocate
 
@@ -133,7 +133,7 @@ Your exact seconds will differ from mine. On a 345-day dataset none of this matt
 
 ## `seq_along()`, `seq_len()`, and the 1:0 trap
 
-You will see `1:length(x)` and `1:nrow(df)` in a great deal of R code, including code written by experienced users. They fail in one case, which does occur in practice: `:` counts downwards when the second value is smaller than the first.
+`1:length(x)` and `1:nrow(df)` are the direct way to write a sequence of positions, and they fail in one case, which does occur in practice: `:` counts downwards when the second value is smaller than the first.
 
 ```{r}
 #| label: one-to-zero
@@ -204,7 +204,7 @@ nrow(covid) - i
 
 Half the year's cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry comes from the dormitory outbreak, which concentrated most of the year's cases into April to August.
 
-Two things about `while`. Something inside the body must change the condition, or it runs forever; here it is `i <- i + 1`, and forgetting that line is the classic way to hang your R session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, `i` would keep climbing past 345 and `covid$confirmed[346]` would be `NA`, at which point R stops with a real error rather than looping forever:
+Two things about `while`. Something inside the body must change the condition, or it runs forever; here it is `i <- i + 1`, and omitting that line hangs the session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, `i` would keep climbing past 345 and `covid$confirmed[346]` would be `NA`, at which point R stops with a real error rather than looping forever:
 
 ```
 Error in while (covid$confirmed[i] < target) { :
@@ -215,7 +215,7 @@ That message nearly always means a comparison produced `NA`, and `NA` is neither
 
 ## `map()` and friends
 
-Loops that build a result one element at a time are common enough that purrr, part of the tidyverse, gives them a shorter form. `map(x, f)` calls `f` on each element of `x` and returns a **list** of the results, always the same length as `x`.
+purrr, part of the tidyverse, gives a shorter form for loops that build a result one element at a time. `map(x, f)` calls `f` on each element of `x` and returns a **list** of the results, always the same length as `x`.
 
 Let me bring `month_summary()` across from @sec-functions. Chapters render in fresh sessions, so it has to be defined again here:
 

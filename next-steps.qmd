@@ -12,11 +12,11 @@ source("_common.R")
 covid <- covid_daily()
 ```
 
-A week of R gets you a working vocabulary rather than fluency. You can read a file, check it,
-reshape it, summarise it by group, plot it, and write a function when the same six lines show up
-for the third time. What you do not yet have is the accumulated set of small recoveries that make
-an error message an inconvenience rather than a stopping point. Those come from hours at the
-keyboard rather than from chapters.
+A week of R gets you a working vocabulary. You can read a file, check it, reshape it, summarise
+it by group, plot it, and write a function when the same six lines show up for the third time.
+What you do not yet have is the accumulated set of small recoveries that make an error message an
+inconvenience rather than a stopping point. Those come from hours at the keyboard, and no chapter
+can supply them.
 
 This last chapter is about where those hours are best spent.
 
@@ -118,8 +118,8 @@ version control; that is enough for now. You do not need to understand rebasing.
 [**The tidyverse style guide**](https://style.tidyverse.org/), by Hadley Wickham. It takes an
 afternoon to read and much of it can be skimmed. It is where the conventions this book uses come
 from: spaces around `<-`, lowercase names with underscores, one dplyr verb per line. Consistency
-matters less for its own sake than because it lets you read your own code from three months ago
-without decoding it first.
+earns its keep because it lets you read your own code from three months ago without decoding it
+first.
 
 [**Advanced R**, 2nd edition](https://adv-r.hadley.nz/), by Hadley Wickham. Free online. This one
 is not for now. Bookmark it and return to it when you find yourself asking why something behaves
@@ -239,8 +239,8 @@ Browse[1]> Q
 
 Three questions identify the bug: you are comparing a character against a Date. Type `Q` to
 quit the browser, `n` to run the next line, `c` to let it finish. Then remove the `browser()`
-call. Leaving it in is a common oversight, and the symptom is a script that keeps stopping for no
-visible reason.
+call. Left in place, it produces a script that keeps stopping at the same line for no visible
+reason.
 
 `debugonce(month_summary)` does the same thing without editing the function, which is preferable
 when the function belongs to a package.
@@ -287,7 +287,7 @@ happens, how the question is put makes a large difference to how quickly it gets
 
 A question that gets answered has four parts: what you were trying to do, stated in terms of the
 result you wanted; the code you ran, as text; what happened, with the error message copied
-exactly; and what you have already tried, so that nobody suggests it again.
+exactly; and what you have already tried, so the answers you get start from where you stopped.
 
 The exact error text matters more than anything else in that list. Post the code and the error
 text rather than describing them. "It says something about a non-numeric argument" cannot be
@@ -332,9 +332,9 @@ your first one. Report an issue on a package's GitHub only once you can show the
 reproducible example and you are reasonably confident the package is at fault rather than your
 own code.
 
-Do not post a photograph of your screen. Code cannot be copied out of a photograph, and the
-people best able to help are unlikely to retype it.
+Do not post a photograph of your screen. Code cannot be copied out of a photograph, so answering
+your question means retyping it first.
 
 When you work something out that took two hours, record the fix in a comment in the script, in
-the words you would have needed at the start. You will meet the same problem again, and so will
-the next person to ask about it.
+the words you would have needed at the start. You will meet the same problem again, and the
+comment is what makes the second encounter a short one.

@@ -27,7 +27,7 @@ covid %>%
   nrow()
 ```
 
-Eighty-eight days. Your supervisor asks what happens if you use a stricter cut-off. So you copy the block and change the number.
+Eighty-eight days. What happens at a stricter cut-off? Copy the block and change the number.
 
 ```{r}
 #| label: copy-2
@@ -47,7 +47,7 @@ covid %>%
 
 Three blocks, 164 days at the loose end and 48 at the strict end, and the analysis is sound as it stands. The problem arrives a week later when you decide the dates matter more than the count and change `nrow()` to `pull(date)` in the first block. Block one now answers a different question from blocks two and three, and nothing in the script records that they have diverged.
 
-The rule of thumb most R programmers converge on is: **once you have copied the same block of code a third time, write a function**. Copies that are edited at different times drift apart, and the more copies there are, the more likely that becomes.
+**Once you have copied the same block of code a third time, write a function.** Copies that are edited at different times drift apart, and the more copies there are, the more likely that becomes.
 
 ## Anatomy
 
@@ -68,7 +68,7 @@ The **arguments** are `df` and `threshold`, in the parentheses after `function`.
 
 The **body** is everything between the braces. It is ordinary R code, and it can use the arguments freely.
 
-The **return value** is the value of the last expression evaluated. There is no `return` keyword here and it is not needed. R functions return their last expression automatically, so `pull(date)` is the answer. You will see `return()` in other people's code and it is not wrong, but the idiom in R is to reserve it for an early exit: a check at the top of a function that refuses nonsense input before any of the real work happens.
+The **return value** is the value of the last expression evaluated. There is no `return` keyword here and none is needed. R functions return their last expression automatically, so `pull(date)` is the answer. `return()` does exist and works wherever you put it; the idiom in R is to reserve it for an early exit, a check at the top of a function that refuses nonsense input before any of the real work happens.
 
 Now use it:
 
@@ -108,7 +108,7 @@ The warning about 24 rows removed is the January and early-February gap in the m
 
 `threshold = -30` looks like a convenience. It does more than that here, because of the sign convention in this dataset.
 
-Google's mobility columns are *percentage change from baseline*. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So "a drop of more than 30%" is `< -30`, and a reader who thinks in magnitudes rather than signs will reach for `30`.
+Google's mobility columns are *percentage change from baseline*. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So "a drop of more than 30%" is `< -30`, and thinking in magnitudes instead of signs leads you to type `30`.
 
 ::: {.callout-important}
 ## Predict first
@@ -178,7 +178,7 @@ The relationship is one-way, though. A function can *read* variables from outsid
 
 The same mechanism has a version that produces no error at all.
 
-The worksheet this book replaces had an exercise that looped over months, and inside the loop it assigned to a variable at the top level of the script:
+Consider a loop over four months that assigns to a variable at the top level of the script:
 
 ```{r}
 #| label: stale-loop
@@ -191,7 +191,7 @@ for (m in c("2020-09-01", "2020-10-01", "2020-11-01", "2020-12-01")) {
 
 Four correct numbers, and nothing wrong with the loop. When it finishes, though, `month_data` is still in the global environment, holding whatever the last iteration put there, which is December.
 
-Several exercises later came a bonus question about September. It used `month_data`:
+Further down the same script, a separate calculation about September reuses `month_data`:
 
 ```{r}
 #| label: stale-bonus
@@ -200,9 +200,9 @@ cat("September mean daily cases:", round(mean(month_data$daily_cases), 1), "\n")
 range(month_data$date)
 ```
 
-The heading says September; the number is December's. Nothing errors and nothing warns, and 12.3 is a believable figure for a quiet month, so there is nothing in the output to signal the mistake. Anyone running that worksheet from top to bottom would record the wrong answer.
+The heading says September; the number is December's. Nothing errors and nothing warns, and 12.3 is a believable figure for a quiet month, so there is nothing in the output to signal the mistake. A run from top to bottom therefore records December's figure under September's label.
 
-This connects to the advice in the good practice chapter about not saving your workspace and restarting R often. In a fresh session, `month_data` does not exist, and the bonus question fails like this:
+This connects to the advice in the good practice chapter about not saving your workspace and restarting R often. In a fresh session, `month_data` does not exist, and the second calculation fails like this:
 
 ```{r}
 #| label: stale-fresh

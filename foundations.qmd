@@ -37,7 +37,7 @@ In RStudio, `Alt` and minus (`Option` and minus on a Mac) types `<-` for you. Th
 
 R inherited `<-` from S, and S inherited it from APL, whose keyboards had a single key that produced a real `←` character. When S moved to keyboards without that key, the arrow was spelled out as two characters and stuck.
 
-`=` also works for assignment at the top level. This book does not use it, for one reason: inside a function call, `=` already means something else. In `round(x, digits = 2)` the `digits = 2` is not creating an object called `digits`. It is telling `round()` which argument you are filling. Reserving `<-` for "make an object" and `=` for "fill an argument" keeps the two visible apart when you read a line of code.
+`=` also works for assignment at the top level. This book does not use it, for one reason: inside a function call, `=` already means something else. In `round(x, digits = 2)` the `digits = 2` tells `round()` which of its arguments you are filling, and leaves no object called `digits` behind once the call has finished. Reserving `<-` for "make an object" and `=` for "fill an argument" keeps the two distinguishable when you read a line of code.
 
 ### Naming things
 
@@ -53,7 +53,7 @@ covd
 
 When you see `object 'x' not found`, R has searched every environment on its search path and found no such name. The usual causes are a typo or a chunk that was never run.
 
-This book uses `snake_case`: lower case, words joined by underscores. The tidyverse does the same, so your code will look like the code around it.
+This book uses `snake_case`: lower case, words joined by underscores. Tidyverse function and argument names follow the same convention, so a script written this way reads consistently from your objects through to the functions you call on them.
 
 Two names to avoid. `TRUE` and `FALSE` are reserved and cannot be reassigned, but their abbreviations `T` and `F` are ordinary variables. A line such as `T <- 0` early in a long script changes the meaning of every later `T`, so write `TRUE` and `FALSE` in full. Similarly, avoid naming your own objects `c`, `data`, `mean` or `df`; R will usually resolve the reference correctly, but the code becomes harder to read.
 
@@ -214,7 +214,7 @@ mean(covid$deaths)
 mean(covid$deaths, na.rm = TRUE)
 ```
 
-Whether that is the right thing to do is a question about deaths, not about R. `na.rm = TRUE` drops the 59 unrecorded days and averages the 286 that remain, so the number returned is the mean of the days the source reported, which is not the mean of 2020. Which of the two you want depends on the question being asked, and the default behaviour at least requires the choice to be made explicitly.
+Whether that is the right thing to do is a question about the deaths data, not about R. `na.rm = TRUE` drops the 59 unrecorded days and averages the 286 that remain, so the number returned is the mean of the days the source reported, which is not the mean of 2020. Which of the two you want depends on the question being asked, and the default behaviour at least requires the choice to be made explicitly.
 
 Two more things about `NA`. Testing it with `==` does not work, because "an unknown value" is not equal to anything, including another unknown value:
 
@@ -322,7 +322,7 @@ seq(from = 1, to = 10, by = 3)
 seq(by = 3, to = 10, from = 1)
 ```
 
-Position only works if you remember the order. Names work regardless of order, and they record in the call itself which argument is being set. The common convention is to pass the first argument or two positionally, since `mean(new_cases)` is unambiguous, and to name everything after that.
+Position only works if you remember the order. Names work regardless of order, and they record in the call itself which argument is being set. Pass the first argument or two positionally, since `mean(new_cases)` is unambiguous, and name everything after that.
 
 Most arguments have defaults, so you only supply the ones you want to change. `args()` shows you what they are:
 
@@ -343,7 +343,7 @@ round(1.5)
 round(2.5)
 ```
 
-`round(0.5)` is 0 and `round(1.5)` is 2. R rounds halves to the nearest even number rather than upward, following the IEC 60559 standard, so that rounding a long column of values does not accumulate an upward bias. `?round` documents this. It is expected behaviour rather than a bug, though it can still surprise someone checking totals by hand.
+`round(0.5)` is 0 and `round(1.5)` is 2. R rounds halves to the nearest even number rather than upward, following the IEC 60559 standard, so that rounding a long column of values does not accumulate an upward bias. `?round` documents this. The behaviour is intended, and it can still surprise someone checking totals by hand.
 
 ### Reading a help page
 
@@ -458,7 +458,7 @@ Error: object 'confirmed' not found
 
 `stats::filter()` has no idea that `confirmed` is a column of the thing you handed it, so it tries to find an object by that name and fails. The fix is a `library(dplyr)` or `library(tidyverse)` line you left out, and the error message does not say so.
 
-Writing `dplyr::filter()` in full removes the ambiguity. That is worth doing in code distributed to other people, and it is verbose for everyday analysis. The usual approach is to load the package and read the conflicts message; if you would rather collisions raised errors than resolved by precedence, the `conflicted` package does that.
+Writing `dplyr::filter()` in full removes the ambiguity, at the cost of a package prefix on every call. It earns that cost in code you distribute, where the reader may have a different set of packages attached. For everyday analysis, load the package and read the conflicts message; if you would prefer collisions to raise an error instead of being resolved by precedence, the `conflicted` package does that.
 
 ## Exercise
 

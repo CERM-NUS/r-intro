@@ -12,7 +12,7 @@ Import is a common source of errors, and most of them are silent. A date column 
 
 ## Where the file is {#sec-paths}
 
-R has a working directory: the folder it treats as "here" when you hand it a relative path. Scripts often set it explicitly, with a line such as `setwd("/Users/swapnil/Documents/GitHub/r-intro")`. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.
+R has a working directory: the folder it treats as "here" when you hand it a relative path. It can be set from inside a script, with a line such as `setwd("/Users/swapnil/Documents/GitHub/r-intro")`. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.
 
 `here::here()` avoids the problem. The `here` package looks upward from wherever R happens to be until it finds the top of the project, identified by an `.Rproj` file, a `.git` directory or a `_quarto.yml`, and builds paths from there.
 
@@ -99,9 +99,9 @@ read_csv(
 
 With a numeric sentinel such as `-99`, nothing will appear to be wrong: the minimum will be `-99`, the mean will be pulled downward, and every graph will still render. Checking the minimum and maximum of each numeric column after import will usually reveal a sentinel of this kind.
 
-## What `read.csv()` would have given you {#sec-base-read-csv}
+## `read.csv()` and `read_csv()` {#sec-base-read-csv}
 
-Base R has its own reader, spelled with a dot instead of an underscore. Older course notes generally use it, so it is worth recognising, and the two names are similar enough to be typed interchangeably by mistake.
+Base R has its own reader, `read.csv()`, spelled with a dot rather than an underscore. It returns a data frame rather than a tibble, it prints no column specification, and it does not parse dates, so the date column arrives as character. The two names differ by one character and are easy to type interchangeably by mistake.
 
 ```{r}
 #| label: base-read
@@ -111,7 +111,7 @@ class(old$date)
 head(old$date, 3)
 ```
 
-No message at all, a plain `data.frame` rather than a tibble, and `date` is a character vector of strings that look like dates. Arithmetic on that column fails:
+All three differences are visible above: no column specification is printed, `class()` reports a plain `data.frame`, and `date` holds strings that look like dates. Arithmetic on that column fails:
 
 ```{r}
 #| label: date-arithmetic
@@ -119,11 +119,11 @@ No message at all, a plain `data.frame` rather than a tibble, and `date` is a ch
 old$date - old$date[1]
 ```
 
-`non-numeric argument to binary operator` reports that the subtraction was attempted on text. This is why base-R instructions usually include a line such as `df$date <- as.Date(df$date)` near the top; with `read_csv()` the conversion has already happened.
+`non-numeric argument to binary operator` reports that the subtraction was attempted on text. The repair is an explicit conversion, `old$date <- as.Date(old$date)`, written before anything touches the column; with `read_csv()` the conversion has already happened at import.
 
 There are two smaller differences. `read.csv()` returns `int` for whole-number columns where `read_csv()` returns `dbl`, and before R 4.0.0 it converted character columns into factors, the historical default described in @sec-tibbles. It is also slower on large files, though at 345 rows the difference is not perceptible.
 
-`read.csv()` works and you may use it. This book uses `read_csv()` because it reports the column types it assigned, and `read.csv()` reports nothing.
+Both readers load the file. This book uses `read_csv()` because it reports the column types it assigned, and `read.csv()` reports nothing.
 
 ## Pinning the types {#sec-col-types}
 

@@ -54,7 +54,7 @@ Run that today and you will not get this file back byte for byte. Countries revi
 
 ## What one row is
 
-One row is one calendar day in Singapore. Nothing finer, nothing coarser.
+One row is one calendar day in Singapore. Nothing finer, and nothing coarser: there are no weekly or monthly aggregates interleaved with the daily rows.
 
 ```{r}
 #| label: coverage
@@ -81,7 +81,7 @@ covid %>%
 count(covid, administrative_area_level_1)
 ```
 
-It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because a student who later pulls three countries and forgets to group by this column will produce a national total that silently pools them.
+It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because pulling three countries later and forgetting to group by this column produces a national total that silently pools them.
 
 ## The counts are cumulative
 
@@ -96,7 +96,7 @@ covid %>%
 
 58,599 is the total number of confirmed cases in Singapore in 2020, not the number on 31 December. The number on 31 December is 30, and you get it by subtracting the previous row. That subtraction is what `lag()` is for, and it is done in the transform chapter.
 
-Two consequences follow, and both catch people out.
+Two consequences follow, and both are easy to miss.
 
 The first is that a plot of `confirmed` against `date` is a monotone rising line for any epidemic anywhere. It cannot show you a peak, a wave, or a circuit breaker, because it never goes down. It looks informative and tells you almost nothing about tempo.
 

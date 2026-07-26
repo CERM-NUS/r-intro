@@ -60,7 +60,7 @@ arrange(covid, desc(stringency_index))
 
 The Oxford stringency index peaked at 82.41, and three separate days sit at that peak. Sorting does not deduplicate; it puts equal things next to each other and leaves them in the order it found them.
 
-`desc()` may look like clutter on a numeric column, but the obvious alternative does not work:
+Negating the value is the other way to reverse a sort, and on a `Date` column it stops:
 
 ```{r}
 #| error: true
@@ -91,7 +91,7 @@ That column is the string `"Singapore"` in all 345 rows. It is there because the
 
 ### `rename()` changes column names
 
-`retail_and_recreation_percent_change_from_baseline` is fifty characters long. The name comes from Google's published series and is descriptive rather than convenient to type.
+`retail_and_recreation_percent_change_from_baseline` is fifty characters long. The name comes from Google's published series, where it spells out the measure in full: the percentage change in visits to retail and recreation venues, relative to the baseline period.
 
 ```{r}
 mob <- rename(
@@ -122,7 +122,7 @@ select(
 
 `mutate()` works on whole columns at a time. There is no loop over rows; `deaths / confirmed` divides two vectors of 345 numbers element by element and hands back a third. This is the main habit shift coming from a spreadsheet, where a formula is written for one cell and then copied down.
 
-The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the reason is demographic before it is clinical: the great majority of Singapore's 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.
+The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the explanation lies in who was infected: the great majority of Singapore's 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults with a low expected fatality rate. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.
 
 ## Stringing verbs together
 
@@ -160,7 +160,7 @@ A few conventions are worth adopting now. Put the `%>%` at the end of the line r
 ::: {.callout-note}
 ## The other pipe
 
-R gained a pipe of its own in version 4.1, written `|>`. It does the same basic thing and needs no packages. It differs in the details: `%>%` lets you write `.` to put the incoming value somewhere other than the first argument, while `|>` has a narrower placeholder with different rules, and the two behave differently with anonymous functions. This book uses `%>%` throughout, so if you see `|>` in code you find elsewhere, it is the same idea and not a typo.
+R gained a pipe of its own in version 4.1, written `|>`. It does the same basic thing and needs no packages. It differs in the details: `%>%` lets you write `.` to put the incoming value somewhere other than the first argument, while `|>` has a narrower placeholder with different rules, and the two behave differently with anonymous functions. This book uses `%>%` throughout, so `|>` in code you find elsewhere expresses the same idea in the other spelling.
 :::
 
 ## Cumulative counts are not incidence
@@ -194,7 +194,7 @@ p_inc <- ggplot(covid_inc, aes(date, daily_cases)) +
 p_cum / p_inc
 ```
 
-The top panel is the shape most dashboards showed in 2020. It rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year's cases had been confirmed by 20 May.
+The top panel rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year's cases had been confirmed by 20 May.
 
 The bottom panel shows the shape of the epidemic. It climbs through April to a single highest day of 1,426 on 20 April, stays high through May, then falls unevenly until the week of 5 July, before a second rise carries it back up through late July into early August and it dies away from mid-August onwards. The tall isolated spike is 5 August, which recorded 908 cases against an August median of 91 and a next-highest August day of 313. Singapore's Ministry of Health attributed that day to clearance testing in the dormitories detecting past infections. On the cumulative curve that day appears only as a slight change of slope, where it would be easy to miss.
 
@@ -240,7 +240,7 @@ median(scrambled$daily_cases)
 
 Eight rows out of 345 are negative, and the median of the wrong answer is 42 against a true value of 40. With the table sorted by something other than date, roughly 97% of the resulting daily counts still look like plausible daily counts, and some are correct by accident, wherever two adjacent rows happened to be adjacent days.
 
-That is what makes the error hard to catch. A bug that produces obvious nonsense is noticed at once; a bug that produces 337 plausible numbers and 8 impossible ones may not surface until a reviewer asks about a negative value in a figure.
+That is what makes the error hard to catch. A bug that produces obvious nonsense is noticed at once; a bug that produces 337 plausible numbers and 8 impossible ones can survive until the negative values appear in a figure and have to be explained.
 
 Put `arrange(date)` in the chain immediately before the `mutate()`. It costs one line, and it does nothing when the data is already sorted by date, which this file is.
 
@@ -254,7 +254,7 @@ covid %>% select(date, confirmed, daily_cases)
 
 ## What belongs in the first row
 
-`lag()` on its own leaves `NA` at the top, because there is no previous row to subtract. The `default = 0` argument fills that gap with a zero instead. Whether that is appropriate depends on the data rather than on R.
+`lag()` on its own leaves `NA` at the top, because there is no previous row to subtract. The `default = 0` argument fills that gap with a zero instead. Whether the zero is appropriate depends on what the series records; R will insert it either way.
 
 Here it is appropriate, for a reason visible in the first row of the table:
 
@@ -266,7 +266,7 @@ covid %>% select(date, confirmed, daily_cases) %>% head(3)
 
 The situation differs if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then `default = 0` would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the appropriate value is `NA`, because the data carry no information about how many cases occurred on the first day of a window whose start was not observed.
 
-The choice therefore depends on the series rather than on a rule to memorise. Look at the first value: if it is zero, `default = 0` records a true zero; if it is not, plain `lag()` leaves an `NA`, which is an accurate statement of what is not known. This file starts at zero, which is why `default = 0` is used in the code above, and that reason is worth writing in a comment beside it.
+The choice therefore turns on the first value of the series. Look at it: if it is zero, `default = 0` records a true zero; if it is anything else, plain `lag()` leaves an `NA`, which is an accurate statement of what is not known. This file starts at zero, which is why `default = 0` is used in the code above, and that reason is worth writing in a comment beside it.
 
 ## Two checks on a differenced series
 
@@ -278,7 +278,7 @@ The first is that a difference of a non-decreasing count cannot be negative. If 
 covid %>% filter(daily_cases < 0)
 ```
 
-Zero rows. What comes back is an empty tibble rather than nothing at all, and the empty tibble still carries its column names and types, so you can see that the check ran rather than failed.
+Zero rows. What comes back is an empty tibble, and it still carries its column names and types, so you can see that the check ran rather than failed.
 
 The second is that the daily numbers must add back up to the cumulative total. The increments telescope: every intermediate value cancels, leaving the last one.
 

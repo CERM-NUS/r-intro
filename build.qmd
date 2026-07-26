@@ -55,7 +55,7 @@ The whole build is one YAML file. It opens with a warning to future me:
 # /Applications/quarto/share/schema/definitions.yml before adding one.
 ```
 
-Under `project:` and `book:`, Quarto validates keys against a fixed schema. A typo does not get ignored, and it does not warn. The render stops. The schema files shipped with your Quarto installation are the authority, and they are more reliable than a blog post about a different version.
+Under `project:` and `book:`, Quarto validates keys against a fixed schema. A typo does not get ignored, and it does not warn. The render stops. The schema files shipped with your Quarto installation are the authority, and they describe the version you are running.
 
 ### `project:`
 
@@ -69,7 +69,7 @@ project:
 
 `type: book` is what turns a folder of `.qmd` files into a numbered book with parts, appendices, previous and next links, and a single search index.
 
-There is no `output-dir`, which is a decision rather than an omission. Quarto therefore renders into its default `_book/`, and `_book/` is gitignored, because the rendered site is not kept on this branch at all. What happens to it instead is the publishing section.
+There is no `output-dir`, which is a decision rather than an oversight. Quarto therefore renders into its default `_book/`, and `_book/` is gitignored, because the rendered site is not kept on this branch at all. What happens to it instead is the publishing section.
 
 `execute-dir: project` sets R's working directory to the project root for every chunk in every chapter. Without it, each chapter would execute in its own directory, which is fine here because every file sits at the top level, but stops being fine the moment anyone puts a chapter in a subfolder. Setting it means `here::here("data", "sg_covid_data.csv")` resolves identically from every chapter, including this one.
 
@@ -170,7 +170,7 @@ source("_common.R")
 
 `include: false` hides the chunk and its output. The reader never sees it.
 
-The repetition is not laziness. Quarto's freeze machinery gives each chapter its own R session, which is what makes a single chapter re-renderable without re-running the whole book. A variable created in chapter 4 does not exist in chapter 5. So anything more than one chapter needs has to be defined in a file that every chapter sources, and `_common.R` is that file. It attaches the packages, sets the ggplot2 theme, defines `read_covid()` and `covid_daily()`, and runs the guard described in the next section.
+There is a reason for the repetition. Quarto's freeze machinery gives each chapter its own R session, which is what makes a single chapter re-renderable without re-running the whole book. A variable created in chapter 4 does not exist in chapter 5. So anything more than one chapter needs has to be defined in a file that every chapter sources, and `_common.R` is that file. It attaches the packages, sets the ggplot2 theme, defines `read_covid()` and `covid_daily()`, and runs the guard described in the next section.
 
 The leading underscore is a Quarto convention: files and directories starting with `_` are not treated as book content and are not copied to the output.
 
@@ -199,7 +199,7 @@ lock$R$Version
 length(lock$Packages)
 ```
 
-`r length(renv::lockfile_read()$Packages)` packages, for a book whose `_common.R` calls `library()` four times. Almost all of them are dependencies of dependencies, which is the honest reason to use a lockfile at all: nobody can hold that graph in their head, and "install the tidyverse" resolves to a different set of versions every month.
+`r length(renv::lockfile_read()$Packages)` packages, for a book whose `_common.R` calls `library()` four times. Almost all of them are dependencies of dependencies, which is the honest reason to use a lockfile at all: that graph is far too large to keep track of by hand, and "install the tidyverse" resolves to a different set of versions every month.
 
 The three commands you need:
 
@@ -315,7 +315,7 @@ rm -rf _freeze/
 quarto render
 ```
 
-or delete one chapter's directory under `_freeze/` if you know that only one is affected. Doing this after any change to `_common.R` is a habit worth building, and the reason `_freeze/` is listed in `.gitattributes` as generated is that the resulting diff is enormous and nobody should read it.
+or delete one chapter's directory under `_freeze/` if you know that only one is affected. Doing this after any change to `_common.R` is a habit worth building, and the reason `_freeze/` is listed in `.gitattributes` as generated is that the resulting diff is enormous and carries no information worth reading.
 
 ## Publishing
 
@@ -333,7 +333,7 @@ It refuses to start in three cases. If a `quarto preview` is running, because th
 
 ### What the split buys, and what it costs
 
-The reason to keep the site off `main` is diffs. Generated HTML is not source. A re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and `git log` on that chapter becomes something you scroll past rather than read. The problem stops being cosmetic as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files nobody can resolve by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.
+The reason to keep the site off `main` is diffs. Generated HTML is not source. A re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and `git log` on that chapter becomes something you scroll past rather than read. The problem stops being cosmetic as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files that cannot be resolved by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.
 
 The cost is real and worth naming, because the previous arrangement was better at one thing. When the site was committed alongside the source, forgetting to rebuild was impossible to miss: you edited a chapter and the working tree stayed dirty until you rendered. Staleness announced itself for free.
 
@@ -376,7 +376,7 @@ The published site has one. This repository does not, and there is nothing under
 
 Knitr writes a chapter's figures into `<chapter>_files/` next to the source, and Quarto moves them into the output directory at the end of the render. A render that dies partway through leaves them sitting at the project root, and those working directories are rubbish that should not be in git. The obvious rule is `*_files/`.
 
-The obvious rule is wrong. A pattern with no slash at the start matches at **any depth**, so `*_files/` also matches `_book/visualise_files/`, `_book/groups_files/`, and every other directory in the rendered site that holds the actual published images. Git would ignore all of them, and the output still goes through git on its way out — that is what publishing to a branch is. The resulting failure is worth naming: the book renders correctly on `localhost`, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem.
+That rule is too broad. A pattern with no slash at the start matches at **any depth**, so `*_files/` also matches `_book/visualise_files/`, `_book/groups_files/`, and every other directory in the rendered site that holds the actual published images. Git would ignore all of them, and the output still goes through git on its way out — that is what publishing to a branch is. The resulting failure is worth naming: the book renders correctly on `localhost`, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem.
 
 The leading slash anchors the pattern to the repository root, so it matches `./visualise_files/` and stops there.
 
@@ -387,7 +387,7 @@ _freeze/** linguist-generated=true
 _freeze/** -diff
 ```
 
-Without it, GitHub reads the repository as mostly generated JSON and SVG rather than R, and re-running one chapter arrives as a pull request with thousands of changed lines that nobody should be asked to review.
+Without it, GitHub reads the repository as mostly generated JSON and SVG rather than R, and re-running one chapter arrives as a pull request with thousands of changed lines that carry nothing to review.
 
 ## Forking it
 

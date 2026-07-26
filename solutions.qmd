@@ -17,7 +17,7 @@ Every exercise in the book has an answer here, and every answer on this page was
 
 Attempt the exercise before reading the solution. These pages work better as a check on an attempt than as a first exposure to the material.
 
-Two objects are set up once at the top of this page and used throughout. `covid` is `covid_daily()`, the file with `daily_cases`, `daily_deaths`, `severity` and `month` already built. `covid_raw` is `read_covid()`, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is fine rather than a sign you have gone wrong.
+Two objects are set up once at the top of this page and used throughout. `covid` is `covid_daily()`, the file with `daily_cases`, `daily_deaths`, `severity` and `month` already built. `covid_raw` is `read_covid()`, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is expected.
 
 ## Build a week by hand {#sec-sol-vectors}
 
@@ -33,7 +33,7 @@ length(week_one)
 typeof(week_one)
 ```
 
-Seven elements, and the type is `double` rather than `integer` even though every value is a whole number. `c(0, 1, 3)` writes doubles unless you ask for integers with `0L, 1L, 3L`. This catches people out when they compare `typeof()` output against what they expected, and it almost never matters in practice.
+Seven elements, and the type is `double` rather than `integer` even though every value is a whole number. `c(0, 1, 3)` writes doubles unless you ask for integers with `0L, 1L, 3L`. The distinction is worth knowing when you check `typeof()` output against what you expected, and it almost never matters in practice.
 
 Part two. Two vectors of the same length subtract element by element, so you need days two to seven in one and days one to six in the other:
 
@@ -464,7 +464,7 @@ covid %>%
   count(daily_cases, severity)
 ```
 
-So the cutoff could sit anywhere from 95 to 100 and every one of the 345 days would keep the label it has. Move it to 101 and 18 August, which recorded exactly 100 cases, becomes Low. Move it to 94 and the same day is unaffected but the 94-case day changes. Prove it rather than trusting the argument:
+So the cutoff could sit anywhere from 95 to 100 and every one of the 345 days would keep the label it has. Move it to 101 and 18 August, which recorded exactly 100 cases, becomes Low. Move it to 94 and the same day is unaffected but the 94-case day changes. Now test that claim against every day in the file:
 
 ```{r}
 #| label: sol-severity-4
@@ -484,7 +484,7 @@ sapply(90:105, function(t) identical(relabel(t), as_written))
 
 `TRUE` from 95 through 100 and `FALSE` either side. The upper cutoff behaves the same way: the largest Medium day is 295 and the smallest High day is 301, so 295 through 300 are interchangeable.
 
-What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they *can* argue is what happens at 50, or at 500, where the gap is wide enough to carry real days across a boundary.
+What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so your headline does not depend on a round number picked by a worksheet author. The choice does start to matter at 50, or at 500, where the gap is wide enough to carry real days across a boundary.
 
 ## Move the cutoffs {#sec-sol-move-cutoffs}
 
@@ -785,7 +785,7 @@ ggsave(tempfile(fileext = ".png"), plot = p_small,
 
 Shorter title, shorter caption, and four month ticks instead of six. The message about a scale being replaced is ggplot2 telling you that the second `scale_x_date()` overwrote the first, which is what was intended here and is something to look at hard when it is not.
 
-**What people get wrong.** Drawing the figure at 7 inches, saving it at 7 inches, and letting the journal or the slide deck shrink it afterwards. That shrink *does* scale the type, because it is scaling the finished image, and 13.8-point text at half size is 7-point text nobody can read. Size the figure for its final home.
+**What people get wrong.** Drawing the figure at 7 inches, saving it at 7 inches, and letting the journal or the slide deck shrink it afterwards. That shrink *does* scale the type, because it is scaling the finished image, and 13.8-point text at half size is 7-point text, which is too small to read on the page. Size the figure for its final home.
 
 ## Make the distribution legible, and say what it cost {#sec-sol-histogram}
 
@@ -933,7 +933,7 @@ The default is a bare column name, not a string, and it works because R does not
 length(mobility_alert(covid))
 ```
 
-Eighty-eight, the same answer as before the rewrite. Adding an argument in the middle of a signature is the usual way to break other people's code, and putting the new argument after `df` with a default that reproduces the old behaviour is what keeps that from happening.
+Eighty-eight, the same answer as before the rewrite. Adding an argument in the middle of a signature breaks every existing call that relied on position, and putting the new argument after `df` with a default that reproduces the old behaviour is what keeps that from happening.
 
 The two counts:
 
@@ -1014,7 +1014,7 @@ Across the twelve months, `high_days` only ever takes the values 0, 4, 12, 18 an
 
 August is where it bites. Four High days, so "All clear", on a month that recorded 4,607 cases, more than September through December put together. The rule counts days over 300 and August's burden was distributed differently.
 
-That is why `high_cut` is an argument rather than a hard-coded 5. Not because the caller will change it often, but because a default in the signature is visible to anyone reading the function, whereas the same number written into the body has to be hunted for. Set it once, at the top, where a reviewer can see it and disagree with it:
+That is why `high_cut` is an argument rather than a hard-coded 5, and not because the caller will change it often: a default in the signature is visible to anyone reading the function, whereas the same number written into the body has to be hunted for. Set it once, at the top, where a reviewer can see it and disagree with it:
 
 ```{r}
 #| label: sol-month-summary-3
