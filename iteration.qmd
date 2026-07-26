@@ -292,15 +292,13 @@ walk(all_months, function(m) {
 
 ## The loop you cannot vectorise
 
-Contact tracing has a capacity. Whatever the team's size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today's new cases, minus what the team got through. The queue also stops at zero: unused capacity on a quiet day is not carried forward to the next one.
+A tracing team can work through so many cases a day. On a day when more arrive, the surplus waits until tomorrow, and unused capacity on a quiet day is not carried forward:
 
 $$
 Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 $$
 
-$C_t$ is the cases reported on day $t$, $k$ is the number the team can process in a day, and $Q_t$ is what is still waiting when they go home. Every $Q$ on the right sits one day behind the $Q$ on the left. You cannot compute 14 June without 13 June, which needs 12 June, and so on back to January. `lag()` is no help, because `lag()` shifts a column that already exists and here the column is the one you are creating.
-
-Give the team 300 cases a day. Singapore averaged 170 a day across 2020, so on paper that is a team with room to spare.
+$C_t$ is the cases reported on day $t$, $k$ is the daily capacity, and $Q_t$ is what is still waiting. `lag()` does not help here, because `lag()` shifts a column that already exists and this is the column being created.
 
 ```{r}
 #| label: queue-loop
@@ -316,44 +314,17 @@ for (t in 2:nrow(covid)) {
 queue <- covid %>%
   select(date, daily_cases) %>%
   mutate(backlog = backlog)
-
-queue %>%
-  filter(date %in% as.Date(c("2020-04-12", "2020-04-13", "2020-05-01",
-                             "2020-06-14", "2020-08-01", "2020-10-14")))
 ```
 
-The loop starts at `t = 2` because day one has nothing before it. That is the same edge case as the `if (i == 1)` branch in the very first loop of this chapter, handled by starting the counter one step in instead of branching inside the body.
-
-Now the version everybody writes first. The queue looks like a running total of the daily excess, and R has a function for running totals:
+The queue looks like a running total of the daily excess, and R has a function for running totals:
 
 ```{r}
 #| label: queue-cumsum
-naive <- pmax(0, cumsum(covid$daily_cases - capacity))
-
-max(naive)
+max(pmax(0, cumsum(covid$daily_cases - capacity)))
 max(backlog)
 ```
 
-The cumulative version peaks at zero: it has the tracing team never falling behind on any day of 2020, while the loop has them 19,172 cases behind in the middle of June.
-
-The damage is done in the first eighty-two days. Singapore did not record more than 300 cases in a day until 13 April, and every day before that hands `cumsum()` a negative number to bank. By 12 April the running total sits at -22,068, and the dormitory outbreak has to work all of that off before the sum turns positive. Across the whole year it never manages it: 58,599 cases against 345 days of 300 is 103,500. So `pmax()` on the outside flattens everything to zero.
-
-Wrapping the clamp around the outside is the mistake. `max(0, ...)` has to happen at every step, because $Q_t$ depends on the *clamped* $Q_{t-1}$, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; `cumsum()` by construction retains every term it has already added. Without the clamp, `cumsum()` gives the right answer. The clamp is the one feature of the model that forces the loop, and identifying which part of a calculation does that is how you tell a genuinely sequential problem from one that only looks sequential.
-
-purrr does have a function that holds running state for you. `accumulate()` gives the identical vector:
-
-```{r}
-#| label: queue-accumulate
-acc <- accumulate(
-  covid$daily_cases[-1],
-  function(q, cases) max(0, q + cases - capacity),
-  .init = max(0, covid$daily_cases[1] - capacity)
-)
-
-identical(backlog, acc)
-```
-
-`accumulate()` is a convenience, and it is worth being clear about what it changes. It moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.
+Zero against 19,172. `max(0, ...)` has to be applied at every step, because $Q_t$ depends on the *clamped* $Q_{t-1}$: once the queue empties it has forgotten everything before it. `cumsum()` retains every term it has added, so the 82 days before Singapore first exceeded 300 cases bank a credit the later outbreak never works off, and `pmax()` on the outside flattens the result to zero.
 
 ```{r}
 #| label: queue-plot
@@ -364,16 +335,11 @@ queue %>%
   geom_line(linewidth = 0.8) +
   scale_x_date(date_labels = "%b") +
   scale_y_continuous(labels = label_comma()) +
-  labs(
-    x = NULL, y = "Cases waiting",
-    title = "A team clearing 300 a day ends up two months behind",
-    caption = "Illustrative capacity. Not Singapore's actual tracing capacity."
-  )
+  labs(x = NULL, y = "Cases waiting",
+       caption = "Illustrative capacity. Not Singapore's actual tracing capacity.")
 ```
 
-The queue builds through the dormitory outbreak, peaks at 19,172 on 14 June and does not empty until 14 October, having been non-zero on 184 of 345 days. The date of that peak is the interesting part. Cases peaked on 20 April, and the workload peaked 55 days later, because a queue keeps growing for as long as arrivals exceed capacity rather than for as long as arrivals are rising. You cannot read that off the case curve. It only appears once you carry the state forward day by day.
-
-The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today's state to tomorrow's, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is why a course otherwise built on `mutate()` spends an evening on `for`.
+Cases peaked on 20 April; the backlog peaks 55 days later on 14 June, because a queue grows for as long as arrivals exceed capacity rather than for as long as arrivals are rising. The same structure appears in the compartmental models later in the course: a state, a rule for getting from today's state to tomorrow's, and a loop to run it.
 
 ## Exercises
 
