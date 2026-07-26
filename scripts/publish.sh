@@ -63,10 +63,14 @@ branch on every publish; nothing here is edited by hand."
   echo "    created and pushed."
 fi
 
-echo "==> rendering and publishing to gh-pages"
-quarto publish gh-pages --no-prompt --no-browser || fail "quarto publish exited non-zero. Read the output above."
+# Render and publish are deliberately separate steps, with the checks between
+# them. `quarto publish` renders by default, which would put every check after
+# the deploy — a failing check would then be a report on a site that is already
+# live, which is not a gate.
+echo "==> rendering"
+quarto render || fail "quarto render exited non-zero. Read the output above."
 
-echo "==> checking what was published"
+echo "==> checking the render before anything is published"
 
 pages=$(find "$ROOT/$OUT" -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')
 [ "$pages" = "$EXPECTED_PAGES" ] || fail "$OUT/ has $pages pages, expected $EXPECTED_PAGES. Update EXPECTED_PAGES if you added a chapter."
@@ -78,18 +82,38 @@ stray=$(find "$ROOT" -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')
 [ -f "$ROOT/$OUT/build-info.json" ] || fail "$OUT/build-info.json is missing. The post-render stamp did not run."
 
 echo "==> checking every solution link resolves"
-grep -ho 'solutions\.html#sec-sol-[a-z0-9-]*' "$ROOT/$OUT"/*.html | sed 's/.*#//' | sort -u > /tmp/rintro-links.$$
+# Match href attributes only. Scanning raw text also picks up prose that
+# mentions the link pattern — build.qmd discusses "solutions.html#sec-sol-…"
+# in a <code> span, which looks like a link with an empty slug and fails a
+# naive check for reasons that have nothing to do with the book.
+grep -hoE 'href="[^"]*solutions\.html#sec-sol-[a-z0-9-]+"' "$ROOT/$OUT"/*.html \
+  | sed 's/.*#//; s/"$//' | sort -u > /tmp/rintro-links.$$
 while IFS= read -r slug; do
   grep -q "id=\"$slug\"" "$ROOT/$OUT/solutions.html" || fail "dead solution link: $slug has no anchor in solutions.html"
 done < /tmp/rintro-links.$$
 links=$(wc -l < /tmp/rintro-links.$$ | tr -d ' '); rm -f /tmp/rintro-links.$$
+
+echo "==> checking every back-link resolves"
+grep -hoE 'href="[^"]*[a-z-]+\.html#exr-[a-z0-9-]+"' "$ROOT/$OUT/solutions.html" \
+  | sed 's/href="//; s/"$//' | sort -u > /tmp/rintro-back.$$
+while IFS= read -r target; do
+  page="${target%%#*}"; page="${page##*/}"; anchor="${target##*#}"
+  [ -f "$ROOT/$OUT/$page" ] || fail "back-link points at $page, which was not rendered"
+  grep -q "id=\"$anchor\"" "$ROOT/$OUT/$page" || fail "dead back-link: $anchor is not in $page"
+done < /tmp/rintro-back.$$
+backlinks=$(wc -l < /tmp/rintro-back.$$ | tr -d ' '); rm -f /tmp/rintro-back.$$
+
+echo "==> publishing to gh-pages"
+quarto publish gh-pages --no-render --no-prompt --no-browser \
+  || fail "quarto publish exited non-zero. Read the output above."
 
 echo "==> confirming gh-pages now matches main"
 "$ROOT/scripts/check-pages-sync.sh" --local || fail "published site does not match main. See above."
 
 cat <<SUMMARY
 
-  Published. $pages pages, $(find "$ROOT/$OUT" -name '*.svg' | wc -l | tr -d ' ') figures, $links solution links resolving.
+  Published. $pages pages, $(find "$ROOT/$OUT" -name '*.svg' | wc -l | tr -d ' ') figures,
+  $links solution links and $backlinks back-links all resolving.
 
   https://cerm-nus.github.io/r-intro/
 
