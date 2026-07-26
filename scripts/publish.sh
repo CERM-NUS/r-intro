@@ -118,3 +118,16 @@ cat <<SUMMARY
   https://cerm-nus.github.io/r-intro/
 
 SUMMARY
+
+# Rendering rewrites _freeze/, which is tracked. Leaving it uncommitted means
+# the next publish refuses to start on a dirty tree, and a fresh clone would
+# re-execute every chunk instead of reusing the cache.
+if [ -n "$(git status --porcelain -- _freeze .gitignore)" ]; then
+  cat <<'NEXT'
+  The render updated the chunk cache. Commit it so the next publish can start
+  from a clean tree:
+
+    git add _freeze .gitignore && git commit -m "Update chunk cache"
+
+NEXT
+fi
