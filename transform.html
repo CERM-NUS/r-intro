@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -558,7 +558,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>That column is the string <code>"Singapore"</code> in all 345 rows. It is there because the data hub serves many countries from one schema, and it carries no information at all once you have filtered down to one of them.</p>
 </section><section id="rename-changes-column-names" class="level3" data-number="6.1.4"><h3 data-number="6.1.4" class="anchored" data-anchor-id="rename-changes-column-names">
 <span class="header-section-number">6.1.4</span> <code>rename()</code> changes column names</h3>
-<p><code>retail_and_recreation_percent_change_from_baseline</code> is fifty characters long and you will be typing it for the rest of the book. Google named it, not you, and the name is descriptive rather than convenient.</p>
+<p><code>retail_and_recreation_percent_change_from_baseline</code> is fifty characters long, and you will type it more times in an afternoon’s work than you would like. Google named it, not you, and the name is descriptive rather than convenient.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mob</span> <span class="op">&lt;-</span> <span class="fu">rename</span><span class="op">(</span></span>
 <span>  <span class="va">covid</span>,</span>
@@ -587,7 +587,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; # ℹ 335 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>New name on the left, old name on the right, which is the opposite of the order most people guess. The way to remember it is that <code>rename()</code> behaves like <code>mutate()</code> and every other function that makes columns: the thing being created is always on the left of the <code>=</code>.</p>
-<p>The rest of this book keeps the long names, because that is what the file ships with and because a chapter that renames things in secret is a chapter you cannot copy code out of. In your own analysis, rename early and rename once.</p>
+<p>The code in this book keeps the long names, because that is what the file ships with and because a chapter that renames things in secret is a chapter you cannot copy code out of. In your own analysis, rename early and rename once.</p>
 </section><section id="mutate-makes-new-columns" class="level3" data-number="6.1.5"><h3 data-number="6.1.5" class="anchored" data-anchor-id="mutate-makes-new-columns">
 <span class="header-section-number">6.1.5</span> <code>mutate()</code> makes new columns</h3>
 <div class="cell">
@@ -780,7 +780,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 </div>
 <p><code>confirmed</code> is 0 on 22 January 2020. Zero cases had been confirmed by the end of that day, so zero cases were confirmed <em>during</em> it. That is a real observation, not a gap. Recording it as <code>NA</code> would throw away a genuine zero and quietly shorten the series by one day in every count, sum and plot downstream.</p>
 <p>The picture changes completely if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then <code>default = 0</code> would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the honest answer is <code>NA</code>, because you have no information about how many cases occurred on the first day of a window you did not observe the start of.</p>
-<p>Two conventions, two different datasets, and no default to memorise. Look at the first value. If it is zero, <code>default = 0</code> records a true zero. If it is not, plain <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> and an <code>NA</code> tells the truth about what you do not know. The book uses <code>default = 0</code> from here on because this file starts at zero, and that is the only reason.</p>
+<p>Two conventions, two different datasets, and no default to memorise. Look at the first value. If it is zero, <code>default = 0</code> records a true zero. If it is not, plain <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> and an <code>NA</code> tells the truth about what you do not know. This file starts at zero, which is the only reason <code>default = 0</code> belongs in the code above, and it is the sort of reason worth writing in a comment beside it.</p>
 </section><section id="two-checks-worth-running-every-time" class="level2" data-number="6.6"><h2 data-number="6.6" class="anchored" data-anchor-id="two-checks-worth-running-every-time">
 <span class="header-section-number">6.6</span> Two checks worth running every time</h2>
 <p>Derived columns are where quiet errors live, because nothing about them looks different from data that came out of a file. Two cheap checks catch most of what can go wrong with a difference of a cumulative series.</p>
@@ -810,7 +810,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 <span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A test that fails when the code is wrong and passes when it is right is worth the two lines it takes to write. Keep both of these near the top of any script that differences a cumulative series.</p>
-<p>One warning about applying the same recipe to <code>deaths</code>. It has 59 missing values at the start, the differencing will not reconcile, and you will recover 27 of the 29 deaths rather than all of them. That is not a mistake you made and it is the subject of <a href="missing.html" class="quarto-xref"><span>Chapter 7</span></a>.</p>
+<p>One warning about applying the same recipe to <code>deaths</code>. That column is missing for the first 59 days of 2020, and the second check will not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason is the <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> you have just met. Singapore’s first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is <code>2 - NA</code>, which is <code>NA</code>, and a sum told to skip missing values skips those two deaths along with them. Differencing recovers changes; it cannot recover the level a series started at. That is a property of the file rather than a mistake you made, and what to do about it is a decision about what a blank in that column means rather than a change to the code.</p>
 </section><section id="exercises" class="level2" data-number="6.7"><h2 data-number="6.7" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">6.7</span> Exercises</h2>
 <div id="exr-verbs" class="theorem exercise">
@@ -837,7 +837,7 @@ Figure&nbsp;6.1: The same epidemic, twice. Above, the cumulative confirmed count
 <div id="exr-daily-cases" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 6.2 (Difference the deaths series)</strong></span> Apply the same pattern you used for cases to the <code>deaths</code> column: sort by date, then make a <code>daily_deaths</code> column by subtracting the lagged cumulative count.</p>
 <p>Then run both of the checks from this chapter on it. Are there any negative values? Does the total of the daily numbers equal the final cumulative figure? Report exactly what you get from each check, including anything R does with missing values along the way.</p>
-<p>Finally, find the largest single-day increase in deaths and the date it happened. Do not repair the shortfall you find; the next chapter is about where it went.</p>
+<p>Finally, find the largest single-day increase in deaths and the date it happened. Leave the shortfall unrepaired. What the exercise wants is the row it went astray on, named exactly.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">

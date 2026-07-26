@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -411,7 +411,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The <strong>name</strong> is <code>mobility_alert</code>. It goes on the left of <code>&lt;-</code>, exactly like any other assignment, because in R a function is a value you store in a variable. There is nothing special about the name; you could have called it <code>f</code>, and one day at 11pm you will, and three weeks later you will regret it. Name it after what it returns or what it does.</p>
 <p>The <strong>arguments</strong> are <code>df</code> and <code>threshold</code>, in the parentheses after <code>function</code>. Inside the body they behave as ordinary variables. <code>threshold</code> has a <strong>default value</strong> of <code>-30</code>, so a caller who has no opinion can leave it out.</p>
 <p>The <strong>body</strong> is everything between the braces. It is ordinary R code, and it can use the arguments freely.</p>
-<p>The <strong>return value</strong> is the value of the last expression evaluated. There is no <code>return</code> keyword here and it is not needed. R functions return their last expression automatically, so <code>pull(date)</code> is the answer. You will see <code><a href="https://rdrr.io/r/base/function.html">return()</a></code> in other people’s code and it is not wrong, but the idiom in R is to reserve it for early exits, which we will use in a moment.</p>
+<p>The <strong>return value</strong> is the value of the last expression evaluated. There is no <code>return</code> keyword here and it is not needed. R functions return their last expression automatically, so <code>pull(date)</code> is the answer. You will see <code><a href="https://rdrr.io/r/base/function.html">return()</a></code> in other people’s code and it is not wrong, but the idiom in R is to reserve it for an early exit: a check at the top of a function that refuses nonsense input before any of the real work happens.</p>
 <p>Now use it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alert_days</span> <span class="op">&lt;-</span> <span class="fu">mobility_alert</span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
@@ -623,7 +623,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; ! Each element of `x` must be either a data frame or `NULL`.</span></span>
 <span><span class="co">#&gt; ℹ Elements 1 and 2 are not.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>list_rbind()</code> is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it. In <a href="iteration.html" class="quarto-xref"><span>Chapter 12</span></a> you will generate all twelve summaries in one line and stack them; writing <code>month_summary()</code> to return a tibble today is what makes that line short tomorrow.</p>
+<p><code>list_rbind()</code> is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it, which is the whole argument for the shape: a function that returns one row composes with itself. Twelve calls and one <code>list_rbind()</code> give you the year as a table, and the cost of that at the point of writing the function is nothing.</p>
 </section><section id="the-guard-clause" class="level2" data-number="11.7"><h2 data-number="11.7" class="anchored" data-anchor-id="the-guard-clause">
 <span class="header-section-number">11.7</span> The guard clause</h2>
 <p>The <code>if (!start %in% df$month) stop(...)</code> at the top of <code>month_summary()</code> is a <strong>guard clause</strong>: a check that runs before the real work and exits early if the inputs make no sense.</p>

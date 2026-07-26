@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -470,7 +470,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; ! arguments imply differing number of rows: 3, 2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>arguments imply differing number of rows: 3, 2</code> is a good error. It arrives at the moment the mistake is made, not three steps later.</p>
-<p>That constraint is the entire point. Every operation you will learn in the next few chapters, filtering rows, creating columns, grouping and summarising, is built on the guarantee that row <em>i</em> of every column refers to the same observation. <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> can drop 200 rows without you checking that anything stayed aligned, because misalignment is not representable.</p>
+<p>That constraint is the entire point. Every operation on a rectangle, filtering rows, creating columns, grouping and summarising, is built on the guarantee that row <em>i</em> of every column refers to the same observation. <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> can drop 200 rows without you checking that anything stayed aligned, because misalignment is not representable.</p>
 <section id="where-data.frame-lets-you-down" class="level3" data-number="4.2.1"><h3 data-number="4.2.1" class="anchored" data-anchor-id="where-data.frame-lets-you-down">
 <span class="header-section-number">4.2.1</span> Where <code>data.frame()</code> lets you down</h3>
 <p>The constraint has one hole in it, and it is old and unfortunate. If the short vector’s length divides the long one exactly, <code><a href="https://rdrr.io/r/base/data.frame.html">data.frame()</a></code> recycles instead of complaining:</p>
@@ -492,7 +492,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Read that from the right. It <em>is</em> a <code>data.frame</code>, so anything that accepts a data frame accepts it. <code>tbl</code> and <code>tbl_df</code> are the tibble classes, which change how it prints and how it is subsetted. <code>spec_tbl_df</code> is readr’s marker, recording the column specification it worked out while reading the file, which <a href="import.html" class="quarto-xref"><span>Chapter 5</span></a> comes back to.</p>
+<p>Read that from the right. It <em>is</em> a <code>data.frame</code>, so anything that accepts a data frame accepts it. <code>tbl</code> and <code>tbl_df</code> are the tibble classes, which change how it prints and how it is subsetted. <code>spec_tbl_df</code> is readr’s marker, carrying the column specification it worked out while reading the file: which column it took to be a date, which it took to be numbers, which it left as text.</p>
 <p>Three things changed, and each of them fixes something that used to cost people time.</p>
 <section id="printing-tells-you-what-you-have" class="level3" data-number="4.3.1"><h3 data-number="4.3.1" class="anchored" data-anchor-id="printing-tells-you-what-you-have">
 <span class="header-section-number">4.3.1</span> Printing tells you what you have</h3>
@@ -542,7 +542,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Levels: circuit breaker pre</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>Levels: circuit breaker pre</code> is alphabetical, so “circuit breaker” now sorts before “pre” and any plot you make will show them in that order. R 4.0.0 changed the default to <code>FALSE</code>, which is one of the few backwards-incompatible changes the language has ever made, and it was made because this had wasted enough people’s time. Tibbles never did the conversion in the first place.</p>
-<p>Factors are useful, and this book uses one deliberately when it builds a severity variable later. The difference is that it will be your decision.</p>
+<p>Factors are useful when you ask for one. A severity label that ought to read low, medium, high rather than alphabetically is exactly the case for <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code>, because you name the levels in the order you want and everything downstream respects it. The difference is that it is your decision, written in code somebody can point at.</p>
 </section><section id="subsetting-stays-a-data-frame" class="level3" data-number="4.3.3"><h3 data-number="4.3.3" class="anchored" data-anchor-id="subsetting-stays-a-data-frame">
 <span class="header-section-number">4.3.3</span> Subsetting stays a data frame</h3>
 <p>Here is the change that saves the most debugging.</p>

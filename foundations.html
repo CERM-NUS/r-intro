@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -399,7 +399,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header><p>Type <code>2 + 2</code> at the console and R prints <code>4</code>. Type it again and R prints <code>4</code> again. Nothing has been kept, and nothing can be built on. Before you can do anything with 345 days of case counts, R has to hold on to things and give them names, and you have to know what kind of thing it is holding.</p>
 <p>That last part is where beginners lose whole evenings. R will happily let you put a word into a column of numbers, and it will not shout. It will convert the numbers into words instead, and then your average comes back as <code>NA</code> and you have no idea why. This chapter is mostly about giving you the vocabulary to diagnose that in ten seconds rather than an hour.</p>
-<p>The Singapore file is used throughout, so load it now. <code>read_covid()</code> is a small helper that ships with this book; <a href="import.html" class="quarto-xref"><span>Chapter 5</span></a> pulls it apart and shows you what it does. For the moment it hands you the data.</p>
+<p>The Singapore file is used throughout, so load it now. <code>read_covid()</code> is a small helper that ships with this book: it reads <code>data/sg_covid_data.csv</code> and hands back exactly what is in the file, with nothing cleaned and nothing repaired.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -461,7 +461,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">confirmed</span> <span class="op">*</span> <span class="fl">2</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1]  0  2  6  6  8 10 14 14 20 26</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>This is called vectorisation, and it is the reason R code for data analysis is short. Later, when <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> computes a new column for every row of a data frame in one line, it will feel unremarkable, because you already know that arithmetic on a vector means arithmetic on all of it.</p>
+<p>This is called vectorisation, and it is the reason R code for data analysis is short. A column of a table is a vector, so one line of arithmetic lands on all 345 days at once and the code never has to mention how many days there are. In a language without it you would be writing a loop, a counter, and eventually an off-by-one error.</p>
 <p>Here is the same idea doing something useful. The <code>confirmed</code> column is cumulative, a running total. The number of <em>new</em> cases on a given day is that day’s total minus the previous day’s. Shift the vector along by one, stick a zero on the front so the lengths still match, and subtract:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">previous_day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">confirmed</span><span class="op">[</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">confirmed</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
@@ -478,7 +478,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">new_cases</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">confirmed</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The zero on the front is doing real work there, and it is not a fudge. The file starts on 22 January with <code>confirmed</code> equal to zero, so 22 January really did have zero new cases. Writing that day as missing instead would drop a genuine day from every count you make afterwards. <code><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">dplyr::lag()</a></code> does this shifting properly and you will meet it soon; the version above is the same idea with the machinery visible.</p>
+<p>The zero on the front is doing real work there, and it is not a fudge. The file starts on 22 January with <code>confirmed</code> equal to zero, so 22 January really did have zero new cases. Writing that day as missing instead would drop a genuine day from every count you make afterwards. <code><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">dplyr::lag()</a></code> does the same shift in one call, and <code>lag(confirmed, default = 0)</code> is where that zero goes; the version above is the same idea with the machinery visible.</p>
 <section id="subsetting" class="level3" data-number="3.2.1"><h3 data-number="3.2.1" class="anchored" data-anchor-id="subsetting">
 <span class="header-section-number">3.2.1</span> Subsetting</h3>
 <p>Square brackets pick elements out by position, counting from 1 rather than 0.</p>
@@ -496,7 +496,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">new_cases</span> <span class="op">&gt;</span> <span class="fl">1000</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1] "2020-04-20" "2020-04-21" "2020-04-22" "2020-04-23"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Four days in 2020 with more than a thousand new cases, and they run consecutively from 20 April. <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> will do this more readably later, but underneath it is this.</p>
+<p>Four days in 2020 with more than a thousand new cases, and they run consecutively from 20 April. <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> says the same thing more readably, and underneath it is doing exactly this: building a logical vector, then keeping the elements it marked <code>TRUE</code>.</p>
 </section></section><section id="sec-types" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="sec-types">
 <span class="header-section-number">3.3</span> Four types, and one absence</h2>
 <p>Every vector has a type, and every element of a vector has the <em>same</em> type. Four types matter for data work:</p>
@@ -566,7 +566,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">deaths</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 23.75874</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Whether that is the right thing to do is a question about deaths, not about R. The chapter on missing data returns to it at length. What matters here is that R made you ask.</p>
+<p>Whether that is the right thing to do is a question about deaths, not about R. <code>na.rm = TRUE</code> drops the 59 unrecorded days and averages the 286 that remain, so the number you get is the mean of the days the source reported, which is not the mean of 2020. Only you can say which of those you wanted. What matters here is that R made you ask.</p>
 <p>Two more things about <code>NA</code>. Testing it with <code>==</code> does not work, because “an unknown value” is not equal to anything, including another unknown value:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="cn">NA</span> <span class="op">==</span> <span class="cn">NA</span></span>

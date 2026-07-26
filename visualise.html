@@ -84,7 +84,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -497,7 +497,7 @@ Figure&nbsp;10.3: Data, aesthetics, geom. Nothing else is compulsory.
 <section id="why-the-line-is-blue" class="level3" data-number="10.1.1">
 <h3 data-number="10.1.1" class="anchored" data-anchor-id="why-the-line-is-blue"><span class="header-section-number">10.1.1</span> Why the line is blue</h3>
 <p>Out of the box, <code>geom_line()</code> draws in black. The line above is NUS blue because <code>_common.R</code>, the setup file every chapter sources, calls <code>update_geom_defaults()</code> to change the default and <code>theme_set(theme_nus())</code> to change the grid, the fonts and the legend position. That code lives in <code>R/nus_theme.R</code> if you want to read it.</p>
-<p>This matters for one practical reason. When you copy a chunk out of this book into your own script and it comes out looking different, the difference is the house theme, not a mistake on your part. The named colours used later, <code>nus_colours[["crimson"]]</code> and friends, come from the same file and will not exist in a fresh R session.</p>
+<p>This matters for one practical reason. When you copy a chunk out of this book into your own script and it comes out looking different, the difference is the house theme, not a mistake on your part. The named colours this chapter uses, <code>nus_colours[["crimson"]]</code> and friends, come from the same file and will not exist in a fresh R session.</p>
 </section>
 <section id="setting-a-colour-versus-mapping-one" class="level3" data-number="10.1.2">
 <h3 data-number="10.1.2" class="anchored" data-anchor-id="setting-a-colour-versus-mapping-one"><span class="header-section-number">10.1.2</span> Setting a colour versus mapping one</h3>
@@ -577,7 +577,7 @@ Figure&nbsp;10.6: August 2020 on its own. The pipe does the filtering, the plus 
 </section>
 <section id="a-bad-plot-on-purpose" class="level2" data-number="10.3">
 <h2 data-number="10.3" class="anchored" data-anchor-id="a-bad-plot-on-purpose"><span class="header-section-number">10.3</span> A bad plot, on purpose</h2>
-<p>The rest of this chapter is built around plots that come out wrong, because a plot handed over already working teaches you nothing about what to do at 11pm when yours does not.</p>
+<p>A plot handed over already working teaches you nothing about what to do at 11pm when yours does not. So this section is built around plots that come out wrong.</p>
 <p>Here is the standard first move for any numeric variable: look at its distribution.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -699,7 +699,7 @@ Figure&nbsp;10.11: A log axis spreads the tail out and loses the zeros.
 </div>
 </div>
 </div>
-<p>Cost: the 13 days with zero new cases are gone, and both warnings tell you so. There is more on this below, because the same problem turns up on the y axis and matters more there.</p>
+<p>Cost: the 13 days with zero new cases are gone, and both warnings tell you so. <code>log10(0)</code> is <code>-Inf</code>, and no axis has a position for negative infinity, so logging a count variable deletes every zero in it. Here that is 13 days out of 345, all of them in the first seven weeks of the record.</p>
 </section>
 <section id="the-deeper-problem" class="level3" data-number="10.3.4">
 <h3 data-number="10.3.4" class="anchored" data-anchor-id="the-deeper-problem"><span class="header-section-number">10.3.4</span> The deeper problem</h3>

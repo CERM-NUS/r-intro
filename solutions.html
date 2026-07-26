@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -107,32 +107,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script><style>html{ scroll-behavior: smooth; }</style>
-<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 </head>
 <body class="nav-sidebar docked quarto-light">
 
@@ -388,7 +362,7 @@ window.Quarto = {
   <li><a href="#sec-sol-mobility-alert" id="toc-sec-sol-mobility-alert" class="nav-link" data-scroll-target="#sec-sol-mobility-alert"><span class="header-section-number">A.15</span> Generalise the alert</a></li>
   <li><a href="#sec-sol-month-summary" id="toc-sec-sol-month-summary" class="nav-link" data-scroll-target="#sec-sol-month-summary"><span class="header-section-number">A.16</span> Add a judgement to the summary</a></li>
   <li><a href="#sec-sol-loop-vs-lag" id="toc-sec-sol-loop-vs-lag" class="nav-link" data-scroll-target="#sec-sol-loop-vs-lag"><span class="header-section-number">A.17</span> Cumulative deaths, both ways</a></li>
-  <li><a href="#sec-sol-sir-step" id="toc-sec-sol-sir-step" class="nav-link" data-scroll-target="#sec-sol-sir-step"><span class="header-section-number">A.18</span> An SIR model with an intervention</a></li>
+  <li><a href="#sec-sol-tracing-backlog" id="toc-sec-sol-tracing-backlog" class="nav-link" data-scroll-target="#sec-sol-tracing-backlog"><span class="header-section-number">A.18</span> How big does the team need to be?</a></li>
   <li>
 <a href="#sec-sol-sitrep" id="toc-sec-sol-sitrep" class="nav-link" data-scroll-target="#sec-sol-sitrep"><span class="header-section-number">A.19</span> Write the August 2020 situation report</a>
   <ul class="collapse">
@@ -419,7 +393,7 @@ window.Quarto = {
 
 </header><p>Every exercise in the book has an answer here, and every answer on this page was executed to produce the output you see. If a number in a solution disagrees with a number you got, one of us has a bug, and finding out which is more useful than either of us being right.</p>
 <p>Read the exercise first and have a go. A solution you have already attempted teaches you something; a solution you read cold teaches you that R exists.</p>
-<p>Two objects are set up once at the top of this page and used throughout. <code>covid</code> is <code>covid_daily()</code>, the state the book reaches at the end of <a href="conditionals.html" class="quarto-xref"><span>Chapter 8</span></a>, with <code>daily_cases</code>, <code>daily_deaths</code>, <code>severity</code> and <code>month</code> already built. <code>covid_raw</code> is <code>read_covid()</code>, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. Chapters up to and including <a href="conditionals.html" class="quarto-xref"><span>Chapter 8</span></a> build those columns in front of you, so if you are working through the book in order and your object is called something else, that is fine.</p>
+<p>Two objects are set up once at the top of this page and used throughout. <code>covid</code> is <code>covid_daily()</code>, the file with <code>daily_cases</code>, <code>daily_deaths</code>, <code>severity</code> and <code>month</code> already built. <code>covid_raw</code> is <code>read_covid()</code>, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is fine rather than a sign you have gone wrong.</p>
 <section id="sec-sol-vectors" class="level2" data-number="A.1"><h2 data-number="A.1" class="anchored" data-anchor-id="sec-sol-vectors">
 <span class="header-section-number">A.1</span> Build a week by hand</h2>
 <blockquote class="blockquote">
@@ -440,7 +414,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">week_one</span><span class="op">[</span><span class="fl">2</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span> <span class="op">-</span> <span class="va">week_one</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1] 1 2 0 1 1 2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>One, two, zero, one, one, two. Day four had no new cases at all. This is the same arithmetic that <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> does across all 345 rows in <a href="transform.html" class="quarto-xref"><span>Chapter 6</span></a>, written out small enough to see.</p>
+<p>One, two, zero, one, one, two. Day four had no new cases at all. This is the same arithmetic that <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> performs across all 345 rows of the real file, written out small enough to see.</p>
 <p>What this does <em>not</em> give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with <code>lag(confirmed, default = 0)</code>, which is defensible here because <code>confirmed[1]</code> really is 0.</p>
 <p>Part three. Add a label to the front:</p>
 <div class="cell">
@@ -471,7 +445,7 @@ window.Quarto = {
 <span><span class="co">#&gt; [1] 3.333333</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>NA</code> in, <code>NA</code> out. R will not guess what the missing value was, so any arithmetic that touches it is undefined and R says so. <code>na.rm = TRUE</code> drops it and averages the remaining six, giving 3.33.</p>
-<p><strong>What people get wrong.</strong> They reach for <code>na.rm = TRUE</code> as a reflex, because it makes the <code>NA</code> go away and the code stops complaining. It also silently changes the denominator: the second mean is over six days, not seven, and nothing in the output says so. <a href="missing.html" class="quarto-xref"><span>Chapter 7</span></a> is about the cases where that matters, and Singapore’s mobility columns are one of them.</p>
+<p><strong>What people get wrong.</strong> They reach for <code>na.rm = TRUE</code> as a reflex, because it makes the <code>NA</code> go away and the code stops complaining. It also silently changes the denominator: the second mean is over six days, not seven, and nothing in the output says so. On seven values you can see the switch happen. Singapore’s mobility columns are missing on 24 of 345 days, and <code>na.rm = TRUE</code> on one of those hands you an average over 321 days with the word “year” attached to it.</p>
 </section><section id="sec-sol-tibble-anatomy" class="level2" data-number="A.2"><h2 data-number="A.2" class="anchored" data-anchor-id="sec-sol-tibble-anatomy">
 <span class="header-section-number">A.2</span> Take a tibble apart</h2>
 <blockquote class="blockquote">
@@ -630,7 +604,7 @@ window.Quarto = {
 <span><span class="co">#&gt; 6 workplaces_percent_change_from_baseline                   24</span></span>
 <span><span class="co">#&gt; 7 residential_percent_change_from_baseline                  24</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>They do not all have the same number. The six mobility columns have 24 apiece and <code>deaths</code> has 59, and the two gaps have nothing to do with each other. The mobility gap runs from 22 January to 14 February because Google’s baseline period, the median by weekday over 3 January to 6 February 2020, had not finished. The <code>deaths</code> gap runs to 20 March because Singapore had not recorded a COVID-19 death yet, and the source file encodes “none yet” as missing rather than as zero. Two different reasons, two different repairs, and <a href="missing.html" class="quarto-xref"><span>Chapter 7</span></a> takes them apart.</p>
+<p>They do not all have the same number. The six mobility columns have 24 apiece and <code>deaths</code> has 59, and the two gaps have nothing to do with each other. The mobility gap runs from 22 January to 14 February because Google’s baseline period, the median by weekday over 3 January to 6 February 2020, had not finished. The <code>deaths</code> gap runs to 20 March because Singapore had not recorded a COVID-19 death yet, and the source file encodes “none yet” as missing rather than as zero. Two different reasons, and so two different repairs. Nothing can fill in a percentage change against a baseline that had not been computed yet, so the mobility gap stays missing and the columns get reported over 321 days. A death count of “none yet” is a real zero written badly, and you can argue it back to zero as long as you say you did.</p>
 <p>If <code>across()</code> and <code>pivot_longer()</code> are new, <code>colSums(is.na(raw))</code> gets you the same numbers in one line of base R.</p>
 <p>Part four:</p>
 <div class="cell">
@@ -700,7 +674,7 @@ window.Quarto = {
 </div>
 <p>Fifty-six both ways. Twenty-four days of April, thirty-one of May, and the first of June. The <code>+ 1</code> is there because subtracting two dates counts the gaps between them, not the days, and forgetting it is how a period ends up one day short in a report. The agreement between the two numbers is the check: if <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> had come back 55, you would have a missing day in the file rather than an off-by-one in your head.</p>
 <p>The top three rows are 10 April, 1 May and 7 May, all at 83% below baseline. They are Good Friday, Labour Day and Vesak Day. The three deepest workplace-mobility days inside Singapore’s strictest eight weeks of 2020 are public holidays, and the same holds across the whole year: the eight deepest workplace days in 2020 are all public holidays.</p>
-<p><strong>What people get wrong.</strong> Reading a mobility trough as a policy effect. Before you write a sentence about any dip in these series, check the date against a calendar. <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a> comes back to this with the full list of eight.</p>
+<p><strong>What people get wrong.</strong> Reading a mobility trough as a policy effect. Before you write a sentence about any dip in these series, check the date against a calendar.</p>
 </section><section id="sec-sol-daily-cases" class="level2" data-number="A.5"><h2 data-number="A.5" class="anchored" data-anchor-id="sec-sol-daily-cases">
 <span class="header-section-number">A.5</span> Difference the deaths series</h2>
 <blockquote class="blockquote">
@@ -762,7 +736,7 @@ window.Quarto = {
 <span><span class="co">#&gt; 2 2020-03-22      2            0</span></span>
 <span><span class="co">#&gt; 3 2020-03-23      2            0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of <code>na.rm = TRUE</code> puts it back. <a href="missing.html" class="quarto-xref"><span>Chapter 7</span></a> shows the repair, which is a decision about what the leading <code>NA</code>s mean rather than a piece of code.</p>
+<p>Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of <code>na.rm = TRUE</code> puts it back. The repair is a decision about what those leading <code>NA</code>s mean rather than a piece of code. Read them as “no deaths had occurred yet” and 21 March’s increment is 2, the daily figures add to 29, and the check passes. Read them as “not reported” and the honest total is 27 with a footnote. Both are defensible; only one of them can be in your report.</p>
 <p>The largest single-day rise:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deaths_daily</span> <span class="op">%&gt;%</span></span>
@@ -856,7 +830,7 @@ window.Quarto = {
 <p>From the chapter on making decisions: check the three severity counts, find the range of <code>daily_cases</code> inside each label, and work out how far the 100 cutoff could move before anything changed.</p>
 </blockquote>
 <p><a href="./conditionals.html#exr-severity">Back to the exercise</a></p>
-<p>Steps one and two in one call. <code>group_by()</code> and <code>summarise()</code> are the subject of <a href="groups.html" class="quarto-xref"><span>Chapter 9</span></a>, so treat this as a preview:</p>
+<p>Steps one and two in one call. <code>group_by()</code> splits the rows by the value of a column, and <code>summarise()</code> then collapses each group to a single row, so one pipeline gives you the count and the range for all three labels at once:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">severity</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -916,7 +890,7 @@ window.Quarto = {
 <span><span class="co">#&gt; [13] FALSE FALSE FALSE FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>TRUE</code> from 95 through 100 and <code>FALSE</code> either side. The upper cutoff behaves the same way: the largest Medium day is 295 and the smallest High day is 301, so 295 through 300 are interchangeable.</p>
-<p>What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they <em>can</em> argue is what happens at 50, or at 500, and that is the next exercise.</p>
+<p>What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they <em>can</em> argue is what happens at 50, or at 500, where the gap is wide enough to carry real days across a boundary.</p>
 </section><section id="sec-sol-move-cutoffs" class="level2" data-number="A.8"><h2 data-number="A.8" class="anchored" data-anchor-id="sec-sol-move-cutoffs">
 <span class="header-section-number">A.8</span> Move the cutoffs and watch the headline move</h2>
 <blockquote class="blockquote">
@@ -1545,100 +1519,114 @@ window.Quarto = {
 </div>
 <p>The first recorded value is 2, not 1. Two deaths had already occurred by the time the series starts, and differencing recovers changes rather than levels, so those two are unrecoverable from this column. 29 minus 2 is 27, and the arithmetic closes.</p>
 <p>None of that is an error in your code. It is what the file says, and the useful response is to write it down rather than to patch it. <a href="missing.html" class="quarto-xref"><span>Chapter 7</span></a> shows the patch, which is a decision about whether the leading <code>NA</code>s mean “zero deaths so far” or “not reported”, and those two readings give different answers.</p>
-</section><section id="sec-sol-sir-step" class="level2" data-number="A.18"><h2 data-number="A.18" class="anchored" data-anchor-id="sec-sol-sir-step">
-<span class="header-section-number">A.18</span> An SIR model with an intervention</h2>
+</section><section id="sec-sol-tracing-backlog" class="level2" data-number="A.18"><h2 data-number="A.18" class="anchored" data-anchor-id="sec-sol-tracing-backlog">
+<span class="header-section-number">A.18</span> How big does the team need to be?</h2>
 <blockquote class="blockquote">
-<p>Also from the chapter on loops: add a circuit breaker to the SIR model between days 40 and 95, plot the infectious compartment against the unmodified run, and say what happens when the intervention lifts.</p>
+<p>Also from the chapter on loops: turn the tracing backlog into a function of capacity, sweep it across five team sizes, and explain why doubling the team more than halves the peak queue.</p>
 </blockquote>
-<p><a href="./iteration.html#exr-sir-step">Back to the exercise</a></p>
-<p>The trick is that <code>beta</code> does not have to be one number. Make it a vector of length <code>days</code> and index it inside the loop:</p>
+<p><a href="./iteration.html#exr-tracing-backlog">Back to the exercise</a></p>
+<p>The loop is the chapter’s, with the two things that vary lifted into arguments:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sir_run</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">beta</span>, <span class="va">gamma</span> <span class="op">=</span> <span class="fl">0.1</span>, <span class="va">N</span> <span class="op">=</span> <span class="fl">100000</span>, <span class="va">days</span> <span class="op">=</span> <span class="fl">150</span>, <span class="va">I0</span> <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="va">beta</span>, <span class="va">days</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">backlog_run</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">cases</span>, <span class="va">capacity</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cases</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">q</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">cases</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="va">days</span><span class="op">)</span></span>
-<span>  <span class="va">I</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="va">days</span><span class="op">)</span></span>
-<span>  <span class="va">R</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="va">days</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">S</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">N</span> <span class="op">-</span> <span class="va">I0</span></span>
-<span>  <span class="va">I</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">I0</span></span>
-<span>  <span class="va">R</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">days</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">new_infections</span> <span class="op">&lt;-</span> <span class="va">beta</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="va">S</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="va">I</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="va">N</span></span>
-<span>    <span class="va">new_removals</span>   <span class="op">&lt;-</span> <span class="va">gamma</span> <span class="op">*</span> <span class="va">I</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span></span>
-<span></span>
-<span>    <span class="va">S</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">S</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">new_infections</span></span>
-<span>    <span class="va">I</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">I</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">new_infections</span> <span class="op">-</span> <span class="va">new_removals</span></span>
-<span>    <span class="va">R</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">R</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">new_removals</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cases</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">q</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">q</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">cases</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
-<span>  <span class="fu">tibble</span><span class="op">(</span>day <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">days</span>, S <span class="op">=</span> <span class="va">S</span>, I <span class="op">=</span> <span class="va">I</span>, R <span class="op">=</span> <span class="va">R</span><span class="op">)</span></span>
+<span>  <span class="va">q</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Nothing clever, and that is the point. Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a> is about. <code>max(0, ...)</code> stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.</p>
+<p>Then the summary function returns one row, so five of them stack:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">team_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">capacity</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">q</span>     <span class="op">&lt;-</span> <span class="fu">backlog_run</span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span>, <span class="va">capacity</span><span class="op">)</span></span>
+<span>  <span class="va">peak</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.max</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span>  <span class="va">after</span> <span class="op">&lt;-</span> <span class="va">q</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">peak</span><span class="op">]</span></span>
+<span></span>
+<span>  <span class="fu">tibble</span><span class="op">(</span></span>
+<span>    capacity     <span class="op">=</span> <span class="va">capacity</span>,</span>
+<span>    peak_backlog <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span>,</span>
+<span>    peak_date    <span class="op">=</span> <span class="va">covid</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">peak</span><span class="op">]</span>,</span>
+<span>    days_behind  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">q</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    cleared      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">after</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">beta_cb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">150</span><span class="op">)</span></span>
-<span><span class="va">beta_cb</span><span class="op">[</span><span class="fl">40</span><span class="op">:</span><span class="fl">95</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.15</span></span>
+<span><span class="va">teams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">300</span>, <span class="fl">400</span>, <span class="fl">600</span>, <span class="fl">800</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">map</span><span class="op">(</span><span class="va">team_summary</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">list_rbind</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">baseline</span>     <span class="op">&lt;-</span> <span class="fu">sir_run</span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span></span>
-<span><span class="va">intervention</span> <span class="op">&lt;-</span> <span class="fu">sir_run</span><span class="op">(</span><span class="va">beta_cb</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="va">teams</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 5</span></span>
+<span><span class="co">#&gt;   capacity peak_backlog peak_date  days_behind cleared</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;date&gt;           &lt;int&gt; &lt;lgl&gt;  </span></span>
+<span><span class="co">#&gt; 1      200        28974 2020-08-07         267 FALSE  </span></span>
+<span><span class="co">#&gt; 2      300        19172 2020-06-14         184 TRUE   </span></span>
+<span><span class="co">#&gt; 3      400        13270 2020-06-04         132 TRUE   </span></span>
+<span><span class="co">#&gt; 4      600         5192 2020-05-15          64 TRUE   </span></span>
+<span><span class="co">#&gt; 5      800         1487 2020-04-24          21 TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Wrapping the loop in a function is the change that makes this exercise tractable. Two runs means two of everything, and copying the loop and editing one line in the copy is precisely the failure mode <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a> is about. <code>beta[t - 1]</code> rather than <code>beta[t]</code> because the transmission that produces day <code>t</code>’s infections happened on day <code>t - 1</code>, which matches the rest of the loop’s indexing.</p>
-<p>Both runs in one tibble, so they can be plotted together:</p>
+<p><code>cleared</code> has to look only at the days after the peak. Every one of these runs starts at zero and stays there through the quiet first months, so asking “was the queue ever empty” would answer <code>TRUE</code> for all five and tell you nothing.</p>
+<p>The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year’s mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an average is how you end up permanently underwater, because the average is a summary of a series whose median is 40 and whose maximum is 1,426.</p>
+<p>The two runs the question asks about, drawn together:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">runs</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
-<span>  <span class="va">baseline</span>     <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>run <span class="op">=</span> <span class="st">"No intervention"</span><span class="op">)</span>,</span>
-<span>  <span class="va">intervention</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>run <span class="op">=</span> <span class="st">"Beta halved, days 40-95"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">600</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">map</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">tibble</span><span class="op">(</span>date <span class="op">=</span> <span class="va">covid</span><span class="op">$</span><span class="va">date</span>, backlog <span class="op">=</span> <span class="fu">backlog_run</span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span>, <span class="va">k</span><span class="op">)</span>,</span>
+<span>           team <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">k</span>, <span class="st">"a day"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">list_rbind</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">runs</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">day</span>, y <span class="op">=</span> <span class="va">I</span>, colour <span class="op">=</span> <span class="va">run</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">annotate</span><span class="op">(</span><span class="st">"rect"</span>, xmin <span class="op">=</span> <span class="fl">40</span>, xmax <span class="op">=</span> <span class="fl">95</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>, ymax <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>           fill <span class="op">=</span> <span class="va">nus_colours</span><span class="op">[[</span><span class="st">"muted"</span><span class="op">]</span><span class="op">]</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">runs</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">backlog</span>, colour <span class="op">=</span> <span class="va">team</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_x_date</span><span class="op">(</span>date_labels <span class="op">=</span> <span class="st">"%b"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">label_comma</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="st">"Day"</span>, y <span class="op">=</span> <span class="st">"Infectious"</span>, colour <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"The intervention flattens the peak and leaves a second one behind"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Illustrative parameters. Not a model of Singapore."</span></span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Cases waiting"</span>, colour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Twice the team, less than a third of the queue"</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Illustrative capacities. Not Singapore's actual tracing capacity."</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
-<figure class="figure"><p><img src="solutions_files/figure-html/sol-sir-2-1.svg" class="img-fluid figure-img"></p>
-<figcaption>A 56-day reduction in transmission from day 40, against the unmodified run. Illustrative parameters, not fitted to any data.</figcaption></figure>
+<figure class="figure"><p><img src="solutions_files/figure-html/sol-backlog-3-1.svg" class="img-fluid figure-img"></p>
+<figcaption>Tracing backlog under two team sizes, applied to Singapore’s 2020 reported cases. Illustrative capacities, not figures published by anyone.</figcaption></figure>
 </div>
 </div>
 </div>
-<p>The two questions, answered from the output rather than from what a model is supposed to do:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tibble</span><span class="op">(</span></span>
-<span>  run       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"No intervention"</span>, <span class="st">"Beta halved, days 40-95"</span><span class="op">)</span>,</span>
-<span>  peak_day  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">baseline</span><span class="op">$</span><span class="va">day</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.max</a></span><span class="op">(</span><span class="va">baseline</span><span class="op">$</span><span class="va">I</span><span class="op">)</span><span class="op">]</span>,</span>
-<span>                <span class="va">intervention</span><span class="op">$</span><span class="va">day</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.max</a></span><span class="op">(</span><span class="va">intervention</span><span class="op">$</span><span class="va">I</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  peak_I    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">baseline</span><span class="op">$</span><span class="va">I</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">intervention</span><span class="op">$</span><span class="va">I</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  final_R   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">baseline</span><span class="op">$</span><span class="va">R</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">intervention</span><span class="op">$</span><span class="va">R</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">teams</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">capacity</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">600</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">capacity</span>, <span class="va">peak_backlog</span>, <span class="va">days_behind</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    backlog_ratio <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">peak_backlog</span> <span class="op">/</span> <span class="va">peak_backlog</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    days_ratio    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">days_behind</span> <span class="op">/</span> <span class="va">days_behind</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
+<span><span class="co">#&gt;   capacity peak_backlog days_behind backlog_ratio days_ratio</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;        &lt;dbl&gt;       &lt;int&gt;         &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1      300        19172         184          1          1   </span></span>
+<span><span class="co">#&gt; 2      600         5192          64          0.27       0.35</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Doubling the team cuts the peak backlog to 27% of what it was, from 19,172 to 5,192, and the days spent behind to 35%, from 184 to 64. Both are much better than halving.</p>
+<p>The reason is that the backlog is built only out of the days when arrivals exceed capacity, and raising capacity attacks those days twice over. It shrinks what each overflow day contributes: 1 May had 932 cases, which is 632 over a team of 300 and 332 over a team of 600. And it removes days from the overflow entirely, because 77 days of 2020 had more than 300 cases and only 29 had more than 600.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">tibble</span><span class="op">(</span></span>
+<span>  capacity   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">600</span><span class="op">)</span>,</span>
+<span>  days_over  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">600</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  total_over <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">-</span> <span class="fl">300</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">-</span> <span class="fl">600</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
-<span><span class="co">#&gt;   run                     peak_day peak_I final_R</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                      &lt;int&gt;  &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 No intervention               55  31211   94649</span></span>
-<span><span class="co">#&gt; 2 Beta halved, days 40-95       55  12072   76470</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span><span class="co">#&gt;   capacity days_over total_over</span></span>
+<span><span class="co">#&gt;      &lt;dbl&gt;     &lt;int&gt;      &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1      300        77      20933</span></span>
+<span><span class="co">#&gt; 2      600        29       6091</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The peak gets much smaller, from about 31,200 infectious to about 12,100, and with these parameters it does not get later at all. Both peak on day 55. That surprised me the first time and it has a clean explanation: the peak occurs when susceptibles fall to <span class="math inline">\(\gamma N / \beta\)</span>, and halving <span class="math inline">\(\beta\)</span> doubles that threshold, so the intervention run reaches its (higher) threshold at roughly the same time the baseline reaches its (lower) one. Change the dates or the depth of the intervention and the peaks separate. The generalisation “interventions delay the peak” is not something the arithmetic guarantees.</p>
-<p>After day 95 the intervention lifts and there is a second rise:</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">intervention</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">day</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">95</span>, <span class="fl">100</span>, <span class="fl">108</span>, <span class="fl">120</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">S</span>, <span class="va">I</span>, <span class="va">R</span><span class="op">)</span>, <span class="va">round</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 5 × 4</span></span>
-<span><span class="co">#&gt;     day     S     I     R</span></span>
-<span><span class="co">#&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1    95 38867  4157 56976</span></span>
-<span><span class="co">#&gt; 2   100 36771  4208 59021</span></span>
-<span><span class="co">#&gt; 3   108 33127  4396 62477</span></span>
-<span><span class="co">#&gt; 4   120 28367  4018 67615</span></span>
-<span><span class="co">#&gt; 5   150 21722  1808 76470</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Infections bottom out around day 95 and climb again to a local peak near day 108. The reason is in the <code>S</code> column. At day 95 the intervention run still has 38,867 susceptibles against the baseline’s 5,713. With <span class="math inline">\(\beta\)</span> back at 0.3 and <span class="math inline">\(\gamma\)</span> at 0.1, each infectious person infects more than one other while <span class="math inline">\(S/N\)</span> stays above one third, so the epidemic restarts.</p>
-<p>Would I have predicted it? The direction, yes, once you look at where the susceptibles are. The size, no. The final attack rate falls from 95% to 76%, so the intervention prevented about 18,000 infections in a population of 100,000 despite the rebound, which is more than the shape of the curve suggests at a glance. Suppression without immunity postpones; it does not cancel. Whether the postponement is worth it depends on what you do with the time, and that is not a question this model contains.</p>
+<p>Total overflow across the year falls from 20,933 to 6,091, a factor of 3.4, and the peak follows it down by a factor of 3.7.</p>
+<p>What makes this happen is the shape of the case series rather than anything about queues in the abstract. Singapore’s 2020 daily counts are heavily skewed, with a median of 40 against a maximum of 1,426, so most days are nowhere near capacity at either team size and the whole queue is decided by about two months in the middle of the year. Capacity added above the bulk of a distribution buys more than capacity added inside it. The practical version of that: if you are asked how many contact tracers to hire, the answer depends on the shape of the peak you expect and not on the total you expect, and those two numbers can move in opposite directions.</p>
 </section><section id="sec-sol-sitrep" class="level2" data-number="A.19"><h2 data-number="A.19" class="anchored" data-anchor-id="sec-sol-sitrep">
 <span class="header-section-number">A.19</span> Write the August 2020 situation report</h2>
 <blockquote class="blockquote">
@@ -1647,7 +1635,7 @@ window.Quarto = {
 <p><a href="./capstone.html#exr-sitrep">Back to the exercise</a></p>
 <p>August’s decision is 5 August, and everything below turns on how it gets handled. So the maximum, the median and the date of the maximum come out first, before anything else is computed:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">report_month</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-08-01"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">report_month</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-08-01"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">august</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="va">report_month</span><span class="op">)</span></span>
 <span></span>
@@ -1671,7 +1659,7 @@ window.Quarto = {
 </div>
 <p>A mean of 148.6 and a median of 91. When those two are that far apart, the mean is describing one day rather than the month. Look at the top of the distribution:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">slice_max</span><span class="op">(</span><span class="va">daily_cases</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_cases</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 2</span></span>
@@ -1686,7 +1674,7 @@ window.Quarto = {
 <p>908 on 5 August, and the next highest day is 313. One day carries 19.7% of the month’s cases. This is the decision the exercise refers to, and the wrong response is to delete the day. It happened, the cases were real, and MOH attributed the count to clearance testing in the dormitories picking up past infections: 903 of the 908 were dormitory residents and 581 were linked to a single cluster at Acacia Lodge. A case detected on 5 August was not necessarily an infection that occurred on 5 August, and that distinction belongs in the report, not in a filter.</p>
 <p>So I report both figures and say why:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-08-05"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span></span>
 <span>    days         <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
@@ -1705,7 +1693,7 @@ window.Quarto = {
 <section id="the-table" class="level3" data-number="A.19.1"><h3 data-number="A.19.1" class="anchored" data-anchor-id="the-table">
 <span class="header-section-number">A.19.1</span> The table</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august_weeks</span> <span class="op">&lt;-</span> <span class="va">august</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august_weeks</span> <span class="op">&lt;-</span> <span class="va">august</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>week <span class="op">=</span> <span class="fu">floor_date</span><span class="op">(</span><span class="va">date</span>, <span class="st">"week"</span>, week_start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">week</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span></span>
@@ -1732,7 +1720,7 @@ window.Quarto = {
 </section><section id="the-first-figure" class="level3" data-number="A.19.2"><h3 data-number="A.19.2" class="anchored" data-anchor-id="the-first-figure">
 <span class="header-section-number">A.19.2</span> The first figure</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spike</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-08-05"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">spike</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-08-05"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_aug_cases</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">august</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">daily_cases</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_col</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">nus_colours</span><span class="op">[[</span><span class="st">"blue"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1761,7 +1749,7 @@ window.Quarto = {
 <span class="header-section-number">A.19.3</span> The second figure</h3>
 <p>The case curve says what was reported. The second figure has to answer a different question, and in August the interesting one is whether anything else changed while cases fell:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august_mobility</span> <span class="op">&lt;-</span> <span class="va">august</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">august_mobility</span> <span class="op">&lt;-</span> <span class="va">august</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span></span>
 <span>    <span class="va">date</span>,</span>
 <span>    `Retail and recreation` <span class="op">=</span> <span class="va">retail_and_recreation_percent_change_from_baseline</span>,</span>

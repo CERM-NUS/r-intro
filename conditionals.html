@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-d219ee7c6873e341797908e32d3834fe.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-e42765805c7f8173c3573882f76689eb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -352,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-boundaries-are-real-days" id="toc-the-boundaries-are-real-days" class="nav-link" data-scroll-target="#the-boundaries-are-real-days"><span class="header-section-number">8.5</span> The boundaries are real days</a></li>
   <li><a href="#missing-values-fall-straight-through" id="toc-missing-values-fall-straight-through" class="nav-link" data-scroll-target="#missing-values-fall-straight-through"><span class="header-section-number">8.6</span> Missing values fall straight through</a></li>
   <li><a href="#table-sorts-alphabetically-and-that-is-wrong-here" id="toc-table-sorts-alphabetically-and-that-is-wrong-here" class="nav-link" data-scroll-target="#table-sorts-alphabetically-and-that-is-wrong-here"><span class="header-section-number">8.7</span> <code>table()</code> sorts alphabetically, and that is wrong here</a></li>
-  <li><a href="#what-the-rest-of-the-book-starts-from" id="toc-what-the-rest-of-the-book-starts-from" class="nav-link" data-scroll-target="#what-the-rest-of-the-book-starts-from"><span class="header-section-number">8.8</span> What the rest of the book starts from</a></li>
+  <li><a href="#the-dataset-assembled" id="toc-the-dataset-assembled" class="nav-link" data-scroll-target="#the-dataset-assembled"><span class="header-section-number">8.8</span> The dataset, assembled</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">8.9</span> Exercises</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/conditionals.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/conditionals.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
@@ -373,7 +373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </header><p>Nobody reading a surveillance report sees “1,426” and thinks “1,426”. They think “bad day”. Most of what routine epidemiological reporting does is turn numbers into labels, and R hands you two entirely different tools for the job. One of them decides what your <em>script</em> does next. The other decides what goes in a <em>column</em>. Beginners reach for the first when they need the second roughly every time, and the result is either a red error or, worse, an answer that is correct for one row and quietly wrong for the other 344.</p>
-<p>This chapter sorts out which is which, and then builds the column the rest of the book leans on: a severity label for every day of 2020.</p>
+<p>This chapter sorts out which is which, and then builds the column that turns 345 numbers into something you can put in a report: a severity label for every day of 2020.</p>
 <section id="where-we-are" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="where-we-are">
 <span class="header-section-number">8.1</span> Where we are</h2>
 <p>Everything here starts from the daily counts you built in the previous chapter. The file ships cumulative totals, so a day’s new cases is today’s total minus yesterday’s, and <code>lag(confirmed, default = 0)</code> supplies the “yesterday” for the very first row. That default matters: <code>confirmed</code> is 0 on 22 January, so day one had a real zero of new cases, not a missing one.</p>
@@ -491,7 +491,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 Low        215</span></span>
 <span><span class="co">#&gt; 3 Medium      53</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The <code>~</code> separates the test from the result. You will meet that squiggle again in formulas and in ggplot facets; here it means “gives”.</p>
+<p>The <code>~</code> separates the test from the result. R uses that squiggle wherever the two sides of a relationship have to sit in one expression, which is why it also turns up in modelling formulas and in ggplot facet specifications; inside <code>case_when()</code> it means “gives”.</p>
 <p><code>case_when()</code> works top to bottom and <strong>first match wins</strong>. Once a row matches a line, later lines never see it. That is what lets the second condition be <code>daily_cases &lt;= 300</code> and not <code>daily_cases &gt;= 100 &amp; daily_cases &lt;= 300</code>: any row still being tested on line two already failed line one, so it already has at least 100 cases.</p>
 <p>Which also means the order is load-bearing. Swap the first two lines and the arithmetic is identical but the answer is not:</p>
 <div class="cell">
@@ -678,9 +678,9 @@ Figure&nbsp;8.1: The same 345 days, counted twice. Only the ordering differs.
 <span><span class="co">#&gt;      0     53     77    215</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A lower-case <code>l</code> sent 215 days to <code>NA</code> without a word of complaint. After you create a factor, run <code>table(..., useNA = "ifany")</code> or <code>count()</code> once and check the total still matches your row count. Two seconds, and it catches this every time.</p>
-</section><section id="what-the-rest-of-the-book-starts-from" class="level2" data-number="8.8"><h2 data-number="8.8" class="anchored" data-anchor-id="what-the-rest-of-the-book-starts-from">
-<span class="header-section-number">8.8</span> What the rest of the book starts from</h2>
-<p>Putting the pieces together, here is the dataset from this point on: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a <code>month</code> column produced by rounding each date down to the first of its month.</p>
+</section><section id="the-dataset-assembled" class="level2" data-number="8.8"><h2 data-number="8.8" class="anchored" data-anchor-id="the-dataset-assembled">
+<span class="header-section-number">8.8</span> The dataset, assembled</h2>
+<p>Putting the pieces together, here is the whole thing in one block: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a <code>month</code> column produced by rounding each date down to the first of its month.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -707,7 +707,7 @@ Figure&nbsp;8.1: The same 345 days, counted twice. Only the ordering differs.
 <span><span class="co">#&gt; 3 2020-04-17         623            1 High     2020-04-01</span></span>
 <span><span class="co">#&gt; 4 2020-04-18         942            0 High     2020-04-01</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That block is exactly what <code>covid_daily()</code> runs. Later chapters open with <code>covid &lt;- covid_daily()</code> instead of retyping it, and <code>_common.R</code> in the project root holds the definition if you want to read it. Nothing is hidden in there that you have not now built by hand.</p>
+<p>That block is exactly what <code>covid_daily()</code> runs. The definition sits in <code>_common.R</code> in the project root, where you can open it and read it, so <code>covid &lt;- covid_daily()</code> rebuilds this table in one line whenever you want it back in a fresh session. Nothing is hidden in there that you have not now built by hand.</p>
 </section><section id="exercises" class="level2" data-number="8.9"><h2 data-number="8.9" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">8.9</span> Exercises</h2>
 <div id="exr-severity" class="theorem exercise">
@@ -731,7 +731,7 @@ Figure&nbsp;8.1: The same 345 days, counted twice. Only the ordering differs.
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>group_by(severity)</code> followed by a <code>summarise()</code> containing <code>n()</code>, <code><a href="https://rdrr.io/r/base/Extremes.html">min()</a></code> and <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> answers steps 1 and 2 in one call, and grouping is the next chapter so treat this as a preview rather than something you should already know. For the <code>NA</code> check, <code>count()</code> shows a missing category if one exists.</p>
+<p><code>group_by(severity)</code> followed by a <code>summarise()</code> containing <code>n()</code>, <code><a href="https://rdrr.io/r/base/Extremes.html">min()</a></code> and <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> answers steps 1 and 2 in one call: <code>group_by()</code> splits the rows into one pile per label, and <code>summarise()</code> computes one row of answers for each pile. If you would rather stay with verbs you have already used, a <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> per label and a <code><a href="https://rdrr.io/r/base/range.html">range()</a></code> on each gets you the same three pairs of numbers with more typing. For the <code>NA</code> check, <code>count()</code> shows a missing category if one exists.</p>
 </div>
 </div>
 </div>
