@@ -345,7 +345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#count-does-the-obvious-thing" id="toc-count-does-the-obvious-thing" class="nav-link active" data-scroll-target="#count-does-the-obvious-thing"><span class="header-section-number">9.1</span> <code>count()</code> does the obvious thing</a></li>
+<li><a href="#counting-with-count" id="toc-counting-with-count" class="nav-link active" data-scroll-target="#counting-with-count"><span class="header-section-number">9.1</span> Counting with <code>count()</code></a></li>
   <li>
 <a href="#group_by-and-summarise" id="toc-group_by-and-summarise" class="nav-link" data-scroll-target="#group_by-and-summarise"><span class="header-section-number">9.2</span> <code>group_by()</code> and <code>summarise()</code></a>
   <ul class="collapse">
@@ -356,8 +356,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#grouped-mutate-keeps-every-row" id="toc-grouped-mutate-keeps-every-row" class="nav-link" data-scroll-target="#grouped-mutate-keeps-every-row"><span class="header-section-number">9.3</span> Grouped <code>mutate()</code> keeps every row</a></li>
   <li><a href="#grouping-by-month-done-twice" id="toc-grouping-by-month-done-twice" class="nav-link" data-scroll-target="#grouping-by-month-done-twice"><span class="header-section-number">9.4</span> Grouping by month, done twice</a></li>
   <li><a href="#months-are-not-the-same-length" id="toc-months-are-not-the-same-length" class="nav-link" data-scroll-target="#months-are-not-the-same-length"><span class="header-section-number">9.5</span> Months are not the same length</a></li>
-  <li><a href="#the-report-is-a-data-frame" id="toc-the-report-is-a-data-frame" class="nav-link" data-scroll-target="#the-report-is-a-data-frame"><span class="header-section-number">9.6</span> The report is a data frame</a></li>
-  <li><a href="#checking-september-against-something-else" id="toc-checking-september-against-something-else" class="nav-link" data-scroll-target="#checking-september-against-something-else"><span class="header-section-number">9.7</span> Checking September against something else</a></li>
+  <li><a href="#returning-a-table-rather-than-printed-lines" id="toc-returning-a-table-rather-than-printed-lines" class="nav-link" data-scroll-target="#returning-a-table-rather-than-printed-lines"><span class="header-section-number">9.6</span> Returning a table rather than printed lines</a></li>
+  <li><a href="#checking-september-against-the-cumulative-column" id="toc-checking-september-against-the-cumulative-column" class="nav-link" data-scroll-target="#checking-september-against-the-cumulative-column"><span class="header-section-number">9.7</span> Checking September against the cumulative column</a></li>
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.8</span> Exercises</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/groups.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/groups.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
@@ -377,11 +377,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Almost nothing you are asked for in public health is a number about the whole dataset. It is a number per month, per ward, per age band, per vaccination status. “How many cases were there in 2020” is a trivia question. “How did the monthly average move across the circuit breaker” is an actual question, and answering it means splitting 345 rows into piles, computing something in each pile, and gluing the answers back into a table.</p>
-<p>dplyr calls that split-apply-combine, and it is two verbs: <code>group_by()</code> to say what the piles are, <code>summarise()</code> to say what to compute in each. Before either of them, though, there is <code>count()</code>, which does the most common case in one word.</p>
+</header><p>Most quantities asked for in public health are not summaries of a whole dataset. They are summaries within subgroups: per month, per ward, per age band, per vaccination status. Answering a question such as how the monthly average moved across the circuit breaker means splitting the 345 rows into groups, computing something within each group, and combining the results back into a table.</p>
+<p>dplyr calls this split-apply-combine, and it takes two verbs: <code>group_by()</code> to declare the groups, and <code>summarise()</code> to say what to compute within each. <code>count()</code> comes first below, because it handles the most common case in a single call.</p>
 <p>Every chunk below uses <code>covid</code>, the dataset you finished the last chapter with. In your own session, <code>covid &lt;- covid_daily()</code> rebuilds it: daily counts differenced out of the cumulative columns, <code>severity</code> as an ordered factor, and a <code>month</code> column.</p>
-<section id="count-does-the-obvious-thing" class="level2" data-number="9.1"><h2 data-number="9.1" class="anchored" data-anchor-id="count-does-the-obvious-thing">
-<span class="header-section-number">9.1</span> <code>count()</code> does the obvious thing</h2>
+<section id="counting-with-count" class="level2" data-number="9.1"><h2 data-number="9.1" class="anchored" data-anchor-id="counting-with-count">
+<span class="header-section-number">9.1</span> Counting with <code>count()</code>
+</h2>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">severity</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
@@ -392,7 +393,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 3 High        77</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>215 days Low, 53 Medium, 77 High. The column of counts is called <code>n</code>, which is dplyr’s convention everywhere.</p>
-<p><code>sort = TRUE</code> puts the biggest pile first, which is what you want when there are forty categories and you care about the top few:</p>
+<p><code>sort = TRUE</code> puts the largest group first, which helps when there are forty categories and only the top few are of interest:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">severity</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
@@ -427,11 +428,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 17 2020-11-01 Low         30</span></span>
 <span><span class="co">#&gt; 18 2020-12-01 Low         31</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Combinations that never happened are absent rather than zero. January has one row, not three, because there were no Medium or High days in January. That is <code>count()</code> behaving reasonably and it is also a trap: if you feed this straight into a plot, the missing zeroes leave holes. <code>count(month, severity, .drop = FALSE)</code> keeps the empty factor levels when you need a complete grid.</p>
+<p>Combinations that never happened are absent rather than zero. January has one row, not three, because there were no Medium or High days in January. This is the documented behaviour, and it can catch you out: a plot built directly from such a table has gaps where the absent combinations would have been. <code>count(month, severity, .drop = FALSE)</code> keeps the empty factor levels when you need a complete grid.</p>
 </section><section id="group_by-and-summarise" class="level2" data-number="9.2"><h2 data-number="9.2" class="anchored" data-anchor-id="group_by-and-summarise">
 <span class="header-section-number">9.2</span> <code>group_by()</code> and <code>summarise()</code>
 </h2>
-<p><code>count()</code> is a shorthand. The long form spells out both halves, and once you can write the long form you can compute anything, not only counts.</p>
+<p><code>count()</code> is a shorthand. The long form spells out both halves and computes any summary you can write, not only counts.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">severity</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -447,12 +448,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 Medium      53      195.    295</span></span>
 <span><span class="co">#&gt; 3 High        77      572.   1426</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>group_by()</code> changes nothing about the data. It attaches a note saying “treat this as three piles”. <code>summarise()</code> reads the note, runs each expression once per pile, and returns one row per pile. The 345-row dataset becomes a 3-row table, and every column in the output is something you asked for by name.</p>
+<p><code>group_by()</code> does not change the data. It attaches metadata recording which rows belong to which group. <code>summarise()</code> reads that metadata, evaluates each expression once per group, and returns one row per group. The 345-row dataset becomes a 3-row table containing only the columns named in the call.</p>
 <p><code>n()</code> is special: it takes no arguments and returns the number of rows in the current group. It only works inside dplyr verbs, because outside one there is no “current group” for it to count.</p>
 <section id="counting-with-sum" class="level3" data-number="9.2.1"><h3 data-number="9.2.1" class="anchored" data-anchor-id="counting-with-sum">
 <span class="header-section-number">9.2.1</span> Counting with <code>sum()</code>
 </h3>
-<p>Here is the idiom worth memorising. In R, <code>TRUE</code> is 1 and <code>FALSE</code> is 0 when you do arithmetic on them. So <code><a href="https://rdrr.io/r/base/sum.html">sum()</a></code> of a condition counts how many times it was true:</p>
+<p>In R, <code>TRUE</code> is 1 and <code>FALSE</code> is 0 in arithmetic, so <code><a href="https://rdrr.io/r/base/sum.html">sum()</a></code> of a condition counts how many times the condition was true:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span></span>
@@ -465,8 +466,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;    &lt;int&gt;       &lt;int&gt;     &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1     77          13     0.223</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>77 High days, 13 days with no new cases at all, and High days were 22% of the year. <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> of the same condition gives the proportion, for the same reason: the average of a pile of ones and zeros is the fraction that are ones.</p>
-<p>This idiom composes with grouping, which is where it earns its keep, and it saves you from the awkward alternative of filtering and then counting rows. One warning, and it will bite you on this dataset:</p>
+<p>77 High days, 13 days with no new cases at all, and High days were 22% of the year. <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> of the same condition gives the proportion, for the same reason: the average of a vector of ones and zeros is the fraction that are ones.</p>
+<p>The same expressions work inside a grouped <code>summarise()</code>, which is where they are most useful, and they avoid the alternative of filtering and then counting rows. One caveat applies on this dataset:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span></span>
@@ -477,7 +478,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;        &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1         NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>NA</code>. The deaths column is missing for the first 59 days of 2020, so 60 of the comparisons return <code>NA</code>, and a sum containing <code>NA</code> is <code>NA</code>. R is telling you it cannot answer, which is correct: it does not know whether those days had deaths. Add <code>na.rm = TRUE</code> only once you have decided that treating “not reported” as “no deaths” is defensible for what you are writing.</p>
+<p><code>NA</code>. The deaths column is missing for the first 59 days of 2020, so 60 of the comparisons return <code>NA</code>, and a sum containing <code>NA</code> is <code>NA</code>. The result reports that R cannot answer, which is accurate: it has no information about whether those days had deaths. Add <code>na.rm = TRUE</code> once you have decided that treating “not reported” as “no deaths” is defensible for what you are writing.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">summarise</span><span class="op">(</span></span>
@@ -488,7 +489,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;        &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1         25</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>25 days on which the cumulative death total went up. Not 29 deaths, and not 27 either. Those are three different quantities and the distinction is the previous chapter’s problem, not this one’s.</p>
+<p>25 days on which the cumulative death total went up. That is not the same as 29 deaths, and not the same as 27 either. Those are three different quantities, and the previous chapter deals with the distinction between them.</p>
 </section><section id="the-.groups-message" class="level3" data-number="9.2.2"><h3 data-number="9.2.2" class="anchored" data-anchor-id="the-.groups-message">
 <span class="header-section-number">9.2.2</span> The <code>.groups</code> message</h3>
 <p>Group by two things and <code>summarise()</code> says something on the way out:</p>
@@ -527,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 17 2020-11-01 Low         30</span></span>
 <span><span class="co">#&gt; 18 2020-12-01 Low         31</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Read it rather than fleeing from it. You grouped by two variables, <code>summarise()</code> consumed the last one, and the result is still grouped by <code>month</code>. That matters, because the next verb in your pipeline will operate per month whether or not you wanted it to. Nothing has gone wrong; dplyr is warning you that the object in your hand is not a plain table.</p>
+<p>The message reports what happened: you grouped by two variables, <code>summarise()</code> consumed the last one, and the result is still grouped by <code>month</code>. That matters, because the next verb in the pipeline will operate per month whether or not you intended it to. Nothing has gone wrong; the message records that the returned object is a grouped table rather than a plain one.</p>
 <p>State your intention and the message goes away:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
@@ -555,10 +556,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 17 2020-11-01 Low         30</span></span>
 <span><span class="co">#&gt; 18 2020-12-01 Low         31</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>.groups = "drop"</code> returns an ungrouped table. <code>.groups = "drop_last"</code> keeps the old behaviour explicitly. Use <code>"drop"</code> unless you have a reason not to, and reach for <code>ungroup()</code> if you inherit a grouped object from somewhere else. Leftover grouping is one of the most common sources of a number that is right in your head and wrong on the screen.</p>
+<p><code>.groups = "drop"</code> returns an ungrouped table. <code>.groups = "drop_last"</code> states the default behaviour explicitly. Use <code>"drop"</code> unless you need the remaining grouping, and use <code>ungroup()</code> when a grouped object arrives from elsewhere. Leftover grouping is a common cause of summaries computed per group when a whole-table figure was intended.</p>
 </section></section><section id="grouped-mutate-keeps-every-row" class="level2" data-number="9.3"><h2 data-number="9.3" class="anchored" data-anchor-id="grouped-mutate-keeps-every-row">
 <span class="header-section-number">9.3</span> Grouped <code>mutate()</code> keeps every row</h2>
-<p><code>summarise()</code> collapses. <code>mutate()</code> does not. Group first and <code>mutate()</code> still returns one row per input row, but the calculations inside it see only the current group. That is how you compare each day with its own month.</p>
+<p><code>summarise()</code> collapses each group to one row; <code>mutate()</code> does not. Group first and <code>mutate()</code> still returns one row per input row, but the calculations inside it see only the current group. This is how you compare each day with its own month.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -588,8 +589,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 3 2020-08-01         307         0.0666</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>sum(daily_cases)</code> inside a grouped <code>mutate()</code> is August’s total, repeated down every August row, so the division gives each day’s share of its own month. If you had run the same <code><a href="https://rdrr.io/r/base/sum.html">sum()</a></code> without grouping you would have divided by 58,599 and got a very small number for everything.</p>
-<p>Look at what it found. 5 August 2020 alone accounts for nearly a fifth of the month. August’s median day was 91 cases and the next highest day was 313, so 908 is not the shape of an epidemic curve. MOH’s account at the time attributed the bulk of it to clearance testing in the dormitories: 903 of the 908 were dormitory residents and 581 were linked to a single cluster at Acacia Lodge, many of them past infections detected by that testing rather than new transmission on the day. A monthly mean will fold that spike straight into August’s average without comment, which is why a grouped <code>mutate()</code> that shows you each day against its own month is a diagnostic worth running before you summarise anything.</p>
-<p>The rule of thumb: use <code>summarise()</code> when the answer has fewer rows than the input, and a grouped <code>mutate()</code> when the answer has the same number of rows but each one needs to know something about its neighbours.</p>
+<p>5 August 2020 alone accounts for nearly a fifth of the month. August’s median day was 91 cases and the next highest day was 313, so 908 is not a plausible point on an epidemic curve. MOH’s account at the time attributed the bulk of it to clearance testing in the dormitories: 903 of the 908 were dormitory residents and 581 were linked to a single cluster at Acacia Lodge, many of them past infections detected by that testing rather than new transmission on the day. A monthly mean folds that spike into August’s average without comment, so comparing each day against its own month is a useful check to run before summarising.</p>
+<p>The rule of thumb: use <code>summarise()</code> when the answer has fewer rows than the input, and a grouped <code>mutate()</code> when the answer has the same number of rows but each row needs a value computed from the rest of its group.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">group_by</span><span class="op">(</span><span class="va">month</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">daily_cases</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 345</span></span>
@@ -625,7 +626,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 2020-02      29</span></span>
 <span><span class="co">#&gt; 3 2020-03      31</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That works. It gives the right twelve groups in the right order and, for a one-off count, nobody would be harmed. But look at what it produced:</p>
+<p>That works: it gives the right twelve groups in the right order, and for a one-off count it is adequate. The class of the column it creates is worth checking, though:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>month_chr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">date</span>, <span class="fl">1</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -633,8 +634,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "character"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code><a href="https://rdrr.io/r/base/substr.html">substr()</a></code> has no idea what a <code>Date</code> is. It calls <code><a href="https://rdrr.io/r/base/character.html">as.character()</a></code> on the way in, chops the text, and hands you back text. Your grouping variable is now a string that happens to look like a date, and three things follow.</p>
-<p>The ordering is correct by luck. ISO-8601 strings sort chronologically when sorted alphabetically, which is the entire reason the format was designed that way, and it is why nobody notices this problem on their first dataset. Read the file in with a different date format and the luck runs out silently:</p>
+<p><code><a href="https://rdrr.io/r/base/substr.html">substr()</a></code> has no method for <code>Date</code> objects. It calls <code><a href="https://rdrr.io/r/base/character.html">as.character()</a></code> on its input, chops the text, and returns text. The grouping variable is now a string that looks like a date, and three consequences follow.</p>
+<p>The ordering is correct here, but only because of the storage format. ISO-8601 strings sort chronologically when sorted alphabetically, which is one of the reasons the format is specified that way, so the problem is easy to miss on a dataset that uses it. Read the file in with a different date format and the ordering fails without any message:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">uk_style</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">date</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">uk_style</span>, <span class="fl">3</span><span class="op">)</span></span>
@@ -644,8 +645,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">uk_style</span>, <span class="fl">1</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1] "01/02/2" "01/03/2" "01/04/2" "01/05/2" "01/06/2"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Seven characters of <code>22/01/2020</code> is <code>22/01/2</code>, and sorting those puts every 1st of the month first regardless of year. No error. A plot with a wrong x-axis.</p>
-<p>Arithmetic is gone. A <code>Date</code> knows how to add a month or measure a gap; a string does not:</p>
+<p>Seven characters of <code>22/01/2020</code> is <code>22/01/2</code>, and sorting those puts every 1st of the month first regardless of year. Nothing errors, and the result is a plot whose x axis is in the wrong order.</p>
+<p>Date arithmetic is also lost. A <code>Date</code> supports adding a month or measuring an interval; a character string does not:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">date</span>, <span class="fl">1</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error:</span></span>
@@ -664,10 +665,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Error in `charToDate()`:</span></span>
 <span><span class="co">#&gt; ! character string is not in a standard unambiguous format</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><strong>character string is not in a standard unambiguous format</strong>. It errors rather than returning <code>NA</code>, which means a pipeline built on partial date strings falls over rather than producing quiet rubbish. That is the better failure of the two, but you should not be relying on either. Round the date, keep it a date.</p>
+<p><strong>character string is not in a standard unambiguous format</strong>. It raises an error rather than returning <code>NA</code>, so a pipeline built on partial date strings stops rather than continuing with missing values. Rounding the date with <code>floor_date()</code> and leaving the column as a <code>Date</code> avoids the question.</p>
 </section><section id="months-are-not-the-same-length" class="level2" data-number="9.5"><h2 data-number="9.5" class="anchored" data-anchor-id="months-are-not-the-same-length">
 <span class="header-section-number">9.5</span> Months are not the same length</h2>
-<p>Here is the monthly table, with the thing everybody forgets included from the start:</p>
+<p>Here is the monthly table, with the number of days included alongside the totals:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">monthly</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">month</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -696,8 +697,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 11 2020-11-01    30   203       6.77         0</span></span>
 <span><span class="co">#&gt; 12 2020-12-01    31   381      12.3          0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>January has 10 days. The data starts on 22 January, so “January” here is not a month, it is the last third of one. February has 29 because 2020 was a leap year. Comparing 13 cases in January with 89 in February and concluding the epidemic grew sevenfold would be wrong twice over: wrong on the denominator, and wrong on what the numbers even are.</p>
-<p>The <code>days</code> column is the fix, and it costs one <code>n()</code> call. Whenever you total something over a period, put the period length in the table next to it. A per-day rate is comparable; a monthly total is not.</p>
+<p>January has 10 days. The data starts on 22 January, so the January row covers the last third of the month rather than the whole of it. February has 29 because 2020 was a leap year. Comparing 13 cases in January with 89 in February and concluding that the epidemic grew sevenfold would be wrong on two counts: the two periods are of different lengths, and the January figure is not a month’s worth of data.</p>
+<p>The <code>days</code> column addresses this and costs one <code>n()</code> call. When you total something over a period, report the length of the period alongside it: totals over periods of different lengths are not directly comparable, while per-day rates are.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">monthly</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">month</span>, y <span class="op">=</span> <span class="va">mean_daily</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_col</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -714,8 +715,8 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 </div>
 </div>
 </div>
-</section><section id="the-report-is-a-data-frame" class="level2" data-number="9.6"><h2 data-number="9.6" class="anchored" data-anchor-id="the-report-is-a-data-frame">
-<span class="header-section-number">9.6</span> The report is a data frame</h2>
+</section><section id="returning-a-table-rather-than-printed-lines" class="level2" data-number="9.6"><h2 data-number="9.6" class="anchored" data-anchor-id="returning-a-table-rather-than-printed-lines">
+<span class="header-section-number">9.6</span> Returning a table rather than printed lines</h2>
 <p>Now the exercise the original worksheet set: flag every month with more than five High-severity days. The rule itself is one line of the last chapter’s material.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alerts</span> <span class="op">&lt;-</span> <span class="va">monthly</span> <span class="op">%&gt;%</span></span>
@@ -730,8 +731,8 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 <span><span class="co">#&gt; February - All clear </span></span>
 <span><span class="co">#&gt; March - All clear</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The loop itself is doing something simple: <code>i</code> takes the values 1, 2 and 3 in turn, and <code><a href="https://rdrr.io/r/base/cat.html">cat()</a></code> pastes its arguments together and prints them to the console. Look at what you are left with holding. Those three lines are text on a console. You cannot sort them, filter them, join them to a table of policy dates, count how many said “Alert”, or paste them into a document without retyping. When the loop finishes, the answer is gone.</p>
-<p>The table is the report:</p>
+<p>The loop itself is straightforward: <code>i</code> takes the values 1, 2 and 3 in turn, and <code><a href="https://rdrr.io/r/base/cat.html">cat()</a></code> pastes its arguments together and prints them to the console. What it leaves behind is three lines of text on a console. You cannot sort them, filter them, join them to a table of policy dates, count how many said “Alert”, or paste them into a document without retyping. When the loop finishes, nothing in the session holds the result.</p>
+<p>The same information as a table:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alerts</span></span>
 <span><span class="co">#&gt; # A tibble: 12 × 6</span></span>
@@ -750,7 +751,7 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 <span><span class="co">#&gt; 11 2020-11-01    30   203       6.77         0 All clear</span></span>
 <span><span class="co">#&gt; 12 2020-12-01    31   381      12.3          0 All clear</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Same information, and now it is an object. Sorting it, filtering it, writing it to CSV and plotting it are all one more line each:</p>
+<p>The table is an object, so sorting it, filtering it, writing it to CSV and plotting it are one more line each:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">alerts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="st">"Alert"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 4 × 6</span></span>
@@ -761,7 +762,7 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 <span><span class="co">#&gt; 3 2020-06-01    30  9023       301.        12 Alert </span></span>
 <span><span class="co">#&gt; 4 2020-07-01    31  8298       268.        12 Alert</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Four months, April through July, which is the dormitory outbreak and the circuit-breaker period around it. August drops below the threshold with 4 High days despite containing the 908-case spike, because the rule counts days rather than cases and one enormous day is still one day. Whether that is the right rule depends on what the alert is for, and noticing that it is a choice is more than half of what this exercise teaches.</p>
+<p>Four months, April through July, which is the dormitory outbreak and the circuit-breaker period around it. August falls below the threshold with 4 High days despite containing the 908-case spike, because the rule counts days rather than cases and a single very large day is still one day. Whether that is the right rule depends on what the alert is for; the threshold and the quantity it counts are both choices made by whoever writes the rule.</p>
 <p>You still need sentences sometimes, for an email or a figure caption. <code>str_glue()</code> builds one by substituting anything in curly braces:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">worst</span> <span class="op">&lt;-</span> <span class="va">monthly</span> <span class="op">%&gt;%</span> <span class="fu">slice_max</span><span class="op">(</span><span class="va">cases</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -769,11 +770,11 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 <span><span class="fu">str_glue</span><span class="op">(</span><span class="st">"The worst month was {format(worst$month, '%B %Y')}: {worst$cases} cases over {worst$days} days."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; The worst month was May 2020: 18715 cases over 31 days.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Build the table first and glue a sentence out of it at the end. Going the other way, where the sentence is the only artefact, is how you end up recomputing the whole analysis because someone asked a follow-up question.</p>
-</section><section id="checking-september-against-something-else" class="level2" data-number="9.7"><h2 data-number="9.7" class="anchored" data-anchor-id="checking-september-against-something-else">
-<span class="header-section-number">9.7</span> Checking September against something else</h2>
-<p>The original worksheet asked for September’s mean daily cases twice: once with <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, and once with a loop that added the values up and divided by 30. Both gave the same answer, and both would have gone on giving the same answer if <code>daily_cases</code> had been computed wrongly, because they were the same arithmetic on the same column. A check that shares its inputs with the thing it is checking is not a check.</p>
-<p>Here is one that is. <code>confirmed</code> is cumulative and untouched by us. September’s new cases must therefore equal the cumulative total on 30 September minus the total on 31 August, whatever our <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> did or did not do. If <code>daily_cases</code> were broken, the two would disagree.</p>
+<p>Build the table first and generate the sentence from it. If the sentence is the only artefact, a follow-up question means recomputing the analysis to answer it.</p>
+</section><section id="checking-september-against-the-cumulative-column" class="level2" data-number="9.7"><h2 data-number="9.7" class="anchored" data-anchor-id="checking-september-against-the-cumulative-column">
+<span class="header-section-number">9.7</span> Checking September against the cumulative column</h2>
+<p>The original worksheet asked for September’s mean daily cases twice: once with <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code>, and once with a loop that added the values up and divided by 30. Both gave the same answer, and both would have gone on agreeing if <code>daily_cases</code> had been computed wrongly, because they perform the same arithmetic on the same column. A check that uses the same inputs as the calculation it is checking cannot detect an error in those inputs.</p>
+<p>An independent check is available. <code>confirmed</code> is cumulative and we have not modified it. September’s new cases must therefore equal the cumulative total on 30 September minus the total on 31 August, whatever our <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> did or did not do. If <code>daily_cases</code> were wrong, the two figures would disagree.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">september</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-09-01"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -801,8 +802,8 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 <span><span class="op">(</span><span class="va">bounds</span><span class="op">$</span><span class="va">confirmed</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">bounds</span><span class="op">$</span><span class="va">confirmed</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fl">30</span></span>
 <span><span class="co">#&gt; [1] 31.76667</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>31.77 both ways, from two routes that share no intermediate column. The differenced route sums 30 numbers we manufactured. The telescoping route touches the raw cumulative column at exactly two rows and ignores everything in between. Agreement between them is evidence; agreement between <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> and a loop doing the same division is not.</p>
-<p>The general move: find a quantity you can compute from the untouched source and compare it against the same quantity computed from your derived columns. It takes two lines and it catches the class of error that is otherwise invisible, the one where every number is plausible and all of them are wrong.</p>
+<p>31.77 both ways, from two routes that share no intermediate column. The differenced route sums 30 values we computed ourselves. The telescoping route reads the raw cumulative column at two rows and ignores everything in between. Because the two routes have no calculation in common, their agreement is evidence that the differencing is right, which is not true of the agreement between <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> and a loop performing the same division.</p>
+<p>The general approach: find a quantity you can compute from the untouched source and compare it with the same quantity computed from your derived columns. It takes two lines, and it catches errors that would otherwise leave every number in the output looking plausible.</p>
 <p>September’s 30 days averaged 31.8 new cases with a maximum of 86, in a year whose peak day was 1,426. By the end of the third quarter the dormitory outbreak was over.</p>
 </section><section id="exercises" class="level2" data-number="9.8"><h2 data-number="9.8" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">9.8</span> Exercises</h2>
@@ -828,7 +829,7 @@ Figure&nbsp;9.1: Mean new cases per day, by month. January covers 10 days and is
 </div>
 <p><a href="./solutions.html#sec-sol-monthly-high">Worked solution</a></p>
 <div id="exr-monthly-alert" class="theorem exercise">
-<p><span class="theorem-title"><strong>Exercise 9.2 (A monthly alert table you can defend)</strong></span> Build a monthly table that assigns each month one of three statuses rather than two: “Alert” when the month has more than 5 High days, “Watch” when it has 1 to 5, and “All clear” when it has none. Include the number of days in each month and the mean daily cases.</p>
+<p><span class="theorem-title"><strong>Exercise 9.2 (A monthly alert table)</strong></span> Build a monthly table that assigns each month one of three statuses rather than two: “Alert” when the month has more than 5 High days, “Watch” when it has 1 to 5, and “All clear” when it has none. Include the number of days in each month and the mean daily cases.</p>
 <p>Then change the rule so that it triggers on the mean daily case rate rather than on a count of days, using a threshold you pick and state. Report which months change status, and write one sentence saying which of the two rules you would rather defend in a meeting, and why.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">

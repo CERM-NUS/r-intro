@@ -373,7 +373,7 @@ window.Quarto = {
   <ul>
 <li><a href="#the-loop-the-worksheet-asked-for" id="toc-the-loop-the-worksheet-asked-for" class="nav-link active" data-scroll-target="#the-loop-the-worksheet-asked-for"><span class="header-section-number">12.1</span> The loop the worksheet asked for</a></li>
   <li><a href="#the-one-liner" id="toc-the-one-liner" class="nav-link" data-scroll-target="#the-one-liner"><span class="header-section-number">12.2</span> The one-liner</a></li>
-  <li><a href="#being-fair-to-the-loop" id="toc-being-fair-to-the-loop" class="nav-link" data-scroll-target="#being-fair-to-the-loop"><span class="header-section-number">12.3</span> Being fair to the loop</a></li>
+  <li><a href="#what-the-loop-costs-and-what-it-gives" id="toc-what-the-loop-costs-and-what-it-gives" class="nav-link" data-scroll-target="#what-the-loop-costs-and-what-it-gives"><span class="header-section-number">12.3</span> What the loop costs and what it gives</a></li>
   <li><a href="#pre-allocate" id="toc-pre-allocate" class="nav-link" data-scroll-target="#pre-allocate"><span class="header-section-number">12.4</span> Pre-allocate</a></li>
   <li><a href="#seq_along-seq_len-and-the-10-trap" id="toc-seq_along-seq_len-and-the-10-trap" class="nav-link" data-scroll-target="#seq_along-seq_len-and-the-10-trap"><span class="header-section-number">12.5</span> <code>seq_along()</code>, <code>seq_len()</code>, and the 1:0 trap</a></li>
   <li><a href="#while-when-you-do-not-know-how-many-steps" id="toc-while-when-you-do-not-know-how-many-steps" class="nav-link" data-scroll-target="#while-when-you-do-not-know-how-many-steps"><span class="header-section-number">12.6</span> <code>while</code>, when you do not know how many steps</a></li>
@@ -398,8 +398,8 @@ window.Quarto = {
   
 
 
-</header><p>Most introductions to the tidyverse skip loops, or mention them once with an apology. This one does not, and the reason is on your timetable. Later in this course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and there is no dplyr verb that expresses that. If your only tool is <code>mutate()</code>, you will be stuck.</p>
-<p>So we do it in the awkward order. Write the loop first, watch it work, then see the one-liner that replaces it, and understand what you gained and what you gave up.</p>
+</header><p>Most introductions to the tidyverse skip loops, or mention them only in passing. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.</p>
+<p>The order here is loop first, then the vectorised expression that replaces it, then an account of what each of the two gives you.</p>
 <section id="the-loop-the-worksheet-asked-for" class="level2" data-number="12.1"><h2 data-number="12.1" class="anchored" data-anchor-id="the-loop-the-worksheet-asked-for">
 <span class="header-section-number">12.1</span> The loop the worksheet asked for</h2>
 <p><code>confirmed</code> in this dataset is cumulative. On 31 December it reads 58,599, which is every case Singapore recorded in 2020, not the number recorded that day. To get daily cases you take each value and subtract the one before it.</p>
@@ -418,9 +418,9 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">daily</span>, <span class="fl">8</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0 1 2 0 1 1 2 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Read it slowly, because every piece is doing something.</p>
+<p>Each part of that loop is doing something specific.</p>
 <p><code>daily &lt;- numeric(nrow(covid))</code> creates the answer <em>before</em> filling it: a vector of 345 zeros, ready to be overwritten. <code>for (i in seq_along(daily))</code> runs the body once for each position, with <code>i</code> taking the values 1, 2, 3 and so on. The <code>if (i == 1)</code> branch exists because there is no day before the first one, so <code>covid$confirmed[0]</code> would give you nothing at all rather than a zero. And on day one the answer is <code>confirmed[1]</code>, which in this dataset is 0, because Singapore’s first record on 22 January had a cumulative count of zero. That day really did have no new cases. It is not missing.</p>
-<p>The result: 0, 1, 2, 0, 1, 1, 2, 0. Small numbers in a country that had not yet noticed what was coming.</p>
+<p>The first eight daily counts are 0, 1, 2, 0, 1, 1, 2, 0, covering 22 to 29 January.</p>
 </section><section id="the-one-liner" class="level2" data-number="12.2"><h2 data-number="12.2" class="anchored" data-anchor-id="the-one-liner">
 <span class="header-section-number">12.2</span> The one-liner</h2>
 <p>Everything above is one <code>mutate()</code> call:</p>
@@ -433,7 +433,7 @@ window.Quarto = {
 <span><span class="co">#&gt; [1] 0 1 2 0 1 1 2 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> shifts a vector down by one position, so <code>lag(confirmed)</code> on day <code>i</code> is <code>confirmed</code> on day <code>i - 1</code>. The whole subtraction happens at once, across all 345 rows, with no index variable anywhere. <code>default = 0</code> is what replaces the <code>if (i == 1)</code> branch: it says what to use where there is no previous value, and 0 is right here for the reason given above. Leave the default out and day one becomes <code>NA</code>, which propagates into every count and every plot downstream.</p>
-<p>Same numbers? Do not take my word for it:</p>
+<p>The two results can be compared directly:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">daily</span>, <span class="va">vectorised</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -444,11 +444,11 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">daily</span>, <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section><section id="being-fair-to-the-loop" class="level2" data-number="12.3"><h2 data-number="12.3" class="anchored" data-anchor-id="being-fair-to-the-loop">
-<span class="header-section-number">12.3</span> Being fair to the loop</h2>
-<p>The loop is eight lines and the <code>mutate()</code> is one. The loop has three places to get an index wrong: <code>seq_along(daily)</code>, <code>covid$confirmed[i]</code> and <code>covid$confirmed[i - 1]</code>. Get the last one wrong by writing <code>i + 1</code> and R will happily run it, hand you <code>NA</code> in the final position, and say nothing. The vectorised version has no indices at all, so it cannot have index bugs.</p>
-<p>That is a real advantage and it is why the tidyverse exists. But the loop buys you two things the one-liner cannot.</p>
-<p>The first is that you can see every step. <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> is a black box until you have written the shift yourself; once you have, it stops being magic.</p>
+</section><section id="what-the-loop-costs-and-what-it-gives" class="level2" data-number="12.3"><h2 data-number="12.3" class="anchored" data-anchor-id="what-the-loop-costs-and-what-it-gives">
+<span class="header-section-number">12.3</span> What the loop costs and what it gives</h2>
+<p>The loop is eight lines and the <code>mutate()</code> is one. The loop has three places to get an index wrong: <code>seq_along(daily)</code>, <code>covid$confirmed[i]</code> and <code>covid$confirmed[i - 1]</code>. Get the last one wrong by writing <code>i + 1</code> and R will run it, return <code>NA</code> in the final position, and give no warning. The vectorised version has no indices at all, so it cannot have index bugs.</p>
+<p>That is a substantial advantage, and it is a large part of why the tidyverse verbs exist. The loop offers two things in return.</p>
+<p>The first is that every step is visible. <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> performs the shift internally; writing the shift out yourself is what shows you what the function is doing.</p>
 <p>The second is that you can stop it and look around. Put <code><a href="https://rdrr.io/r/base/browser.html">browser()</a></code> inside the body and R drops you into an interactive prompt at that iteration, with <code>i</code> and every other local variable available to inspect:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">daily</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -460,7 +460,7 @@ window.Quarto = {
 <p>The rule most people settle on: reach for the vectorised version by default, and write the loop when the calculation is sequential or when you need to watch it happen.</p>
 </section><section id="pre-allocate" class="level2" data-number="12.4"><h2 data-number="12.4" class="anchored" data-anchor-id="pre-allocate">
 <span class="header-section-number">12.4</span> Pre-allocate</h2>
-<p><code>daily &lt;- numeric(nrow(covid))</code> was not decoration. Compare it with the way people write loops when nobody has told them otherwise:</p>
+<p><code>daily &lt;- numeric(nrow(covid))</code> allocates the answer vector before the loop starts. Compare that with the alternative, which is to grow the vector one element at a time:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grow</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -485,22 +485,21 @@ window.Quarto = {
 <span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
 <span><span class="co">#&gt;       n grow_secs prealloc_secs grow_vs_previous_row</span></span>
 <span><span class="co">#&gt;   &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 10000    0.0810       0.00200                 NA  </span></span>
-<span><span class="co">#&gt; 2 20000    0.273        0                        3.4</span></span>
+<span><span class="co">#&gt; 1 10000    0.0790       0.00200                 NA  </span></span>
+<span><span class="co">#&gt; 2 20000    0.272        0.00100                  3.4</span></span>
 <span><span class="co">#&gt; 3 40000    1.06         0.00100                  3.9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The last column is <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> again, earning its keep outside a mutate on the COVID data. Each doubling of <code>n</code> multiplies the growing version’s time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: <code>x &lt;- c(x, i)</code> does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of <code>x</code> into it, adds the new value, and throws the old one away. Do that <code>n</code> times and you have copied roughly <code>n²/2</code> values.</p>
+<p>The last column uses <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> again, this time outside a <code>mutate()</code> on the COVID data. Each doubling of <code>n</code> multiplies the growing version’s time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: <code>x &lt;- c(x, i)</code> does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of <code>x</code> into it, adds the new value, and throws the old one away. Do that <code>n</code> times and you have copied roughly <code>n²/2</code> values.</p>
 <p><code>prealloc_secs</code> barely moves, because <code>x[i] &lt;- value</code> writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.</p>
-<p>Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations it is the difference between a coffee break and lunch, and it is the single most common performance bug in student R code.</p>
+<p>Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations the gap is large enough to be worth avoiding, and growing a vector inside a loop is a common cause of slow R code.</p>
 </section><section id="seq_along-seq_len-and-the-10-trap" class="level2" data-number="12.5"><h2 data-number="12.5" class="anchored" data-anchor-id="seq_along-seq_len-and-the-10-trap">
 <span class="header-section-number">12.5</span> <code>seq_along()</code>, <code>seq_len()</code>, and the 1:0 trap</h2>
-<p>You will see <code>1:length(x)</code> and <code>1:nrow(df)</code> everywhere, including in code written by people who know better. They are wrong in exactly one case, and it is a case that happens.</p>
-<p><code>:</code> counts downwards if it has to.</p>
+<p>You will see <code>1:length(x)</code> and <code>1:nrow(df)</code> in a great deal of R code, including code written by experienced users. They fail in one case, which does occur in practice: <code>:</code> counts downwards when the second value is smaller than the first.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">1</span><span class="op">:</span><span class="fl">0</span></span>
 <span><span class="co">#&gt; [1] 1 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Not empty. A vector of length two, counting down. So a loop written as <code>1:nrow(df)</code> over a data frame with no rows runs <strong>twice</strong>, with <code>i</code> equal to 1 and then 0.</p>
+<p>The result is a vector of length two counting down, not an empty vector. So a loop written as <code>1:nrow(df)</code> over a data frame with no rows runs <strong>twice</strong>, with <code>i</code> equal to 1 and then 0.</p>
 <p>Here is a filter that finds nothing, because Singapore never recorded more than 1,426 cases in a day:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">quiet</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">2000</span><span class="op">)</span></span>
@@ -528,7 +527,7 @@ window.Quarto = {
 <span><span class="co">#&gt; Day NA had NA new cases</span></span>
 <span><span class="co">#&gt; Day  had  new cases</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Two lines, and neither is true. The first is <code>i = 1</code>, and asking a zero-row tibble for its first row gives <code>NA</code>. The second is <code>i = 0</code>, and index zero in R returns a zero-length vector, which <code><a href="https://rdrr.io/r/base/cat.html">cat()</a></code> prints as nothing at all. No error. If that loop had been accumulating a total instead of printing, you would now have <code>NA</code> where the right answer was “there were no such days”.</p>
+<p>Two lines are printed, and neither is correct. The first is <code>i = 1</code>, and asking a zero-row tibble for its first row gives <code>NA</code>. The second is <code>i = 0</code>, and index zero in R returns a zero-length vector, which <code><a href="https://rdrr.io/r/base/cat.html">cat()</a></code> prints as nothing at all. No error. If that loop had been accumulating a total instead of printing, you would now have <code>NA</code> where the right answer was “there were no such days”.</p>
 <p><code><a href="https://rdrr.io/r/base/seq.html">seq_len()</a></code> and <code><a href="https://rdrr.io/r/base/seq.html">seq_along()</a></code> never count backwards. They return an empty sequence when there is nothing to iterate over, and a loop over an empty sequence does not run:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">quiet</span><span class="op">)</span><span class="op">)</span></span>
@@ -563,11 +562,11 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span> <span class="op">-</span> <span class="va">i</span></span>
 <span><span class="co">#&gt; [1] 225</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Half the year’s cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry is the dormitory outbreak, and it is worth sitting with for a moment.</p>
+<p>Half the year’s cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry comes from the dormitory outbreak, which concentrated most of the year’s cases into April to August.</p>
 <p>Two things about <code>while</code>. Something inside the body must change the condition, or it runs forever; here it is <code>i &lt;- i + 1</code>, and forgetting that line is the classic way to hang your R session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, <code>i</code> would keep climbing past 345 and <code>covid$confirmed[346]</code> would be <code>NA</code>, at which point R stops with a real error rather than looping forever:</p>
 <pre><code>Error in while (covid$confirmed[i] &lt; target) { :
   missing value where TRUE/FALSE needed</code></pre>
-<p>That message is worth memorising. It nearly always means a comparison produced <code>NA</code>, and <code>NA</code> is neither true nor false, so <code>while</code> and <code>if</code> refuse to guess.</p>
+<p>That message nearly always means a comparison produced <code>NA</code>, and <code>NA</code> is neither true nor false, so <code>while</code> and <code>if</code> refuse to guess.</p>
 </section><section id="map-and-friends" class="level2" data-number="12.7"><h2 data-number="12.7" class="anchored" data-anchor-id="map-and-friends">
 <span class="header-section-number">12.7</span> <code>map()</code> and friends</h2>
 <p>Loops that build a result one element at a time are common enough that purrr, part of the tidyverse, gives them a shorter form. <code>map(x, f)</code> calls <code>f</code> on each element of <code>x</code> and returns a <strong>list</strong> of the results, always the same length as <code>x</code>.</p>
@@ -601,7 +600,7 @@ window.Quarto = {
 <span><span class="co">#&gt;  [6] "2020-06-01" "2020-07-01" "2020-08-01" "2020-09-01" "2020-10-01"</span></span>
 <span><span class="co">#&gt; [11] "2020-11-01" "2020-12-01"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Now the payoff for having made it return a one-row tibble:</p>
+<p>Because <code>month_summary()</code> returns a one-row tibble, twelve calls can be stacked into a table:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">monthly</span> <span class="op">&lt;-</span> <span class="va">all_months</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">map</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="fu">month_summary</span><span class="op">(</span><span class="va">covid</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -659,8 +658,7 @@ window.Quarto = {
 <p><code>walk()</code> returns its input invisibly, so nothing clutters the console except what you asked to print. Using <code>map()</code> here would work and would also dump twelve tibbles underneath your report.</p>
 </section><section id="the-loop-you-cannot-vectorise" class="level2" data-number="12.8"><h2 data-number="12.8" class="anchored" data-anchor-id="the-loop-you-cannot-vectorise">
 <span class="header-section-number">12.8</span> The loop you cannot vectorise</h2>
-<p>Here is the case that justifies the whole chapter.</p>
-<p>Contact tracing has a capacity. Whatever the team’s size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today’s new cases, minus what the team got through. And it stops at zero, because a team that clears its desk by lunchtime cannot bank the spare afternoon against next month.</p>
+<p>Contact tracing has a capacity. Whatever the team’s size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today’s new cases, minus what the team got through. The queue also stops at zero: unused capacity on a quiet day is not carried forward to the next one.</p>
 <p><span class="math display">\[
 Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 \]</span></p>
@@ -703,9 +701,9 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">backlog</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 19172</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Zero. The cumulative sum says the tracing team never fell behind on a single day of 2020, while the loop has them 19,172 cases deep in the middle of June.</p>
+<p>The cumulative version peaks at zero: it has the tracing team never falling behind on any day of 2020, while the loop has them 19,172 cases behind in the middle of June.</p>
 <p>The damage is done in the first eighty-two days. Singapore did not record more than 300 cases in a day until 13 April, and every day before that hands <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> a negative number to bank. By 12 April the running total sits at -22,068, and the dormitory outbreak has to work all of that off before the sum turns positive. Across the whole year it never manages it: 58,599 cases against 345 days of 300 is 103,500. So <code><a href="https://rdrr.io/r/base/Extremes.html">pmax()</a></code> on the outside flattens everything to zero.</p>
-<p>Wrapping the clamp around the outside is the mistake. <code>max(0, ...)</code> has to happen at every step, because <span class="math inline">\(Q_t\)</span> depends on the <em>clamped</em> <span class="math inline">\(Q_{t-1}\)</span>, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> by construction never forgets a term it has already added. Take the clamp out and <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> is exactly right, which is the thing to notice. One specific piece of the model forces the loop, and being able to point at which piece is how you tell a calculation that needs a loop from one you have not thought about hard enough.</p>
+<p>Wrapping the clamp around the outside is the mistake. <code>max(0, ...)</code> has to happen at every step, because <span class="math inline">\(Q_t\)</span> depends on the <em>clamped</em> <span class="math inline">\(Q_{t-1}\)</span>, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> by construction retains every term it has already added. Without the clamp, <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> gives the right answer. The clamp is the one feature of the model that forces the loop, and identifying which part of a calculation does that is how you tell a genuinely sequential problem from one that only looks sequential.</p>
 <p>purrr does have a function that holds running state for you. <code>accumulate()</code> gives the identical vector:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu">accumulate</span><span class="op">(</span></span>
@@ -717,7 +715,7 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">backlog</span>, <span class="va">acc</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That is a real convenience, and you should be clear about what it buys. <code>accumulate()</code> moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.</p>
+<p><code>accumulate()</code> is a convenience, and it is worth being clear about what it changes. It moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">queue</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">backlog</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -738,7 +736,7 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 </div>
 </div>
 <p>The queue builds through the dormitory outbreak, peaks at 19,172 on 14 June and does not empty until 14 October, having been non-zero on 184 of 345 days. The date of that peak is the interesting part. Cases peaked on 20 April, and the workload peaked 55 days later, because a queue keeps growing for as long as arrivals exceed capacity rather than for as long as arrivals are rising. You cannot read that off the case curve. It only appears once you carry the state forward day by day.</p>
-<p>The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today’s state to tomorrow’s, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is the argument for spending an evening on <code>for</code> in a course that otherwise spends its time on <code>mutate()</code>.</p>
+<p>The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today’s state to tomorrow’s, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is why a course otherwise built on <code>mutate()</code> spends an evening on <code>for</code>.</p>
 </section><section id="exercises" class="level2" data-number="12.9"><h2 data-number="12.9" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">12.9</span> Exercises</h2>
 <div id="exr-loop-vs-lag" class="theorem exercise">
@@ -778,7 +776,7 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>This is <code>month_summary()</code> and <code>map()</code> again: a function of one argument that returns a one-row tibble, then <code>map()</code> and <code>list_rbind()</code> to stack five of them. <code><a href="https://rdrr.io/r/base/which.min.html">which.max()</a></code> gives you the position of the peak, and for “did it clear” you want whether any value <em>after</em> that position is zero. Keep <code>max(0, ...)</code> inside the loop, which is the whole point of the section above. If the last question will not come, compare <code>sum(covid$daily_cases &gt; 300)</code> against <code>sum(covid$daily_cases &gt; 600)</code>.</p>
+<p>This is <code>month_summary()</code> and <code>map()</code> again: a function of one argument that returns a one-row tibble, then <code>map()</code> and <code>list_rbind()</code> to stack five of them. <code><a href="https://rdrr.io/r/base/which.min.html">which.max()</a></code> gives you the position of the peak, and for “did it clear” you want whether any value <em>after</em> that position is zero. Keep <code>max(0, ...)</code> inside the loop, for the reason given in the section above. If the last question will not come, compare <code>sum(covid$daily_cases &gt; 300)</code> against <code>sum(covid$daily_cases &gt; 600)</code>.</p>
 </div>
 </div>
 </div>

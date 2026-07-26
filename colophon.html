@@ -368,7 +368,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Books used to end with a note about the paper, the press and the typeface. The software equivalent is more useful than the paper one ever was, because a version number is the first thing anybody needs when your code produces a different answer from mine.</p>
+</header><p>Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing anybody needs when your code produces a different answer from mine.</p>
 <section id="what-produced-this-page" class="level2" data-number="D.1"><h2 data-number="D.1" class="anchored" data-anchor-id="what-produced-this-page">
 <span class="header-section-number">D.1</span> What produced this page</h2>
 <p>The block below ran while this page was being built, so the versions in it are the ones that produced everything you have read.</p>
@@ -425,8 +425,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The first five are the series colours. <code>ink</code>, <code>muted</code> and <code>rule</code> are for text and gridlines.</p>
 <p>The palette was tested rather than eyeballed. <code>scripts/check_palette.R</code> simulates protanopia, deuteranopia and tritanopia (Machado et al.&nbsp;2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.</p>
-<p>Five is the ceiling. <code>nus_pal()</code> raises an error rather than recycle a sixth colour, because a plot with two indistinguishable series is worse than a plot that refused to be drawn.</p>
-<p>Figures are SVG rather than PNG.</p>
+<p>Five is the ceiling. <code>nus_pal()</code> raises an error rather than recycle a sixth colour, since two series drawn in the same colour cannot be told apart in the finished figure.</p>
+<p>Figures are SVG rather than PNG, so plot text stays sharp at any zoom.</p>
 </section><section id="licence" class="level2" data-number="D.3"><h2 data-number="D.3" class="anchored" data-anchor-id="licence">
 <span class="header-section-number">D.3</span> Licence</h2>
 <p>The text, the code and the figures are MIT licensed. Copyright 2026 Swapnil Mishra. The full text is in <code>LICENSE</code> in the repository. In practice: use it, fork it, teach from it, change it. Attribution is appreciated and not demanded.</p>
@@ -454,8 +454,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="header-section-number">D.5</span> Telling me something is wrong</h2>
 <p>Please do. An error in a textbook propagates into every assignment written from it, which makes it worth more attention than an error in most other places.</p>
 <p>The fastest route is the “Report an issue” link in the right-hand margin of the page you are on. It opens a GitHub issue with the page already identified. If you can see the fix, “Edit this page” opens the source file directly and turns your correction into a pull request.</p>
-<p>A report that lets me reproduce the problem contains four things: which page and section, the code you ran, the complete error or warning text pasted rather than described, and the output of <code><a href="https://sessioninfo.r-lib.org/reference/session_info.html">sessioninfo::session_info()</a></code>. The third one is the one people trim, and it is the one that matters. “It said something about an object not found” and “Error: object ‘daily_cases’ not found” are different amounts of information.</p>
-<p>Reports that a paragraph is confusing are as welcome as reports that a number is wrong, and considerably harder to write. If you read something three times and still had to guess, that is a defect, and it is mine rather than yours.</p>
+<p>A report that lets me reproduce the problem contains four things: which page and section, the code you ran, the complete error or warning text pasted rather than described, and the output of <code><a href="https://sessioninfo.r-lib.org/reference/session_info.html">sessioninfo::session_info()</a></code>. The third is the one most often trimmed, and it carries most of the information: “It said something about an object not found” and “Error: object ‘daily_cases’ not found” are different amounts of information.</p>
+<p>Reports that a paragraph is confusing are as welcome as reports that a number is wrong, and considerably harder to write. If you read something three times and still had to guess, that is a defect in the writing.</p>
 </section><section id="acknowledgements" class="level2" data-number="D.6"><h2 data-number="D.6" class="anchored" data-anchor-id="acknowledgements">
 <span class="header-section-number">D.6</span> Acknowledgements</h2>
 <p>Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.</p>

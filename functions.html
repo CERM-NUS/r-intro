@@ -347,8 +347,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
 <li><a href="#the-rule-of-three" id="toc-the-rule-of-three" class="nav-link active" data-scroll-target="#the-rule-of-three"><span class="header-section-number">11.1</span> The rule of three</a></li>
   <li><a href="#anatomy" id="toc-anatomy" class="nav-link" data-scroll-target="#anatomy"><span class="header-section-number">11.2</span> Anatomy</a></li>
-  <li><a href="#default-arguments-earn-their-keep" id="toc-default-arguments-earn-their-keep" class="nav-link" data-scroll-target="#default-arguments-earn-their-keep"><span class="header-section-number">11.3</span> Default arguments earn their keep</a></li>
-  <li><a href="#what-happens-inside-stays-inside" id="toc-what-happens-inside-stays-inside" class="nav-link" data-scroll-target="#what-happens-inside-stays-inside"><span class="header-section-number">11.4</span> What happens inside stays inside</a></li>
+  <li><a href="#default-arguments-and-the-sign-convention" id="toc-default-arguments-and-the-sign-convention" class="nav-link" data-scroll-target="#default-arguments-and-the-sign-convention"><span class="header-section-number">11.3</span> Default arguments and the sign convention</a></li>
+  <li><a href="#variables-created-inside-a-function" id="toc-variables-created-inside-a-function" class="nav-link" data-scroll-target="#variables-created-inside-a-function"><span class="header-section-number">11.4</span> Variables created inside a function</a></li>
   <li><a href="#stale-globals-and-why-you-restart-r" id="toc-stale-globals-and-why-you-restart-r" class="nav-link" data-scroll-target="#stale-globals-and-why-you-restart-r"><span class="header-section-number">11.5</span> Stale globals, and why you restart R</a></li>
   <li><a href="#returning-more-than-one-thing" id="toc-returning-more-than-one-thing" class="nav-link" data-scroll-target="#returning-more-than-one-thing"><span class="header-section-number">11.6</span> Returning more than one thing</a></li>
   <li><a href="#the-guard-clause" id="toc-the-guard-clause" class="nav-link" data-scroll-target="#the-guard-clause"><span class="header-section-number">11.7</span> The guard clause</a></li>
@@ -371,8 +371,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Copy-paste is how most people’s analysis scripts grow, and it works fine right up until the day it doesn’t. The failure is never dramatic. You change one copy, forget the other two, and the script keeps running and keeps producing a number. That number is now wrong and nothing on your screen says so.</p>
-<p>This chapter is about the alternative.</p>
+</header><p>Analysis scripts commonly grow by copy-paste, and the failure mode when they do is a quiet one. You change one copy, forget the other two, and the script keeps running and keeps producing a number. The number is now wrong, and nothing on screen indicates it.</p>
+<p>This chapter covers the alternative: moving the repeated block into a function.</p>
 <section id="the-rule-of-three" class="level2" data-number="11.1"><h2 data-number="11.1" class="anchored" data-anchor-id="the-rule-of-three">
 <span class="header-section-number">11.1</span> The rule of three</h2>
 <p>Here is a question worth asking of the mobility data: on how many days did retail and recreation activity fall more than 30% below its January baseline?</p>
@@ -396,8 +396,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 164</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Three blocks, 164 days at the loose end and 48 at the strict end, and the analysis is fine. The problem arrives a week later when you decide the dates matter more than the count, and you change <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> to <code>pull(date)</code> in the first block. Now block one answers a different question from blocks two and three, and the only record of that decision is in your head.</p>
-<p>The rule of thumb most R programmers converge on is: <strong>once you have copied the same block of code a third time, write a function</strong>. Two copies is a coincidence. Three is a pattern, and a pattern that lives in three places will eventually disagree with itself.</p>
+<p>Three blocks, 164 days at the loose end and 48 at the strict end, and the analysis is sound as it stands. The problem arrives a week later when you decide the dates matter more than the count and change <code><a href="https://rdrr.io/r/base/nrow.html">nrow()</a></code> to <code>pull(date)</code> in the first block. Block one now answers a different question from blocks two and three, and nothing in the script records that they have diverged.</p>
+<p>The rule of thumb most R programmers converge on is: <strong>once you have copied the same block of code a third time, write a function</strong>. Copies that are edited at different times drift apart, and the more copies there are, the more likely that becomes.</p>
 </section><section id="anatomy" class="level2" data-number="11.2"><h2 data-number="11.2" class="anchored" data-anchor-id="anatomy">
 <span class="header-section-number">11.2</span> Anatomy</h2>
 <p>A function has four parts, and R makes all four visible in the definition:</p>
@@ -408,7 +408,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    <span class="fu">pull</span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The <strong>name</strong> is <code>mobility_alert</code>. It goes on the left of <code>&lt;-</code>, exactly like any other assignment, because in R a function is a value you store in a variable. There is nothing special about the name; you could have called it <code>f</code>, and one day at 11pm you will, and three weeks later you will regret it. Name it after what it returns or what it does.</p>
+<p>The <strong>name</strong> is <code>mobility_alert</code>. It goes on the left of <code>&lt;-</code>, exactly like any other assignment, because in R a function is a value you store in a variable. There is nothing special about the name as far as R is concerned; <code>f</code> would work equally well. Name it after what it returns or what it does, so that a call to it can be read without looking up the definition.</p>
 <p>The <strong>arguments</strong> are <code>df</code> and <code>threshold</code>, in the parentheses after <code>function</code>. Inside the body they behave as ordinary variables. <code>threshold</code> has a <strong>default value</strong> of <code>-30</code>, so a caller who has no opinion can leave it out.</p>
 <p>The <strong>body</strong> is everything between the braces. It is ordinary R code, and it can use the arguments freely.</p>
 <p>The <strong>return value</strong> is the value of the last expression evaluated. There is no <code>return</code> keyword here and it is not needed. R functions return their last expression automatically, so <code>pull(date)</code> is the answer. You will see <code><a href="https://rdrr.io/r/base/function.html">return()</a></code> in other people’s code and it is not wrong, but the idiom in R is to reserve it for an early exit: a check at the top of a function that refuses nonsense input before any of the real work happens.</p>
@@ -424,8 +424,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail</a></span><span class="op">(</span><span class="va">alert_days</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-07-13"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Eighty-eight days, running from 7 April to 13 July. The 7th of April is the first day of the circuit breaker, which is exactly what you would hope to see from a mobility series that is doing its job.</p>
-<p>Notice what the function inherited for free. Because the body uses <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, the 24 missing values in the retail column drop out silently and correctly, and you get 88 days rather than the 112 that the base-R subscript would have handed you. That decision was made back in the chapter on missing data and it is now baked into every call.</p>
+<p>Eighty-eight days, running from 7 April to 13 July. The 7th of April is the first day of the circuit breaker, so the flagged period begins on the day the policy changed.</p>
+<p>The function also inherits a decision made earlier. Because the body uses <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, the 24 missing values in the retail column are dropped rather than returned as <code>NA</code> rows, which gives 88 days rather than the 112 that base-R subscripting would return. That decision was made in the chapter on missing data and now applies to every call.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">retail_and_recreation_percent_change_from_baseline</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="op">-</span><span class="fl">30</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, colour <span class="op">=</span> <span class="va">nus_colours</span><span class="op">[[</span><span class="st">"muted"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span></span>
@@ -449,9 +449,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The warning about 24 rows removed is the January and early-February gap in the mobility series, and it should appear every time you plot this column. If it ever stops appearing, something upstream has filled those values in and you want to know about it.</p>
-</section><section id="default-arguments-earn-their-keep" class="level2" data-number="11.3"><h2 data-number="11.3" class="anchored" data-anchor-id="default-arguments-earn-their-keep">
-<span class="header-section-number">11.3</span> Default arguments earn their keep</h2>
-<p><code>threshold = -30</code> looks like a convenience. It is doing more work than that, and the reason is the sign convention in this dataset.</p>
+</section><section id="default-arguments-and-the-sign-convention" class="level2" data-number="11.3"><h2 data-number="11.3" class="anchored" data-anchor-id="default-arguments-and-the-sign-convention">
+<span class="header-section-number">11.3</span> Default arguments and the sign convention</h2>
+<p><code>threshold = -30</code> looks like a convenience. It does more than that here, because of the sign convention in this dataset.</p>
 <p>Google’s mobility columns are <em>percentage change from baseline</em>. A fall in activity is a negative number. Retail bottoms out at -70 on 24 April. Residential goes the other way and peaks at +55 on 1 May, because when everything else empties out, people are at home. So “a drop of more than 30%” is <code>&lt; -30</code>, and a reader who thinks in magnitudes rather than signs will reach for <code>30</code>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -474,8 +474,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">wrong_sign</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-02-15" "2020-02-16" "2020-02-17"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Three hundred and twenty-one. Retail mobility spends almost the whole year below +30, so the filter keeps nearly everything, and the first “alert day” is 15 February, when nothing was happening. No error, no warning, no red text. Just a plausible-looking vector of dates that answers a question nobody asked.</p>
-<p>This is the failure mode that functions are built to reduce. The default value is a decision made once, in the light, by someone who was thinking about signs at the time. Every call that accepts the default inherits that thinking. Only a caller who deliberately overrides it can get it wrong, and a deliberate override is at least visible in the code.</p>
+<p>Three hundred and twenty-one. Retail mobility is below +30 on almost every day of the year, so the filter keeps nearly all the rows, and the first “alert day” is 15 February, before the series had moved. There is no error and no warning: the result is a plausible vector of dates answering a different question from the one intended.</p>
+<p>A default value records the decision about the sign once, in one place, and every call that accepts it inherits that decision. A caller who wants a different threshold has to write the override, which then appears in the code where it can be checked.</p>
 <p>If you want to be stricter than a default, you can check the argument and refuse:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mobility_alert</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">threshold</span> <span class="op">=</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span> <span class="op">{</span></span>
@@ -492,9 +492,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Error:</span></span>
 <span><span class="co">#&gt; ! `threshold` should be negative. Mobility is measured as percentage change from baseline, so a drop of 30% is -30, not 30.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>call. = FALSE</code> suppresses the “Error in mobility_alert(…)” prefix, which is noise when the message already says everything. Whether to add a check like this is a judgement call. Checks cost lines and they can be wrong themselves. Add them where a wrong answer would be silent, as it is here, and skip them where the code would fall over anyway.</p>
-</section><section id="what-happens-inside-stays-inside" class="level2" data-number="11.4"><h2 data-number="11.4" class="anchored" data-anchor-id="what-happens-inside-stays-inside">
-<span class="header-section-number">11.4</span> What happens inside stays inside</h2>
+<p><code>call. = FALSE</code> suppresses the “Error in mobility_alert(…)” prefix, which adds nothing when the message already identifies the problem. Whether to add a check like this is a judgement call: checks cost lines and can themselves be wrong. Add them where a wrong answer would otherwise be silent, as it is here, and leave them out where the code would fail anyway.</p>
+</section><section id="variables-created-inside-a-function" class="level2" data-number="11.4"><h2 data-number="11.4" class="anchored" data-anchor-id="variables-created-inside-a-function">
+<span class="header-section-number">11.4</span> Variables created inside a function</h2>
 <p>A variable created inside a function does not exist after the function returns. R evaluates the body in a fresh environment that is thrown away on the way out.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">peak_day</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="op">{</span></span>
@@ -511,11 +511,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Error:</span></span>
 <span><span class="co">#&gt; ! object 'worst' not found</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That error is a feature. If every function left its working variables lying around, a script with thirty functions in it would be a minefield of names that might or might not mean what you think. Scope is what lets you call a variable <code>i</code> or <code>tmp</code> or <code>worst</code> inside a function without wondering what else in your session is called that.</p>
-<p>The traffic goes one way, though. A function can <em>read</em> variables from outside itself. If the body mentions a name it does not define, R looks in the environment where the function was written, which is usually your global environment. That is how <code>mobility_alert()</code> can call <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> at all. It is also how a function can quietly depend on something you forgot you had.</p>
+<p>The error is the intended behaviour. If every function left its working variables behind, a script with thirty functions in it would accumulate names whose current values depend on which function ran last. Scope is what lets you use <code>i</code> or <code>tmp</code> or <code>worst</code> inside a function without checking what else in the session has that name.</p>
+<p>The relationship is one-way, though. A function can <em>read</em> variables from outside itself. If the body mentions a name it does not define, R looks in the environment where the function was written, which is usually the global environment. That is how <code>mobility_alert()</code> can call <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> at all. It is also how a function can depend on an object in the global environment without that dependency appearing in its arguments.</p>
 </section><section id="stale-globals-and-why-you-restart-r" class="level2" data-number="11.5"><h2 data-number="11.5" class="anchored" data-anchor-id="stale-globals-and-why-you-restart-r">
 <span class="header-section-number">11.5</span> Stale globals, and why you restart R</h2>
-<p>Now the more dangerous version of this, because it does not produce an error at all.</p>
+<p>The same mechanism has a version that produces no error at all.</p>
 <p>The worksheet this book replaces had an exercise that looped over months, and inside the loop it assigned to a variable at the top level of the script:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2020-09-01"</span>, <span class="st">"2020-10-01"</span>, <span class="st">"2020-11-01"</span>, <span class="st">"2020-12-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -528,7 +528,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; November mean daily cases: 6.8 </span></span>
 <span><span class="co">#&gt; December mean daily cases: 12.3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Four correct numbers. The loop is fine. But when it finishes, <code>month_data</code> is still sitting in the global environment, holding whatever the last iteration put there, which is December.</p>
+<p>Four correct numbers, and nothing wrong with the loop. When it finishes, though, <code>month_data</code> is still in the global environment, holding whatever the last iteration put there, which is December.</p>
 <p>Several exercises later came a bonus question about September. It used <code>month_data</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"September mean daily cases:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
@@ -537,14 +537,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-12-01" "2020-12-31"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The heading says September. The number is December’s. Nothing errors, nothing warns, and 12.3 is a perfectly believable figure for a quiet month. A student who ran that worksheet top to bottom would have written down the wrong answer with total confidence, and so would I.</p>
-<p>Now connect this to the rule from the good practice chapter about never saving your workspace and restarting R often. In a fresh session, <code>month_data</code> does not exist, and the bonus question fails like this:</p>
+<p>The heading says September; the number is December’s. Nothing errors and nothing warns, and 12.3 is a believable figure for a quiet month, so there is nothing in the output to signal the mistake. Anyone running that worksheet from top to bottom would record the wrong answer.</p>
+<p>This connects to the advice in the good practice chapter about not saving your workspace and restarting R often. In a fresh session, <code>month_data</code> does not exist, and the bonus question fails like this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>Error: object 'month_data' not found</code></pre>
-<p>A loud error that stops you, instead of a quiet number that fools you. That trade is the entire argument for restarting R. You are not trying to keep your session tidy for its own sake. You are trying to convert silent wrong answers into noisy ones, because you can fix a noisy one.</p>
-<p>The structural fix is the subject of this chapter. If the calculation lives in a function, there is no top-level <code>month_data</code> to go stale, because the variable dies when the function returns.</p>
+<p>The code stops with an error instead of returning a number computed from a stale object. That is the reason for restarting R regularly: it turns this class of mistake from a wrong answer that looks right into a failure you can see.</p>
+<p>The structural fix is the subject of this chapter. If the calculation lives inside a function, there is no top-level <code>month_data</code> to go stale, because the variable ceases to exist when the function returns.</p>
 </section><section id="returning-more-than-one-thing" class="level2" data-number="11.6"><h2 data-number="11.6" class="anchored" data-anchor-id="returning-more-than-one-thing">
 <span class="header-section-number">11.6</span> Returning more than one thing</h2>
 <p><code>mobility_alert()</code> returns a vector, which is fine because it has one thing to say. Most summaries have several. Suppose you want, for a given month: how many days, how many cases, the daily mean, the peak and when it happened, and how many days were classed High.</p>
@@ -570,7 +570,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; $total</span></span>
 <span><span class="co">#&gt; [1] 15243</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Do not do this. Return a one-row tibble instead:</p>
+<p>Return a one-row tibble instead:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">which_month</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">start</span> <span class="op">&lt;-</span> <span class="fu">floor_date</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">which_month</span><span class="op">)</span>, <span class="st">"month"</span><span class="op">)</span></span>
@@ -623,7 +623,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; ! Each element of `x` must be either a data frame or `NULL`.</span></span>
 <span><span class="co">#&gt; ℹ Elements 1 and 2 are not.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>list_rbind()</code> is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it, which is the whole argument for the shape: a function that returns one row composes with itself. Twelve calls and one <code>list_rbind()</code> give you the year as a table, and the cost of that at the point of writing the function is nothing.</p>
+<p><code>list_rbind()</code> requires data frames, and the restriction reflects a real difference. A plain list carries no column types and no assurance that two lists have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries both, so a function that returns one row composes with itself: twelve calls and one <code>list_rbind()</code> give the year as a table.</p>
 </section><section id="the-guard-clause" class="level2" data-number="11.7"><h2 data-number="11.7" class="anchored" data-anchor-id="the-guard-clause">
 <span class="header-section-number">11.7</span> The guard clause</h2>
 <p>The <code>if (!start %in% df$month) stop(...)</code> at the top of <code>month_summary()</code> is a <strong>guard clause</strong>: a check that runs before the real work and exits early if the inputs make no sense.</p>
@@ -632,7 +632,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Error:</span></span>
 <span><span class="co">#&gt; ! No data for March 2021. The data covers January 2020 to December 2020.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Ask yourself what the alternative would have been. <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> would have returned zero rows and <code>summarise()</code> would have run on nothing. Here is that version, with the guard taken out:</p>
+<p>Without the guard, <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> returns zero rows and <code>summarise()</code> runs on nothing. Here is that version, with the guard taken out:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_summary_unguarded</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">which_month</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">start</span> <span class="op">&lt;-</span> <span class="fu">floor_date</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">which_month</span><span class="op">)</span>, <span class="st">"month"</span><span class="op">)</span></span>
@@ -654,8 +654,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; ! `peak_date` must be size 1, not 0.</span></span>
 <span><span class="co">#&gt; ℹ To return more or less than 1 row per group, use `reframe()`.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>R does stop, which is lucky, but look at what it stops on. The message is about <code>peak_date</code> being size 0, and <code>reframe()</code> is suggested as the fix. Neither has anything to do with what actually went wrong, which is that you asked for a month the data does not contain. A student chasing that message will spend twenty minutes reading about <code>reframe()</code>.</p>
-<p>Drop <code>peak_date</code> from that function and it gets worse, because then nothing is the wrong size and the whole thing succeeds:</p>
+<p>R does stop here, but consider what it stops on. The message concerns <code>peak_date</code> having size 0, and it suggests <code>reframe()</code> as the fix. Neither refers to the actual problem, which is that the requested month is not in the data, so the message points you at the wrong part of the documentation.</p>
+<p>Drop <code>peak_date</code> from that function and nothing is the wrong size, so the call succeeds:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">month</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2021-03-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -674,15 +674,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1     0     0        NaN  -Inf</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Zero days, zero cases, a mean of <code>NaN</code> and a peak of <code>-Inf</code>, delivered as a one-row tibble that will stack happily alongside eleven real months. The warning about <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> is the only clue, and warnings scroll past.</p>
-<p>That is what the guard buys: a message naming what you asked for, that it isn’t there, and what is. When you write an error message, write the one you would want to read at 11pm.</p>
-<p>One more thing about <code>month_summary()</code>: it demands a full date, <code>"2020-09-01"</code> rather than <code>"2020-09"</code>. That is <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>’s rule, not mine, and it fails loudly:</p>
+<p>Zero days, zero cases, a mean of <code>NaN</code> and a peak of <code>-Inf</code>, returned as a one-row tibble that will stack alongside eleven real months without complaint. The warning from <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> is the only indication, and warnings are easy to miss in a long run.</p>
+<p>That is what the guard provides: a message naming the month you asked for, stating that it is not present, and giving the range that is. An error message is most useful when it names the input that caused the failure and the values that would have worked.</p>
+<p>One more point about <code>month_summary()</code>: it requires a full date, <code>"2020-09-01"</code> rather than <code>"2020-09"</code>. That is <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>’s behaviour rather than a choice made in the function, and it fails with an error:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-09"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Error in `charToDate()`:</span></span>
 <span><span class="co">#&gt; ! character string is not in a standard unambiguous format</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Loudly is the right behaviour. A month string with no day is ambiguous, and R would rather stop than guess.</p>
+<p>An error is the appropriate response here. A month string with no day does not identify a date, and <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code> stops rather than supplying one.</p>
 </section><section id="exercises" class="level2" data-number="11.8"><h2 data-number="11.8" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">11.8</span> Exercises</h2>
 <div id="exr-mobility-alert" class="theorem exercise">
@@ -708,7 +708,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="./solutions.html#sec-sol-mobility-alert">Worked solution</a></p>
 <div id="exr-month-summary" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 11.2 (Add a judgement to the summary)</strong></span> Extend <code>month_summary()</code> with one more column, <code>verdict</code>, that reads <code>"Escalate"</code> when the month had more than five High days and <code>"All clear"</code> otherwise.</p>
-<p>Run it on September 2020 and on April 2020 and check that both verdicts are what you expect from the case counts. Then decide whether five is a defensible cut-off, and make it an argument if you think it isn’t.</p>
+<p>Run it on September 2020 and on April 2020 and check that both verdicts are what you expect from the case counts. Then decide whether five is a defensible cut-off, and make it an argument if you conclude it is not.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">

@@ -346,13 +346,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
 <li><a href="#work-in-a-project" id="toc-work-in-a-project" class="nav-link active" data-scroll-target="#work-in-a-project"><span class="header-section-number">2.1</span> 1. Work in a project</a></li>
-  <li><a href="#setwd-is-the-one-line-that-guarantees-your-code-runs-on-exactly-one-computer" id="toc-setwd-is-the-one-line-that-guarantees-your-code-runs-on-exactly-one-computer" class="nav-link" data-scroll-target="#setwd-is-the-one-line-that-guarantees-your-code-runs-on-exactly-one-computer"><span class="header-section-number">2.2</span> 2. <code>setwd()</code> is the one line that guarantees your code runs on exactly one computer</a></li>
-  <li><a href="#restart-r-often-and-start-every-session-empty" id="toc-restart-r-often-and-start-every-session-empty" class="nav-link" data-scroll-target="#restart-r-often-and-start-every-session-empty"><span class="header-section-number">2.3</span> 3. Restart R often, and start every session empty</a></li>
-  <li><a href="#every-library-at-the-top-and-rmlist-ls-is-not-a-restart" id="toc-every-library-at-the-top-and-rmlist-ls-is-not-a-restart" class="nav-link" data-scroll-target="#every-library-at-the-top-and-rmlist-ls-is-not-a-restart"><span class="header-section-number">2.4</span> 4. Every <code>library()</code> at the top, and <code>rm(list = ls())</code> is not a restart</a></li>
-  <li><a href="#the-raw-data-file-is-read-only" id="toc-the-raw-data-file-is-read-only" class="nav-link" data-scroll-target="#the-raw-data-file-is-read-only"><span class="header-section-number">2.5</span> 5. The raw data file is read-only</a></li>
-  <li><a href="#name-things-so-that-tomorrows-you-can-read-them" id="toc-name-things-so-that-tomorrows-you-can-read-them" class="nav-link" data-scroll-target="#name-things-so-that-tomorrows-you-can-read-them"><span class="header-section-number">2.6</span> 6. Name things so that tomorrow’s you can read them</a></li>
+  <li><a href="#use-here-rather-than-setwd" id="toc-use-here-rather-than-setwd" class="nav-link" data-scroll-target="#use-here-rather-than-setwd"><span class="header-section-number">2.2</span> 2. Use <code>here()</code> rather than <code>setwd()</code></a></li>
+  <li><a href="#restart-r-often-and-start-each-session-empty" id="toc-restart-r-often-and-start-each-session-empty" class="nav-link" data-scroll-target="#restart-r-often-and-start-each-session-empty"><span class="header-section-number">2.3</span> 3. Restart R often, and start each session empty</a></li>
+  <li><a href="#loading-packages-and-clearing-the-environment" id="toc-loading-packages-and-clearing-the-environment" class="nav-link" data-scroll-target="#loading-packages-and-clearing-the-environment"><span class="header-section-number">2.4</span> 4. Loading packages, and clearing the environment</a></li>
+  <li><a href="#treat-the-raw-data-file-as-read-only" id="toc-treat-the-raw-data-file-as-read-only" class="nav-link" data-scroll-target="#treat-the-raw-data-file-as-read-only"><span class="header-section-number">2.5</span> 5. Treat the raw data file as read-only</a></li>
+  <li><a href="#naming-objects" id="toc-naming-objects" class="nav-link" data-scroll-target="#naming-objects"><span class="header-section-number">2.6</span> 6. Naming objects</a></li>
   <li><a href="#pin-your-packages-with-renv" id="toc-pin-your-packages-with-renv" class="nav-link" data-scroll-target="#pin-your-packages-with-renv"><span class="header-section-number">2.7</span> 7. Pin your packages with <code>renv</code></a></li>
-  <li><a href="#git-in-three-commands-and-one-idea" id="toc-git-in-three-commands-and-one-idea" class="nav-link" data-scroll-target="#git-in-three-commands-and-one-idea"><span class="header-section-number">2.8</span> 8. Git, in three commands and one idea</a></li>
+  <li><a href="#version-control-with-git" id="toc-version-control-with-git" class="nav-link" data-scroll-target="#version-control-with-git"><span class="header-section-number">2.8</span> 8. Version control with Git</a></li>
   <li><a href="#ask-for-help-with-a-reprex" id="toc-ask-for-help-with-a-reprex" class="nav-link" data-scroll-target="#ask-for-help-with-a-reprex"><span class="header-section-number">2.9</span> 9. Ask for help with a reprex</a></li>
   <li><a href="#write-the-report-and-the-analysis-in-the-same-file" id="toc-write-the-report-and-the-analysis-in-the-same-file" class="nav-link" data-scroll-target="#write-the-report-and-the-analysis-in-the-same-file"><span class="header-section-number">2.10</span> 10. Write the report and the analysis in the same file</a></li>
   <li><a href="#the-checklist" id="toc-the-checklist" class="nav-link" data-scroll-target="#the-checklist"><span class="header-section-number">2.11</span> The checklist</a></li>
@@ -376,8 +376,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Most of the time R wastes for beginners has nothing to do with R. It goes on the file that was in the wrong folder, the object left over from an hour ago that quietly poisoned a result, and the package that changed under a script nobody had run in a year. None of those are hard problems. They are habits, and the habits are cheap to acquire now and expensive to retrofit later.</p>
-<p>What follows is ten of them. Each one exists because I have been burnt by its absence.</p>
+</header><p>A large share of the time beginners lose in R goes on problems that are not really about R: the file that was in the wrong folder, the object left over from an hour ago that changed a result without any visible sign, and the package that changed under a script nobody had run in a year. None of these are difficult problems, but they are much easier to avoid from the start than to correct in an established project.</p>
+<p>This chapter sets out ten working habits that avoid them.</p>
 <section id="work-in-a-project" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="work-in-a-project">
 <span class="header-section-number">2.1</span> 1. Work in a project</h2>
 <p>Make a folder for each piece of work, put a <code>.Rproj</code> file in it, and open your work by double-clicking that file.</p>
@@ -398,37 +398,38 @@ LaTeX: XeLaTeX
 
 AutoAppendNewline: Yes
 StripTrailingWhitespace: Yes</code></pre>
-<p>That is all it is. What it <em>does</em> is more than it looks. Opening it starts a fresh R session whose working directory is the folder containing the file, on every machine, every time, without you typing a path. It gives the project its own environment and its own command history, so two projects open at once cannot contaminate each other. It carries the settings above with the folder, so a collaborator who opens it gets your tab width and your encoding rather than their own. And it makes the folder findable: a lot of tooling, including <code>here</code> and <code>renv</code> and <code>usethis</code>, works out where “here” is by looking for a <code>.Rproj</code>.</p>
-<p>Make one with File, New Project, Existing Directory. It takes about eight seconds and it is the single highest-return habit in this chapter.</p>
-</section><section id="setwd-is-the-one-line-that-guarantees-your-code-runs-on-exactly-one-computer" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="setwd-is-the-one-line-that-guarantees-your-code-runs-on-exactly-one-computer">
-<span class="header-section-number">2.2</span> 2. <code>setwd()</code> is the one line that guarantees your code runs on exactly one computer</h2>
-<p>You will see this at the top of scripts, in textbooks, and in code your supervisor sends you:</p>
+<p>That is the complete file. Its effects are worth listing. Opening it starts a fresh R session whose working directory is the folder containing the file, on any machine, without a path being typed. It gives the project its own environment and its own command history, so two projects open at the same time do not share objects. It carries the settings above with the folder, so a collaborator who opens it gets the project’s tab width and encoding rather than their own. And it marks the folder: several packages, including <code>here</code>, <code>renv</code> and <code>usethis</code>, locate the project root by looking for a <code>.Rproj</code> file.</p>
+<p>Make one with File, New Project, Existing Directory. It takes a few seconds and the remaining rules in this chapter assume it.</p>
+</section><section id="use-here-rather-than-setwd" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="use-here-rather-than-setwd">
+<span class="header-section-number">2.2</span> 2. Use <code>here()</code> rather than <code>setwd()</code>
+</h2>
+<p>Scripts often open with a call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> and an absolute path:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="st">"/Users/swapnil/Documents/GitHub/r-intro"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">"data/sg_covid_data.csv"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>It works. It works on my laptop, and only on my laptop, and only until I reorganise my Documents folder. Send that script to a classmate and the first line fails:</p>
+<p>The path is specific to one machine and to the current arrangement of the folders on it, so the script fails for a colleague and for you after any reorganisation. On another machine the first line produces:</p>
 <pre><code>Error in setwd("/Users/swapnil/Documents/GitHub/r-intro") :
   cannot change working directory</code></pre>
-<p>There is no version of that path that is correct on two machines. Windows users get a second problem on top, because Windows paths use backslashes and a backslash starts an escape sequence in an R string:</p>
+<p>No single absolute path is correct on two machines with different users or directory layouts. Windows adds a second problem, because Windows paths use backslashes and a backslash begins an escape sequence in an R string:</p>
 <pre><code>Error: '\U' used without hex digits in character string</code></pre>
-<p>That is R reading <code>C:\Users\...</code> and seeing <code>\U</code>, which it expects to be followed by a Unicode code point. You can escape the backslashes, or use forward slashes, which work fine on Windows. Better, do not type absolute paths at all.</p>
-<p>The fix is <code><a href="https://here.r-lib.org/reference/here.html">here::here()</a></code>. It looks for a project marker, a <code>.Rproj</code> file, a <code>.git</code> directory, or a file called <code>.here</code>, walking up from wherever R happens to be standing, and then builds a path down from that root:</p>
+<p>That is R reading <code>C:\Users\...</code>, seeing <code>\U</code>, and expecting a Unicode code point to follow. You can escape the backslashes, or use forward slashes, which R accepts on Windows. The better option is to avoid absolute paths.</p>
+<p><code><a href="https://here.r-lib.org/reference/here.html">here::here()</a></code> builds paths without an absolute component being typed. It walks up from the current working directory looking for a project marker, which may be a <code>.Rproj</code> file, a <code>.git</code> directory, or a file called <code>.here</code>, and then builds a path down from the folder it finds:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "/Users/swapnil/Documents/GitHub/r-intro/data/sg_covid_data.csv"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>On my machine that is what it prints. On yours it prints something else, and that is the entire point. The same line of code resolves to the right file on both. It works from a script in the project root, from a Quarto document two folders down, and from the console, because it never depends on where you currently are.</p>
-<p>You give <code>here()</code> the path pieces as separate arguments and it joins them with whatever separator the operating system uses. So <code>here("data", "raw", "file.csv")</code> is correct on macOS, Linux and Windows, and you never type a slash of either kind.</p>
-</section><section id="restart-r-often-and-start-every-session-empty" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="restart-r-often-and-start-every-session-empty">
-<span class="header-section-number">2.3</span> 3. Restart R often, and start every session empty</h2>
-<p>Two settings, once, and then a keyboard shortcut for the rest of your life.</p>
-<p>Go to Tools, Global Options, General. Untick <strong>“Restore .RData into workspace at startup”</strong>. Set <strong>“Save workspace to .RData on exit”</strong> to <strong>Never</strong>. Out of the box, restore is ticked and save is set to “Ask”, which means that sooner or later, at eleven at night, you will click Yes without reading the dialog. Setting it to Never removes the question. Both defaults date from an era when reloading a workspace was cheaper than recomputing it, and RStudio keeps them for compatibility rather than because anyone thinks they are a good idea.</p>
+<p>That is the path on the machine that built this book; on yours the same call prints a different absolute path but points at the same file within the project. The call also behaves the same way from a script in the project root, from a Quarto document two folders down, and from the console, because it resolves from the project root rather than from the current working directory.</p>
+<p>You give <code>here()</code> the path components as separate arguments and it joins them with the separator the operating system uses. <code>here("data", "raw", "file.csv")</code> is therefore correct on macOS, Linux and Windows without a slash being typed in either direction.</p>
+</section><section id="restart-r-often-and-start-each-session-empty" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="restart-r-often-and-start-each-session-empty">
+<span class="header-section-number">2.3</span> 3. Restart R often, and start each session empty</h2>
+<p>This rule involves two settings, changed once, and one keyboard shortcut.</p>
+<p>Go to Tools, Global Options, General. Untick <strong>“Restore .RData into workspace at startup”</strong>. Set <strong>“Save workspace to .RData on exit”</strong> to <strong>Never</strong>. By default, restore is ticked and save is set to “Ask”, so the workspace is preserved unless you decline the dialog each time; setting it to Never removes the question. Both defaults date from a period when reloading a saved workspace was cheaper than recomputing it, and RStudio retains them for backward compatibility.</p>
 <p>The <code>.Rproj</code> file overrides the global setting for its own project, which is why the one shown above carries <code>RestoreWorkspace: No</code> and <code>SaveWorkspace: No</code>. Change both in Global Options as well, so that projects you have not configured behave the same way.</p>
 <p>Then learn <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> on a Mac, which restarts R. Use it several times an hour. It takes under a second.</p>
-<p>Here is the failure this prevents. When R saves your workspace on exit and reloads it on startup, your environment accumulates. Objects created weeks ago sit there, invisible unless you go looking. Your script runs beautifully. You send it to someone and it fails on line 12 because line 12 uses an object your script never creates, and you never noticed because it has been sitting in your workspace since March. The script was never complete. Your environment was propping it up.</p>
-<p>The subtler version is worse, and it comes from a real bug in the worksheet this book replaces. The worksheet had a loop that built a monthly subset in order to print a count for each month. Something close to this:</p>
+<p>The failure this prevents is as follows. When R saves the workspace on exit and reloads it on startup, the environment accumulates. Objects created weeks ago remain, and are not visible unless you look in the Environment pane. A script can then run without error on your machine and fail on line 12 for someone else, because line 12 uses an object the script never creates and which has been sitting in your workspace since March. The script is incomplete, and the accumulated environment conceals the omission.</p>
+<p>A second version of the problem is harder to detect, and this one comes from a bug in the worksheet this book replaces. The worksheet had a loop that built a monthly subset in order to print a count for each month, close to this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -439,14 +440,14 @@ StripTrailingWhitespace: Yes</code></pre>
 <span>  <span class="co"># the original printed a count for month m here</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The loop does its job and finishes. But <code>m</code> and <code>month_data</code> were created at top level, so they are still in the global environment afterwards, holding whatever the last iteration put there:</p>
+<p>The loop runs and finishes. Because <code>m</code> and <code>month_data</code> were created at top level, they remain in the global environment afterwards, holding whatever the last iteration put in them:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">m</span></span>
 <span><span class="co">#&gt; [1] 12</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-12-01" "2020-12-31"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>December. Now forty lines further down the worksheet, after several other exercises, there was a plot of <code>month_data</code> that was supposed to be showing April, because the reader had been asked to build an April subset in the meantime. If they had skipped that exercise, or run it and then restarted, or run the chunks out of order, <code>month_data</code> was still December, and the plot came out looking perfectly reasonable.</p>
+<p>The subset left behind is December’s. Forty lines further down the worksheet, after several other exercises, there was a plot of <code>month_data</code> that was meant to show April, because the reader had been asked to build an April subset in the meantime. If they skipped that exercise, or ran it and then restarted, or ran the chunks out of order, <code>month_data</code> was still December and the plot was plausible on its face.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># What the reader thought was April's mean daily cases</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">month_data</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
@@ -462,17 +463,17 @@ StripTrailingWhitespace: Yes</code></pre>
 <span><span class="co">#&gt;        &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1       508.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Twelve, against five hundred and eight. Both are numbers, both print without complaint, and nothing anywhere errors. A stale global is the hardest kind of wrong answer to catch, because the only symptom is that the answer is wrong, and you have no reason to suspect it.</p>
-<p>Restarting R and running the script from the top is what catches this. If it runs clean from an empty session, the script is the analysis. If it does not, you have found a dependency you did not know you had, which is worth finding.</p>
-</section><section id="every-library-at-the-top-and-rmlist-ls-is-not-a-restart" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="every-library-at-the-top-and-rmlist-ls-is-not-a-restart">
-<span class="header-section-number">2.4</span> 4. Every <code>library()</code> at the top, and <code>rm(list = ls())</code> is not a restart</h2>
-<p>Put every package your script needs in one block at the top of the file. A reader can then see the dependencies in five seconds instead of scrolling. More practically, a script that loads a package halfway down fails differently depending on how far execution got, which makes the failure harder to reproduce than it needs to be.</p>
-<p>The thing people reach for instead of restarting is this:</p>
+<p>The stale object gives a mean of twelve daily cases; April’s mean is five hundred and eight. Both print without complaint and nothing raises an error. A stale global object is difficult to detect for exactly that reason: there is no warning, and the only symptom is a number that happens to be wrong.</p>
+<p>Restarting R and running the script from the top detects this. If the script runs from an empty session, its results depend only on what it contains. If it does not, you have found a dependency on something outside the file.</p>
+</section><section id="loading-packages-and-clearing-the-environment" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="loading-packages-and-clearing-the-environment">
+<span class="header-section-number">2.4</span> 4. Loading packages, and clearing the environment</h2>
+<p>Put every package your script needs in one block at the top of the file. A reader can then see the dependencies without reading the whole script. A script that loads a package halfway down also fails differently depending on how far execution reached before the failure, which makes the failure harder to reproduce.</p>
+<p>The usual substitute for restarting R is this:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>It feels like a fresh start. It is not one. <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> lists the objects in the global environment and <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> removes them, and that is the whole of what happens. Consider what is untouched.</p>
-<p>Attached packages stay attached. <code><a href="https://rdrr.io/r/base/search.html">search()</a></code> shows R’s chain of environments, and <code>rm(list = ls())</code> empties exactly one entry in it, the first:</p>
+<p>This is not equivalent to a restart. <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> lists the objects in the global environment and <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> removes them; nothing else changes. Several things are left untouched.</p>
+<p>Attached packages stay attached. <code><a href="https://rdrr.io/r/base/search.html">search()</a></code> shows R’s chain of environments, and <code>rm(list = ls())</code> empties one entry in it, the first:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/search.html">search</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] ".GlobalEnv"        "package:scales"    "package:patchwork"</span></span>
@@ -484,7 +485,7 @@ StripTrailingWhitespace: Yes</code></pre>
 <span><span class="co">#&gt; [19] "renv:shims"        "package:utils"     "package:methods"  </span></span>
 <span><span class="co">#&gt; [22] "Autoloads"         "package:base"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Everything from <code>package:scales</code> down is still attached and still masking whatever it was masking. Session-wide settings survive too: an <code>options(digits = 3)</code> you typed an hour ago is still quietly rounding everything you print. Open file connections stay open. And <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> hides names that begin with a dot, so anything dot-named is never passed to <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> in the first place:</p>
+<p>Everything from <code>package:scales</code> down is still attached, and still masks whatever it was masking. Session-wide settings survive as well: an <code>options(digits = 3)</code> set an hour ago continues to round printed output. Open file connections stay open. And <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> omits names beginning with a dot, so dot-named objects are never passed to <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
@@ -495,23 +496,23 @@ StripTrailingWhitespace: Yes</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span>all.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] ".main"               ".QuartoInlineRender" ".Random.seed"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>.Random.seed</code> is still there after the supposed clean-out, which means your “fresh” session is not even at a fresh random state. Restarting R clears all of it, and takes less time than typing the <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> call.</p>
-</section><section id="the-raw-data-file-is-read-only" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="the-raw-data-file-is-read-only">
-<span class="header-section-number">2.5</span> 5. The raw data file is read-only</h2>
-<p>Whatever arrives from the source goes in <code>data/</code> and is never edited again. Not to fix a date format, not to fill in a blank, not to delete the header row someone put in twice.</p>
-<p>The dataset in this book is a good argument for the rule. It has 59 missing values at the start of the deaths column, 24 missing days in every one of the six mobility columns, and case counts that are cumulative rather than daily. All three need repairing, and every one of those repairs happens in code, in front of you, in a way you can read and disagree with. If instead I had opened the CSV in Excel and typed zeros over the missing deaths, the file would look tidier and the analysis would be worse, because a zero and a not-yet-reported are different things and nobody downstream would ever know which they were holding.</p>
-<p>Every repair belongs in the script. That way the repair has a reason next to it, it survives the arrival of an updated file, and a reviewer can see what you changed. A file edited by hand has none of those properties.</p>
-</section><section id="name-things-so-that-tomorrows-you-can-read-them" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="name-things-so-that-tomorrows-you-can-read-them">
-<span class="header-section-number">2.6</span> 6. Name things so that tomorrow’s you can read them</h2>
-<p>Use <code>snake_case</code>: lowercase words joined by underscores. <code>daily_cases</code>, <code>monthly_summary</code>, <code>covid_april</code>. R is a language where four naming conventions coexist in the base install alone, and you cannot fix that, but you can be internally consistent.</p>
-<p>Name data after what it is, using nouns. Name functions after what they do, using verbs. <code>severity</code> is a column; <code>classify_severity()</code> is a function. When you read <code>monthly_report &lt;- summarise_by_month(covid)</code> you know which is which without looking anything up.</p>
-<p>Do not call things <code>df</code>, <code>df2</code>, <code>data</code>, <code>temp</code>, or <code>df_final_v2</code>. Two reasons. The first is that six weeks later <code>df2</code> tells you nothing and you will have to run the code to find out what is in it. The second is that some of those names are already taken. <code>df</code> is a real function in base R, the density of the F distribution:</p>
+<p><code>.Random.seed</code> survives the clean-out, so the random number state carries over as well. Restarting R clears all of this, and takes about as long as typing the <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> call.</p>
+</section><section id="treat-the-raw-data-file-as-read-only" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="treat-the-raw-data-file-as-read-only">
+<span class="header-section-number">2.5</span> 5. Treat the raw data file as read-only</h2>
+<p>Whatever arrives from the source goes in <code>data/</code> and is not edited afterwards: not to fix a date format, not to fill in a blank, not to remove a duplicated header row.</p>
+<p>The dataset in this book illustrates the reason. It has 59 missing values at the start of the deaths column, 24 missing days in each of the six mobility columns, and case counts that are cumulative rather than daily. All three need handling, and each is handled in code that you can read and disagree with. Opening the CSV in Excel and typing zeros over the missing deaths would produce a tidier-looking file and a worse analysis, because a reported zero and a not-yet-reported value are different quantities and the edited file would no longer distinguish them.</p>
+<p>Repairs made in the script carry their justification with them, survive the arrival of an updated version of the source file, and can be inspected by a reviewer. An edit made by hand in a spreadsheet has none of those properties.</p>
+</section><section id="naming-objects" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="naming-objects">
+<span class="header-section-number">2.6</span> 6. Naming objects</h2>
+<p>Use <code>snake_case</code>: lowercase words joined by underscores. <code>daily_cases</code>, <code>monthly_summary</code>, <code>covid_april</code>. At least four naming conventions coexist in R’s base installation, so the language itself will not be consistent, but your own code can be.</p>
+<p>Name data after what it is, using nouns, and functions after what they do, using verbs. <code>severity</code> is a column; <code>classify_severity()</code> is a function. In <code>monthly_report &lt;- summarise_by_month(covid)</code> the distinction is visible without consulting anything.</p>
+<p>Avoid <code>df</code>, <code>df2</code>, <code>data</code>, <code>temp</code> and <code>df_final_v2</code>, for two reasons. The first is that <code>df2</code> carries no information about its contents, so six weeks later you have to run the code to find out what is in it. The second is that some of those names are already in use. <code>df</code> is a function in base R, the density of the F distribution:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/Fdist.html">df</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.2788548</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Assign your data frame to <code>df</code> and you have masked it. That particular collision is unlikely to hurt you, but <code>data</code>, <code>c</code>, <code>mean</code>, <code>sum</code>, <code>t</code> and <code>T</code> are all things people name variables, and some of those do hurt.</p>
-<p>Long names cost nothing, because Tab completes them. <code>monthly_case_summary</code> is three keystrokes and a Tab.</p>
+<p>Assigning a data frame to <code>df</code> masks that function. This particular collision rarely causes trouble, since few analyses call <code><a href="https://rdrr.io/r/stats/Fdist.html">df()</a></code>. Others are riskier: <code>data</code>, <code>c</code>, <code>mean</code>, <code>sum</code>, <code>t</code> and <code>T</code> are all names people assign to variables, and code that calls the masked function afterwards will fail or, in the case of <code>T</code>, silently change meaning.</p>
+<p>Long names are cheap to type, because Tab completes them. <code>monthly_case_summary</code> is a few keystrokes and a Tab.</p>
 </section><section id="pin-your-packages-with-renv" class="level2" data-number="2.7"><h2 data-number="2.7" class="anchored" data-anchor-id="pin-your-packages-with-renv">
 <span class="header-section-number">2.7</span> 7. Pin your packages with <code>renv</code>
 </h2>
@@ -521,40 +522,40 @@ StripTrailingWhitespace: Yes</code></pre>
 <span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/snapshot.html">snapshot</a></span><span class="op">(</span><span class="op">)</span>  <span class="co"># after you add or update a package</span></span>
 <span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html">restore</a></span><span class="op">(</span><span class="op">)</span>   <span class="co"># on a new machine, or when you come back to it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The claim is narrow and it is this: this repository, plus <code>renv.lock</code>, equals the same numbers in 2029. Without a lockfile, “install the tidyverse and run my script” means whatever the tidyverse happens to be on the day someone tries, and dplyr’s behaviour in 2029 is not something either of us can promise.</p>
-<p>This book uses <code>renv</code>, and <code>renv.lock</code> is committed alongside the chapters. If you clone the repository, <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> builds the exact library the book was written against.</p>
-<p>Be honest about the limits. <code>renv</code> pins R packages. It does not pin R itself, or your operating system, or the system libraries a package compiles against. For that you need containers, and that is a different course. Pinning packages is the step that removes most of the risk for most of the work.</p>
-</section><section id="git-in-three-commands-and-one-idea" class="level2" data-number="2.8"><h2 data-number="2.8" class="anchored" data-anchor-id="git-in-three-commands-and-one-idea">
-<span class="header-section-number">2.8</span> 8. Git, in three commands and one idea</h2>
+<p>The claim a lockfile supports is a narrow one: the repository together with <code>renv.lock</code> records which package versions produced the results, and <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> reinstalls those versions. Without a lockfile, “install the tidyverse and run my script” means whatever the tidyverse happens to be on the day someone tries, and package behaviour does change between versions.</p>
+<p>This book uses <code>renv</code>, and <code>renv.lock</code> is committed alongside the chapters. If you clone the repository, <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> builds the library the book was written against.</p>
+<p>The limits are worth stating. <code>renv</code> pins R packages. It does not pin R itself, the operating system, or the system libraries a package compiles against, and reproducing those requires containers, which are outside the scope of this book. Pinning packages addresses the largest and most frequent source of version drift.</p>
+</section><section id="version-control-with-git" class="level2" data-number="2.8"><h2 data-number="2.8" class="anchored" data-anchor-id="version-control-with-git">
+<span class="header-section-number">2.8</span> 8. Version control with Git</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Compute daily cases from the cumulative column"</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>add</code> chooses what goes into the next snapshot, <code>commit</code> takes the snapshot with a message attached, <code>push</code> sends it somewhere that is not your laptop. That is enough to be useful from day one. Everything else in Git is for when you need it.</p>
-<p>The idea underneath is that your repository becomes a lab notebook you cannot rewrite by accident. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it exists on a machine you do not control. You can rewrite Git history if you set out to, but you cannot do it by mistake, and you cannot do it to a commit somebody else has already pulled without it being obvious. That is a much stronger claim than a folder full of <code>analysis_v3_FINAL_revised.R</code>.</p>
-<p>The everyday benefit is smaller and you will feel it sooner. With commits behind you, you can delete code without hesitating. The half-finished approach and the two hundred lines you replaced can both go, the file stays clean, and if you ever need any of it back it is one command away. Untracked code makes people hoard, and hoarded code makes scripts unreadable.</p>
+<p><code>add</code> chooses what goes into the next snapshot, <code>commit</code> takes the snapshot with a message attached, and <code>push</code> sends it to a machine that is not your laptop. Those three are enough to be useful from the start; the rest of Git can wait until a situation calls for it.</p>
+<p>The property this gives you is a record of the project that is difficult to alter unintentionally. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a server. History can be rewritten deliberately, but not by accident, and rewriting a commit someone else has already pulled is visible to them. A folder of files named <code>analysis_v3_FINAL_revised.R</code> provides none of this.</p>
+<p>The everyday benefit is more immediate. With commits behind you, code can be deleted rather than kept: the half-finished approach and the two hundred lines you replaced can both go, the file stays readable, and any of it can be recovered with one command. Without version control the safer option is to keep everything, and scripts grow accordingly.</p>
 <p>Commit code, small data files, and your lockfile. Do not commit two gigabytes of intermediate output. That is what <code>.gitignore</code> is for.</p>
 </section><section id="ask-for-help-with-a-reprex" class="level2" data-number="2.9"><h2 data-number="2.9" class="anchored" data-anchor-id="ask-for-help-with-a-reprex">
 <span class="header-section-number">2.9</span> 9. Ask for help with a reprex</h2>
 <p>A <strong>reprex</strong> is a reproducible example: the smallest piece of code that still shows your problem, together with everything someone needs to run it. The <code>reprex</code> package will build one for you. Copy your code, run <code><a href="https://reprex.tidyverse.org/reference/reprex.html">reprex::reprex()</a></code>, and it executes that code in a clean R session and puts the code plus its real output on your clipboard, formatted for GitHub or Slack.</p>
-<p>The clean session is the point. A surprising share of the time, the act of writing the reprex fixes the bug, because the bug was an object left over in your environment and the clean session does not have it. That is rule 3 collecting its debt.</p>
+<p>The clean session does useful work here. A fair proportion of the time, writing the reprex resolves the problem without anyone else reading it, because the cause was an object left over in your environment which the clean session does not have. This is the same failure described in rule 3.</p>
 <p>What makes a question answerable, in order of how often it is missing:</p>
 <ol type="1">
-<li>Code the reader can actually run. Not a screenshot. Not a fragment referring to <code>my_data</code> that nobody else has. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of <code>dput(head(your_data, 10))</code>.</li>
-<li>The error message, copied exactly. Not “it says there’s an error”. Not retyped from memory. The whole thing, including the lines after the first.</li>
-<li>What you expected instead. Half of all R questions turn out to be a disagreement about what the function was supposed to do, and stating your expectation surfaces that immediately.</li>
+<li>Code the reader can run. Not a screenshot, and not a fragment referring to <code>my_data</code>, which nobody else has. Either use a dataset that ships with R, or reduce yours to ten rows and paste the output of <code>dput(head(your_data, 10))</code>.</li>
+<li>The error message, copied exactly rather than paraphrased or retyped from memory, including the lines after the first.</li>
+<li>What you expected instead. A large share of R questions turn out to rest on a disagreement about what the function was supposed to do, and stating the expectation makes that visible.</li>
 <li>Your versions. <code><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo()</a></code> prints your R version and every attached package. Paste it at the bottom.</li>
 </ol>
-<p>Cut everything that is not needed to reproduce the problem. If your example is forty lines and the error happens on line 4, the other thirty-six lines are asking your reader to do work you could have done yourself.</p>
+<p>Remove anything not needed to reproduce the problem. If the example is forty lines and the error occurs on line 4, the other thirty-six lines have to be read and discarded by whoever answers.</p>
 </section><section id="write-the-report-and-the-analysis-in-the-same-file" class="level2" data-number="2.10"><h2 data-number="2.10" class="anchored" data-anchor-id="write-the-report-and-the-analysis-in-the-same-file">
 <span class="header-section-number">2.10</span> 10. Write the report and the analysis in the same file</h2>
-<p>The classic workflow is: run the script, copy the numbers into Word, write around them. The moment you do that, the document and the analysis are two separate objects that agree by coincidence. Change a filter, re-run, and the number in the document is now wrong and nothing in the world will tell you.</p>
-<p>Quarto removes the copy. A <code>.qmd</code> file holds your prose and your code together, and rendering it runs the code and drops the real output into the finished document. Change the filter, render again, every number updates. Tables, figures, and numbers written inline in a sentence, all of them.</p>
-<p>This book is a Quarto book. Every chapter is a <code>.qmd</code> file, every output on every page was produced by the code shown above it, and the whole thing is rebuilt from scratch before it is published. I would not be willing to put numbers under my own name in something a hundred students rely on any other way.</p>
+<p>The common workflow is to run the script, copy the numbers into Word, and write around them. From that point the document and the analysis are separate artefacts that agree only as long as nobody changes the analysis. Change a filter, re-run the script, and the number in the document is out of date with nothing to indicate it.</p>
+<p>Quarto removes the copying step. A <code>.qmd</code> file holds prose and code together, and rendering it runs the code and inserts the resulting output into the finished document. Change the filter, render again, and the numbers update: tables, figures, and values written inline in a sentence alike.</p>
+<p>This book is a Quarto book. Every chapter is a <code>.qmd</code> file, every output on every page was produced by the code shown above it, and the book is rebuilt from scratch before publication, so a number in the text cannot drift away from the code that produced it.</p>
 </section><section id="the-checklist" class="level2" data-number="2.11"><h2 data-number="2.11" class="anchored" data-anchor-id="the-checklist">
 <span class="header-section-number">2.11</span> The checklist</h2>
-<p>One screen. Print it, or keep it open for a week until it stops being something you have to remember.</p>
+<p>The ten rules above, in one screen.</p>
 <table class="table">
-<caption>Habits worth having before you write anything that matters.</caption>
+<caption>The ten habits in this chapter.</caption>
 <colgroup>
 <col style="width: 18%">
 <col style="width: 82%">
@@ -574,7 +575,7 @@ StripTrailingWhitespace: Yes</code></pre>
 </tr>
 <tr class="even">
 <td><strong>Test</strong></td>
-<td>Before you send it: restart R, run the whole script from the top. If it does not run clean, it is not finished.</td>
+<td>Before you send it: restart R, run the whole script from the top. If it does not run cleanly, something it needs is missing from the file.</td>
 </tr>
 <tr class="odd">
 <td><strong>Packages</strong></td>
@@ -588,7 +589,7 @@ StripTrailingWhitespace: Yes</code></pre>
 <tr class="odd">
 <td><strong>Names</strong></td>
 <td>
-<code>snake_case</code>. Nouns for data, verbs for functions. Never <code>df2</code>.</td>
+<code>snake_case</code>. Nouns for data, verbs for functions. Avoid <code>df</code>, <code>df2</code>, <code>temp</code>.</td>
 </tr>
 <tr class="even">
 <td><strong>Versions</strong></td>
@@ -607,7 +608,7 @@ StripTrailingWhitespace: Yes</code></pre>
 </tr>
 <tr class="odd">
 <td><strong>Output</strong></td>
-<td>Report and analysis in one <code>.qmd</code>. Never paste a number into Word.</td>
+<td>Report and analysis in one <code>.qmd</code>. No numbers pasted into a separate document.</td>
 </tr>
 </tbody>
 </table>

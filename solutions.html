@@ -352,9 +352,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sec-sol-daily-cases" id="toc-sec-sol-daily-cases" class="nav-link" data-scroll-target="#sec-sol-daily-cases"><span class="header-section-number">A.5</span> Difference the deaths series</a></li>
   <li><a href="#sec-sol-mobility-na" id="toc-sec-sol-mobility-na" class="nav-link" data-scroll-target="#sec-sol-mobility-na"><span class="header-section-number">A.6</span> Interrogate the mobility gap</a></li>
   <li><a href="#sec-sol-severity" id="toc-sec-sol-severity" class="nav-link" data-scroll-target="#sec-sol-severity"><span class="header-section-number">A.7</span> Audit your severity column</a></li>
-  <li><a href="#sec-sol-move-cutoffs" id="toc-sec-sol-move-cutoffs" class="nav-link" data-scroll-target="#sec-sol-move-cutoffs"><span class="header-section-number">A.8</span> Move the cutoffs and watch the headline move</a></li>
+  <li><a href="#sec-sol-move-cutoffs" id="toc-sec-sol-move-cutoffs" class="nav-link" data-scroll-target="#sec-sol-move-cutoffs"><span class="header-section-number">A.8</span> Move the cutoffs</a></li>
   <li><a href="#sec-sol-monthly-high" id="toc-sec-sol-monthly-high" class="nav-link" data-scroll-target="#sec-sol-monthly-high"><span class="header-section-number">A.9</span> High-severity days by month</a></li>
-  <li><a href="#sec-sol-monthly-alert" id="toc-sec-sol-monthly-alert" class="nav-link" data-scroll-target="#sec-sol-monthly-alert"><span class="header-section-number">A.10</span> A monthly alert table you can defend</a></li>
+  <li><a href="#sec-sol-monthly-alert" id="toc-sec-sol-monthly-alert" class="nav-link" data-scroll-target="#sec-sol-monthly-alert"><span class="header-section-number">A.10</span> A monthly alert table</a></li>
   <li><a href="#sec-sol-september" id="toc-sec-sol-september" class="nav-link" data-scroll-target="#sec-sol-september"><span class="header-section-number">A.11</span> Cross-check a month that is not September</a></li>
   <li><a href="#sec-sol-epi-curve" id="toc-sec-sol-epi-curve" class="nav-link" data-scroll-target="#sec-sol-epi-curve"><span class="header-section-number">A.12</span> Draw a publication-ready epidemic curve</a></li>
   <li><a href="#sec-sol-histogram" id="toc-sec-sol-histogram" class="nav-link" data-scroll-target="#sec-sol-histogram"><span class="header-section-number">A.13</span> Make the distribution legible, and say what it cost</a></li>
@@ -391,8 +391,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Every exercise in the book has an answer here, and every answer on this page was executed to produce the output you see. If a number in a solution disagrees with a number you got, one of us has a bug, and finding out which is more useful than either of us being right.</p>
-<p>Read the exercise first and have a go. A solution you have already attempted teaches you something; a solution you read cold teaches you that R exists.</p>
+</header><p>Every exercise in the book has an answer here, and every answer on this page was executed to produce the output you see. If a number in a solution disagrees with a number you got, one of us has a bug, and the discrepancy is worth tracking down.</p>
+<p>Attempt the exercise before reading the solution. These pages work better as a check on an attempt than as a first exposure to the material.</p>
 <p>Two objects are set up once at the top of this page and used throughout. <code>covid</code> is <code>covid_daily()</code>, the file with <code>daily_cases</code>, <code>daily_deaths</code>, <code>severity</code> and <code>month</code> already built. <code>covid_raw</code> is <code>read_covid()</code>, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is fine rather than a sign you have gone wrong.</p>
 <section id="sec-sol-vectors" class="level2" data-number="A.1"><h2 data-number="A.1" class="anchored" data-anchor-id="sec-sol-vectors">
 <span class="header-section-number">A.1</span> Build a week by hand</h2>
@@ -433,7 +433,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; Error in `labelled * 2`:</span></span>
 <span><span class="co">#&gt; ! non-numeric argument to binary operator</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>non-numeric argument to binary operator</code> is the error you will meet most often in your first month of R, and nine times out of ten the cause is exactly this: a stray label, a footnote marker, or a <code>"N/A"</code> typed by hand into a spreadsheet column, coercing an entire column of numbers to text on import.</p>
+<p><code>non-numeric argument to binary operator</code> is one of the errors you will meet most often in your first month of R, and the usual cause is exactly this: a stray label, a footnote marker, or a <code>"N/A"</code> typed by hand into a spreadsheet column, coercing an entire column of numbers to text on import.</p>
 <p>Part four:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">week_na</span> <span class="op">&lt;-</span> <span class="va">week_one</span></span>
@@ -663,7 +663,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; # ℹ 46 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Two <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> conditions separated by a comma are combined with AND, which is what you want for a date range. Writing <code>filter(date &gt;= start &amp; date &lt;= end)</code> is identical; the comma is the house style because it reads as a list of requirements.</p>
-<p><code>arrange(workplaces)</code> sorts ascending, and mobility drops are negative, so ascending puts the deepest drops first. If you wanted the same thing for a series where bigger means worse, you would need <code>arrange(desc(...))</code>. Getting this backwards is worth checking every time, because a sorted table always looks convincing.</p>
+<p><code>arrange(workplaces)</code> sorts ascending, and mobility drops are negative, so ascending puts the deepest drops first. If you wanted the same thing for a series where bigger means worse, you would need <code>arrange(desc(...))</code>. Check the direction every time, because a sorted table looks equally convincing either way round.</p>
 <p>How many rows:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">cb</span><span class="op">)</span></span>
@@ -704,7 +704,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">deaths_daily</span><span class="op">$</span><span class="va">daily_deaths</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>NA</code>, not <code>FALSE</code>. This is the part of the exercise worth slowing down for. <code>NA &lt; 0</code> is <code>NA</code>, because R has no idea whether the missing value was negative. <code><a href="https://rdrr.io/r/base/any.html">any()</a></code> then has a vector containing <code>NA</code>s and <code>FALSE</code>s and no <code>TRUE</code> at all, and the honest answer to “is at least one of these true?” when some of them are unknown is “I cannot tell”. So it returns <code>NA</code>.</p>
+<p><code>NA</code>, not <code>FALSE</code>. <code>NA &lt; 0</code> is <code>NA</code>, because R has no idea whether the missing value was negative. <code><a href="https://rdrr.io/r/base/any.html">any()</a></code> then has a vector containing <code>NA</code>s and <code>FALSE</code>s and no <code>TRUE</code> at all, and the honest answer to “is at least one of these true?” when some of them are unknown is “I cannot tell”. So it returns <code>NA</code>.</p>
 <p>Tell it to ignore the unknowns and you get the answer you wanted:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">deaths_daily</span><span class="op">$</span><span class="va">daily_deaths</span> <span class="op">&lt;</span> <span class="fl">0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -736,7 +736,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 2020-03-22      2            0</span></span>
 <span><span class="co">#&gt; 3 2020-03-23      2            0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of <code>na.rm = TRUE</code> puts it back. The repair is a decision about what those leading <code>NA</code>s mean rather than a piece of code. Read them as “no deaths had occurred yet” and 21 March’s increment is 2, the daily figures add to 29, and the check passes. Read them as “not reported” and the honest total is 27 with a footnote. Both are defensible; only one of them can be in your report.</p>
+<p>Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of <code>na.rm = TRUE</code> puts it back. The repair is a decision about what those leading <code>NA</code>s mean rather than a piece of code. Read them as “no deaths had occurred yet” and 21 March’s increment is 2, the daily figures add to 29, and the check passes. Read them as “not reported” and the honest total is 27 with a footnote. Both are defensible, and the report has to state which reading it uses.</p>
 <p>The largest single-day rise:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deaths_daily</span> <span class="op">%&gt;%</span></span>
@@ -748,7 +748,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 1 2020-04-27     14            2</span></span>
 <span><span class="co">#&gt; 2 2020-05-06     20            2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Two days tie at two deaths, so <code>slice_max(n = 1)</code> returns both. <code>with_ties = FALSE</code> would give you one arbitrarily, which is fine when you want a single row and wrong when the tie is the finding. In a year with 29 deaths, the fact that no day recorded more than two is worth a sentence on its own.</p>
+<p>Two days tie at two deaths, so <code>slice_max(n = 1)</code> returns both. <code>with_ties = FALSE</code> would give you one arbitrarily, which is fine when you want a single row and wrong when the existence of the tie is part of what you are reporting. In a year with 29 deaths, the fact that no day recorded more than two is worth a sentence on its own.</p>
 </section><section id="sec-sol-mobility-na" class="level2" data-number="A.6"><h2 data-number="A.6" class="anchored" data-anchor-id="sec-sol-mobility-na">
 <span class="header-section-number">A.6</span> Interrogate the mobility gap</h2>
 <blockquote class="blockquote">
@@ -892,7 +892,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>TRUE</code> from 95 through 100 and <code>FALSE</code> either side. The upper cutoff behaves the same way: the largest Medium day is 295 and the smallest High day is 301, so 295 through 300 are interchangeable.</p>
 <p>What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they <em>can</em> argue is what happens at 50, or at 500, where the gap is wide enough to carry real days across a boundary.</p>
 </section><section id="sec-sol-move-cutoffs" class="level2" data-number="A.8"><h2 data-number="A.8" class="anchored" data-anchor-id="sec-sol-move-cutoffs">
-<span class="header-section-number">A.8</span> Move the cutoffs and watch the headline move</h2>
+<span class="header-section-number">A.8</span> Move the cutoffs</h2>
 <blockquote class="blockquote">
 <p>Also from the chapter on making decisions: rebuild <code>severity</code> with cutoffs at 50 and 500, compare the counts with 215 / 53 / 77, and write a defensible sentence under each rule.</p>
 </blockquote>
@@ -938,7 +938,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Under thresholds of 50 and 500, only 42 days in 2020, 12%, exceeded 500 new cases, and a further 114 sat in a broad middle band.</p>
 </blockquote>
 <p>Neither is false. The first invites the reader to conclude that a fifth of Singapore’s 2020 was a bad day. The second invites them to conclude that high-burden days were rare. A reader who sees only one of the two takes away a different impression of the same year.</p>
-<p>A threshold is an argument, and the place for an argument is your methods section, next to a reason. “300 was chosen because it is roughly the daily capacity of the contact-tracing system” is a cutoff you can defend. “300 was on the worksheet” is not, and until somebody asks you, nobody will know which one you had.</p>
+<p>A threshold is a choice, and it belongs in your methods section next to the reason for it. “300 was chosen because it is roughly the daily capacity of the contact-tracing system” is a cutoff you can defend. “300 was on the worksheet” is not, and a reader cannot tell the two apart unless you say which one applies.</p>
 </section><section id="sec-sol-monthly-high" class="level2" data-number="A.9"><h2 data-number="A.9" class="anchored" data-anchor-id="sec-sol-monthly-high">
 <span class="header-section-number">A.9</span> High-severity days by month</h2>
 <blockquote class="blockquote">
@@ -995,7 +995,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>May wins both. Every one of its 31 days was above 300 cases, and it carried 18,715 of the year’s 58,599.</p>
 <p>They can come apart, and August is the near-miss that shows how. August has 4 High days and 4,607 cases, more than September through December combined, while March has 0 High days and 824. A count of days above a threshold is insensitive to how far above the threshold those days sat, so a month of steady 320s and a month carrying one 908 can produce very different High counts for similar totals. Report both, or report the one whose question you are answering.</p>
 </section><section id="sec-sol-monthly-alert" class="level2" data-number="A.10"><h2 data-number="A.10" class="anchored" data-anchor-id="sec-sol-monthly-alert">
-<span class="header-section-number">A.10</span> A monthly alert table you can defend</h2>
+<span class="header-section-number">A.10</span> A monthly alert table</h2>
 <blockquote class="blockquote">
 <p>Also from the chapter on grouping and summarising: three statuses instead of two, then the same table under a rate-based rule, and which of the two you would defend.</p>
 </blockquote>
@@ -1049,7 +1049,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>One month changes: August, “Watch” under the day-count rule and “Alert” under the rate rule. August had 4 High days and a mean of 148.6, and the mean is being pulled up by 5 August, which recorded 908 cases against a monthly median of 91. Recompute August’s mean without that single day and it falls to 123.3, still above 100 but by much less.</p>
 <p>Which rule I would rather defend: the day-count rule, and not because it is kinder to August. A count of days above a threshold cannot be moved by one extreme value, and 5 August is an extreme value with a known cause. MOH attributed the day’s numbers to clearance testing in the dormitories picking up past infections, 903 of the 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. A rule that escalates a whole month on the strength of one day of retrospective testing is a rule that will escalate again the next time a backlog clears.</p>
-<p>The honest version of the answer is that I would report both columns and let the meeting see the disagreement, because the disagreement is the finding. A single status column hides the fact that August was one thing by one measure and another thing by another.</p>
+<p>The honest version of the answer is that I would report both columns and let the meeting see the disagreement. A single status column hides the fact that August is classified one way by one measure and the other way by another.</p>
 </section><section id="sec-sol-september" class="level2" data-number="A.11"><h2 data-number="A.11" class="anchored" data-anchor-id="sec-sol-september">
 <span class="header-section-number">A.11</span> Cross-check a month that is not September</h2>
 <blockquote class="blockquote">
@@ -1096,7 +1096,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; numeric(0)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>numeric(0)</code>. Not an error, not <code>NA</code>, an empty vector. There is no December 2019 in this file, so <code>prev</code> has zero rows, <code>pull(confirmed)</code> returns a length-zero vector, and arithmetic between a length-1 vector and a length-0 vector gives length 0. R does exactly what it was asked and the answer has nothing in it.</p>
-<p>That is worse than an error, because <code>numeric(0)</code> will travel. Put it in a <code>mutate()</code> and you get a length mismatch three steps later. Print it in a report and you get a blank cell nobody notices.</p>
+<p>That is harder to catch than an error, because <code>numeric(0)</code> propagates. Put it in a <code>mutate()</code> and you get a length mismatch three steps later. Print it in a report and you get a blank cell.</p>
 <p>The fix uses a fact about this specific file:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span><span class="op">$</span><span class="va">confirmed</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
@@ -1248,8 +1248,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Read the warning, because it writes your caption for you. <code>Removed 55 rows containing non-finite outside the scale range</code> is the exact count: <code>xlim()</code> does not crop the picture, it drops the rows before the bins are computed, so those 55 days are not in this figure at all. They are the 55 days above 400 cases, which between them carry 36,379 of the year’s 58,599 cases. A figure that omits 62% of the epidemic needs to say so, and the caption above does. The second warning, about 2 rows removed by <code>geom_bar()</code>, is the two bins that straddle the edge of the new limits.</p>
-<p><code>coord_cartesian(xlim = c(0, 400))</code> is the alternative and behaves differently: it zooms the finished plot instead of filtering the data, so the bins are computed over all 345 days, nothing is removed, and you cannot see past 400. No warning appears, which is convenient and is also why I prefer <code>xlim()</code> here. The warning is a receipt.</p>
+<p>The warning gives you the number for the caption. <code>Removed 55 rows containing non-finite outside the scale range</code> is the exact count: <code>xlim()</code> does not crop the picture, it drops the rows before the bins are computed, so those 55 days are not in this figure at all. They are the 55 days above 400 cases, which between them carry 36,379 of the year’s 58,599 cases. A figure that omits 62% of the epidemic needs to say so, and the caption above does. The second warning, about 2 rows removed by <code>geom_bar()</code>, is the two bins that straddle the edge of the new limits.</p>
+<p><code>coord_cartesian(xlim = c(0, 400))</code> is the alternative and behaves differently: it zooms the finished plot instead of filtering the data, so the bins are computed over all 345 days, nothing is removed, and you cannot see past 400. No warning appears, which is convenient and is also why I prefer <code>xlim()</code> here: the warning is a record of what was dropped.</p>
 <p>Now the faceted version. The factor is what puts the panels in calendar order:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
@@ -1270,7 +1270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p><code>month.name</code> is a base R constant holding the twelve month names in order. Without the <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> call the panels come out April, August, December, February, and the plot looks broken for a reason that has nothing to do with plotting.</p>
-<p>Which one goes in the report: the faceted one, if the question is about how the year changed. The single histogram answers “what did a typical day in 2020 look like”, and the answer, that most days were under 100 cases, is true and close to useless, because 2020 in Singapore was not one epidemic curve at one intensity. The facets show January to March sitting flat against the axis, April to July spread right across it, August straddling both with its one 908-case day out on its own, and September to December back where the year started. That contrast is the finding, and a single histogram flattens it into a shape that describes no month in particular.</p>
+<p>Which one goes in the report: the faceted one, if the question is about how the year changed. The single histogram answers “what did a typical day in 2020 look like”, and the answer, that most days were under 100 cases, is true and close to useless, because 2020 in Singapore was not one epidemic curve at one intensity. The facets show January to March sitting flat against the axis, April to July spread right across it, August straddling both with its one 908-case day out on its own, and September to December back where the year started. A single histogram flattens that contrast into a shape that describes no month in particular.</p>
 </section><section id="sec-sol-stringency" class="level2" data-number="A.14"><h2 data-number="A.14" class="anchored" data-anchor-id="sec-sol-stringency">
 <span class="header-section-number">A.14</span> Put policy next to cases</h2>
 <blockquote class="blockquote">
@@ -1317,7 +1317,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 2020-04-25             82.4         618</span></span>
 <span><span class="co">#&gt; 3 2020-05-01             82.4         932</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The maximum of 82.41 is reached on three separate days and the first is 10 April 2020. <code>slice_max()</code> would give you the same three rows, which is why the exercise warns you about it: with <code>n = 1</code> and default <code>with_ties = TRUE</code> you get all three, and <code>arrange(date)</code> then puts the earliest first. Taking <code>slice_max(..., n = 1, with_ties = FALSE)</code> and calling the result “the date” would be a guess dressed as an answer.</p>
+<p>The maximum of 82.41 is reached on three separate days and the first is 10 April 2020. <code>slice_max()</code> would give you the same three rows, which is why the exercise warns you about it: with <code>n = 1</code> and default <code>with_ties = TRUE</code> you get all three, and <code>arrange(date)</code> then puts the earliest first. Taking <code>slice_max(..., n = 1, with_ties = FALSE)</code> and calling the result “the date” would report one of three tied dates as though it were the only one.</p>
 <p>Cases had not peaked on 10 April. The peak was 1,426 on 20 April, ten days later, and on 10 April the count was 198:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">slice_max</span><span class="op">(</span><span class="va">daily_cases</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_cases</span><span class="op">)</span></span>
@@ -1428,7 +1428,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;date&gt;     &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;         &lt;int&gt; &lt;chr&gt;   </span></span>
 <span><span class="co">#&gt; 1 2020-04-01    30 15243       508.  1426 2020-04-20        18 Escalate</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>September: 30 days, 953 cases, a mean of 31.8, a peak of 86, zero High days, “All clear”. April: 15,243 cases, a peak of 1,426 on the 20th, 18 High days, “Escalate”. Both verdicts match what the case counts say, which is the check the exercise asked for and is not a formality. Run this on twelve months and one of them will surprise you, and that is when you find out whether the rule or the data is wrong.</p>
+<p>September: 30 days, 953 cases, a mean of 31.8, a peak of 86, zero High days, “All clear”. April: 15,243 cases, a peak of 1,426 on the 20th, 18 High days, “Escalate”. Both verdicts match what the case counts say, which is the check the exercise asked for. Running the function across all twelve months, below, is what shows whether the rule behaves sensibly over the whole year.</p>
 <p>Is five defensible? Not on the evidence in this file. Look at the whole year:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">list_rbind</span><span class="op">(</span><span class="fu">map</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">month</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="fu">month_summary</span><span class="op">(</span><span class="va">covid</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -1449,9 +1449,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 11 2020-11-01    30   203        6.8         0 All clear</span></span>
 <span><span class="co">#&gt; 12 2020-12-01    31   381       12.3         0 All clear</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Across the twelve months, <code>high_days</code> only ever takes the values 0, 4, 12, 18 and 31. Nothing sits between 4 and 12. Five splits the year into four escalating months and eight clear ones, and so does any cut-off from 4 up to 11. Drop to 3 and August joins the escalating group; go up to 12 and June and July leave it. The rule is stable against small changes, which is reassuring, and the data gives you no reason to prefer five over any other number in that range, which is not.</p>
+<p>Across the twelve months, <code>high_days</code> only ever takes the values 0, 4, 12, 18 and 31. Nothing sits between 4 and 12. Five splits the year into four escalating months and eight clear ones, and so does any cut-off from 4 up to 11. Drop to 3 and August joins the escalating group; go up to 12 and June and July leave it. So the rule is stable against small changes in the cut-off, and the data gives no reason to prefer five over any other number between 4 and 11.</p>
 <p>August is where it bites. Four High days, so “All clear”, on a month that recorded 4,607 cases, more than September through December put together. The rule counts days over 300 and August’s burden was distributed differently.</p>
-<p>That is why <code>high_cut</code> is an argument rather than a hard-coded 5. Not because the caller will change it often, but because a number that appears in a function signature with a default is a number somebody chose, and a number buried in the body is a number nobody can find. Set it once, at the top, where a reviewer can argue with it:</p>
+<p>That is why <code>high_cut</code> is an argument rather than a hard-coded 5. Not because the caller will change it often, but because a default in the signature is visible to anyone reading the function, whereas the same number written into the body has to be hunted for. Set it once, at the top, where a reviewer can see it and disagree with it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">month_summary</span><span class="op">(</span><span class="va">covid</span>, <span class="st">"2020-08-01"</span>, high_cut <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">month</span>, <span class="va">high_days</span>, <span class="va">mean_daily</span>, <span class="va">verdict</span><span class="op">)</span></span>
@@ -1538,7 +1538,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="va">q</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Nothing clever, and that is the point. Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a> is about. <code>max(0, ...)</code> stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.</p>
+<p>Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode <a href="functions.html" class="quarto-xref"><span>Chapter 11</span></a> is about. <code>max(0, ...)</code> stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.</p>
 <p>Then the summary function returns one row, so five of them stack:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">team_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">capacity</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1570,7 +1570,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 5      800         1487 2020-04-24          21 TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><code>cleared</code> has to look only at the days after the peak. Every one of these runs starts at zero and stays there through the quiet first months, so asking “was the queue ever empty” would answer <code>TRUE</code> for all five and tell you nothing.</p>
-<p>The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year’s mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an average is how you end up permanently underwater, because the average is a summary of a series whose median is 40 and whose maximum is 1,426.</p>
+<p>The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year’s mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an annual mean leaves the team permanently behind, because that mean summarises a series whose median is 40 and whose maximum is 1,426.</p>
 <p>The two runs the question asks about, drawn together:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">300</span>, <span class="fl">600</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -1688,7 +1688,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1    30  3699       123.           89   313</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Without 5 August the mean falls from 148.6 to 123.3 and the median barely moves, from 91 to 89. The median was already telling you what a typical August day looked like. That is the argument for putting a median in every monthly table.</p>
+<p>Without 5 August the mean falls from 148.6 to 123.3 and the median barely moves, from 91 to 89. The median was already describing a typical August day, which is the reason to report one alongside the mean in a monthly table.</p>
 <p>Deaths are 0 for August. The cumulative column reads 27 on 31 July and 27 on 31 August, so this is a real zero and not a gap, and August is late enough in the year that the leading <code>NA</code> problem in <code>deaths</code> does not touch it.</p>
 <section id="the-table" class="level3" data-number="A.19.1"><h3 data-number="A.19.1" class="anchored" data-anchor-id="the-table">
 <span class="header-section-number">A.19.1</span> The table</h3>
@@ -1775,7 +1775,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Retail sits between 15% and 27% below baseline all month with no trend in it. Workplaces oscillate with the week, and the one deep trough, 73% below baseline on 10 August, is National Day observed rather than anything epidemiological. Stringency moves almost as little: 50.93 on 28 of the 31 days, with three scattered days at 56.48 that are exactly the one-day ticks <a href="visualise.html" class="quarto-xref"><span>Chapter 10</span></a> warns against reading as announcements.</p>
-<p>The weekly median more than halved while neither of those series went anywhere. That constrains the explanations available and it does not identify a cause, which is a sentence worth writing down rather than talking yourself out of.</p>
+<p>The weekly median more than halved while neither of those series moved. That constrains the explanations available without identifying a cause, and the report should say as much.</p>
 </section><section id="the-three-sentences" class="level3" data-number="A.19.4"><h3 data-number="A.19.4" class="anchored" data-anchor-id="the-three-sentences">
 <span class="header-section-number">A.19.4</span> The three sentences</h3>
 <blockquote class="blockquote">

@@ -354,7 +354,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul>
 </li>
   <li><a href="#filling-in-and-dropping-out" id="toc-filling-in-and-dropping-out" class="nav-link" data-scroll-target="#filling-in-and-dropping-out"><span class="header-section-number">7.4</span> Filling in and dropping out</a></li>
-  <li><a href="#the-112-rows-that-should-have-been-88" id="toc-the-112-rows-that-should-have-been-88" class="nav-link" data-scroll-target="#the-112-rows-that-should-have-been-88"><span class="header-section-number">7.5</span> The 112 rows that should have been 88</a></li>
+  <li><a href="#logical-subsetting-with-and-filter" id="toc-logical-subsetting-with-and-filter" class="nav-link" data-scroll-target="#logical-subsetting-with-and-filter"><span class="header-section-number">7.5</span> Logical subsetting with <code>[</code> and <code>filter()</code></a></li>
   <li><a href="#the-two-deaths-that-differencing-loses" id="toc-the-two-deaths-that-differencing-loses" class="nav-link" data-scroll-target="#the-two-deaths-that-differencing-loses"><span class="header-section-number">7.6</span> The two deaths that differencing loses</a></li>
   <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">7.7</span> Exercise</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/missing.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/missing.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
@@ -375,8 +375,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Every table you have printed so far has had <code>NA</code> in it, and so far it has been scenery. This chapter is about reading it. In this file the missing values carry as much information as the numbers: one block of them is a fact about Google’s measuring instrument, another is a fact about Singapore’s epidemic, and which one you are looking at decides what you are allowed to do about it.</p>
-<p>There is also a bug at the end of the chapter, inherited from the worksheet this book replaces, which turns a correct question into an answer 27% too large and leaves no trace that anything went wrong.</p>
+</header><p>Every table printed so far has had <code>NA</code> in it, without much comment. This chapter is about reading those gaps. In this file the missing values carry as much information as the numbers: one block of them is a property of Google’s measuring instrument, another is a property of Singapore’s epidemic, and which of the two you are looking at determines what can reasonably be done about it.</p>
+<p>Later in the chapter there is also a bug, inherited from the worksheet this book replaces, which turns a correct question into an answer 27% too large without producing an error or a warning.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -398,8 +398,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;  &lt;int&gt;      &lt;int&gt;       &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1         0     59          0     24         24          24</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Naming six columns by hand does not scale to a file with two hundred of them, and there are ways to run one count over every column at once without typing any of their names. At six columns the typing is worth it, because the output says on its face what was counted and you do not have to trust anything to read it. The answer is stark enough: the case counts and the policy indices are complete for all 345 days, <code>deaths</code> is missing on 59 of them, and every mobility column is missing on exactly 24.</p>
-<p>Exactly 24, in all six. That is a strong hint that they went missing together, for one shared reason, and they did.</p>
+<p>Naming six columns by hand does not scale to a file with two hundred of them, and there are ways to run one count over every column at once without typing any of their names. At six columns the typing is worth it, because the output states on its face what was counted. The case counts and the policy indices are complete for all 345 days, <code>deaths</code> is missing on 59 of them, and every mobility column is missing on exactly 24.</p>
+<p>The same count in all six columns suggests that they went missing together, for one shared reason, and they did.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">retail_and_recreation_percent_change_from_baseline</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -417,13 +417,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;int&gt; &lt;date&gt;     &lt;date&gt;    </span></span>
 <span><span class="co">#&gt; 1    59 2020-01-22 2020-03-20</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Two solid blocks at the start of the year, of different lengths, ending on different days. Neither is scattered, and neither is random.</p>
+<p>Both gaps are contiguous blocks at the start of the year, of different lengths and ending on different days, rather than missing days scattered through the series.</p>
 </section><section id="two-kinds-of-missing" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="two-kinds-of-missing">
 <span class="header-section-number">7.2</span> Two kinds of missing</h2>
-<p>The mobility gap runs from 22 January to 14 February. Google’s Community Mobility Reports express each day as a percentage change from a baseline, and that baseline is the median for the corresponding day of the week over the five weeks from 3 January to 6 February 2020. A percentage change from a baseline cannot be computed before the baseline period has closed, and Google’s published series begins on 15 February. The missing days are a property of the instrument. Nothing happened in Singapore on 3 February that made mobility unmeasurable; the yardstick did not exist yet.</p>
+<p>The mobility gap runs from 22 January to 14 February. Google’s Community Mobility Reports express each day as a percentage change from a baseline, and that baseline is the median for the corresponding day of the week over the five weeks from 3 January to 6 February 2020. A percentage change from a baseline cannot be computed before the baseline period has closed, and Google’s published series begins on 15 February. The missing days are therefore a property of the instrument rather than of Singapore: mobility on 3 February was not unmeasurable, but the baseline it would have been expressed against did not yet exist.</p>
 <p>The <code>deaths</code> gap runs from 22 January to 20 March, and it ends because Singapore’s first recorded COVID-19 deaths appear in the data on 21 March. Before that there was no death count to report, and the data hub carries nothing rather than a zero. This gap is a property of the epidemic.</p>
-<p>That difference decides everything downstream. For <code>deaths</code>, you know what the missing value would have been if someone had written it down: zero. Zero deaths had been recorded, so the cumulative count was zero, and substituting a zero is recovering a fact rather than inventing one. For mobility, you have no idea. Substituting a zero would assert that retail activity in early February sat exactly at its baseline, which is a measurement Google never made and you cannot make on their behalf.</p>
-<p>A blank in a spreadsheet looks the same in both cases. Only you know which one you have.</p>
+<p>That difference determines what can be done with each gap. For <code>deaths</code>, you know what the missing value would have been if someone had written it down: zero. Zero deaths had been recorded, so the cumulative count was zero, and substituting a zero is recovering a fact rather than inventing one. For mobility, you have no idea. Substituting a zero would assert that retail activity in early February sat exactly at its baseline, which is a measurement Google never made and you cannot make on their behalf.</p>
+<p>A blank cell looks the same in both cases; the distinction comes from knowing how the data were produced, not from the file.</p>
 <p>Here is what the mobility gap looks like when you plot straight over it:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">retail_and_recreation_percent_change_from_baseline</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -445,7 +445,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 </div>
 </div>
 </div>
-<p>The missing days leave no hole. The line starts later, the x-axis quietly begins in February, and unless you already knew the file covered January you would never ask. The warning printed above the figure is the only thing that tells you, which is a reason to leave warnings switched on in your own work rather than tidying them away.</p>
+<p>The missing days leave no visible hole. The line starts later and the x-axis begins in February, so a reader who did not already know that the file covers January has nothing in the figure to prompt the question. The warning printed above the figure is the only indication, which is a reason to leave warnings visible in your own work rather than suppressing them.</p>
 </section><section id="what-na-does-to-arithmetic" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="what-na-does-to-arithmetic">
 <span class="header-section-number">7.3</span> What <code>NA</code> does to arithmetic</h2>
 <p><code>NA</code> in R means “there is a value here and I do not know it”. Any calculation involving an unknown produces an unknown:</p>
@@ -457,29 +457,29 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">retail_sample</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>This is deliberate and it is a feature. R refuses to give you an average that quietly ignores two fifths of your data. If you want it to ignore them, say so:</p>
+<p>This is deliberate: R does not return an average that silently ignores two of the five values. To exclude them, say so:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">retail_sample</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] -129</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">retail_sample</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] -43</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>na.rm = TRUE</code> means “remove the missing values before doing the sum”. What comes back is the mean of the three days you have, and calling it “the mean” without saying so is where a lot of quietly wrong analysis starts.</p>
-<p>Comparisons behave the same way, and this is the part that bites:</p>
+<p><code>na.rm = TRUE</code> means “remove the missing values before doing the sum”. What comes back is the mean of the three days that were observed, and it should be described that way rather than as the mean of five.</p>
+<p>Comparisons behave the same way:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">retail_sample</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span></span>
 <span><span class="co">#&gt; [1] FALSE    NA  TRUE    NA  TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>NA &lt; -30</code> is <code>NA</code>, not <code>FALSE</code>. R does not know what the value is, so it cannot know whether it is below −30. Refusing to guess is the right behaviour and it is about to cause a great deal of trouble.</p>
+<p><code>NA &lt; -30</code> is <code>NA</code>, not <code>FALSE</code>. The value is unknown, so whether it lies below −30 is also unknown. That is the correct result, and it has consequences for subsetting that a later section of this chapter takes up.</p>
 <p>The same logic explains why you cannot test for missingness with <code>==</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="cn">NA</span> <span class="op">==</span> <span class="cn">NA</span></span>
 <span><span class="co">#&gt; [1] NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Two unknowns are not known to be equal. That is what <code><a href="https://rdrr.io/r/base/NA.html">is.na()</a></code> is for, and it is the only thing that works.</p>
+<p>Two unknown values are not known to be equal. Testing for missingness is what <code><a href="https://rdrr.io/r/base/NA.html">is.na()</a></code> is for.</p>
 <section id="when-na.rm-runs-out-of-data" class="level3" data-number="7.3.1"><h3 data-number="7.3.1" class="anchored" data-anchor-id="when-na.rm-runs-out-of-data">
 <span class="header-section-number">7.3.1</span> When <code>na.rm</code> runs out of data</h3>
-<p>Try to average January’s retail mobility, where every single value is missing:</p>
+<p>Try to average January’s retail mobility, where every value is missing:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">january</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&lt;</span> <span class="st">"2020-02-01"</span><span class="op">)</span></span>
 <span></span>
@@ -505,16 +505,16 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html">is.nan</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>If a monthly summary comes back with <code>NaN</code> in one row, you have not found a strange bug. You have found a month with no data in it at all, and <code>na.rm = TRUE</code> did exactly what you told it to.</p>
+<p>A <code>NaN</code> in one row of a monthly summary therefore indicates a month with no observed values in it, rather than a bug: <code>na.rm = TRUE</code> removed every value before the mean was taken.</p>
 </section></section><section id="filling-in-and-dropping-out" class="level2" data-number="7.4"><h2 data-number="7.4" class="anchored" data-anchor-id="filling-in-and-dropping-out">
 <span class="header-section-number">7.4</span> Filling in and dropping out</h2>
-<p>Two more tools, both from the tidyverse, both easy to reach for too quickly.</p>
+<p>Two more tools, both from the tidyverse, each of which needs a decision about the data before it is used.</p>
 <p><code>coalesce()</code> takes the first non-missing value across its arguments, element by element:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">coalesce</span><span class="op">(</span><span class="va">retail_sample</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] -15   0 -51   0 -63</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>This is the right thing to do to <code>deaths</code> and the wrong thing to do to mobility, for the reason set out above. The recipe below is defensible because the claim it encodes is true: before 21 March, Singapore’s cumulative recorded COVID-19 deaths were zero.</p>
+<p>This is the appropriate treatment for <code>deaths</code> and not for mobility, for the reason set out above. The code below is defensible because the claim it encodes is true: before 21 March, Singapore’s cumulative recorded COVID-19 deaths were zero.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -529,23 +529,23 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; 3 2020-03-21      2             2</span></span>
 <span><span class="co">#&gt; 4 2020-03-22      2             2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>drop_na()</code> removes whole rows. Applied to the entire table it is blunter than people expect:</p>
+<p><code>drop_na()</code> removes whole rows. Applied to the entire table it removes more than most people expect:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 345</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="fu">drop_na</span><span class="op">(</span><span class="va">covid</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 286</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Fifty-nine days gone, and not because their mobility or stringency data was bad. They went because <code>deaths</code> was missing, and <code>drop_na()</code> with no arguments drops a row if <em>any</em> column in it is missing. Those 59 days include 35 days of perfectly good mobility readings and 59 days of case counts, all thrown away to fix a problem in a column you might not even have been using.</p>
-<p>Name the columns you actually care about and the damage is proportionate:</p>
+<p>Fifty-nine days are removed, and not because of their mobility or stringency values. They go because <code>deaths</code> is missing, and <code>drop_na()</code> with no arguments drops a row if <em>any</em> column in it is missing. Those 59 rows include 35 days of complete mobility readings and 59 days of case counts, discarded on account of a column the analysis may not use.</p>
+<p>Naming the columns the analysis depends on limits the loss to rows that are missing those columns:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="fu">drop_na</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">ends_with</span><span class="op">(</span><span class="st">"_percent_change_from_baseline"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 321</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-</section><section id="the-112-rows-that-should-have-been-88" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="the-112-rows-that-should-have-been-88">
-<span class="header-section-number">7.5</span> The 112 rows that should have been 88</h2>
-<p>Now the bug.</p>
-<p>A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? The worksheet asked it in base R, which is how most people were taught to subset a data frame, and how most people still write it when they are in a hurry.</p>
+</section><section id="logical-subsetting-with-and-filter" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="logical-subsetting-with-and-filter">
+<span class="header-section-number">7.5</span> Logical subsetting with <code>[</code> and <code>filter()</code>
+</h2>
+<p>A reasonable question about the circuit breaker: on how many days did retail and recreation mobility sit more than 30% below baseline? The worksheet asked it in base R, using the single-bracket subscript that most people meet first when they are taught to subset a data frame.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -573,9 +573,9 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; [1] 88</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="88" type="1">
-<li>The two answers differ by 24, which is a number you have already met on this page.</li>
+<li>The two answers differ by 24, which is the number of days on which the mobility columns are missing.</li>
 </ol>
-<p>Look at what came back from the first one:</p>
+<p>The rows returned by the first version account for the difference:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">low_retail</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">retail_and_recreation_percent_change_from_baseline</span><span class="op">)</span></span>
@@ -594,7 +594,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="co">#&gt; 10 NA            NA                                                 NA</span></span>
 <span><span class="co">#&gt; # ℹ 102 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Twenty-four rows in which every column is missing, including <code>date</code>, including <code>confirmed</code>, sitting at the top of the result. Those days are not in the data twice. They are not in the result at all, in any meaningful sense. They are artefacts of how base R indexes with a logical vector.</p>
+<p>Twenty-four rows in which every column is missing, including <code>date</code> and <code>confirmed</code>, sit at the top of the result. They carry no information about which days they came from, and they are artefacts of how base R indexes with a logical vector.</p>
 <p>The chain runs like this. The comparison is evaluated first, giving one <code>TRUE</code>, <code>FALSE</code> or <code>NA</code> per row:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">retail_and_recreation_percent_change_from_baseline</span>, <span class="fl">3</span><span class="op">)</span></span>
@@ -609,14 +609,14 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="va">retail_sample</span><span class="op">[</span><span class="va">retail_sample</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1]  NA -51  NA -63</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Four elements out of five, from a condition that only two of them satisfy. Applied to a data frame, “return a missing element” means “return a row of nothing”, so each of the 24 unknown days becomes a full row of <code>NA</code>. 88 real rows plus 24 phantoms is 112.</p>
-<p>The worksheet’s next line asked which days those were. A student who had done everything correctly up to that point got this:</p>
+<p>Four elements out of five, from a condition that only two of them satisfy. Applied to a data frame, “return a missing element” means “return a row of missing values”, so each of the 24 unknown days becomes a full row of <code>NA</code>. 88 matching rows plus 24 all-missing rows is 112.</p>
+<p>The worksheet’s next line asked which days those were:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">low_retail</span><span class="op">$</span><span class="va">date</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] NA NA NA NA NA</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Five missing dates, from a variable that has no missing dates anywhere in the file. Nothing about that output tells you what went wrong, and the natural conclusion is that you broke something.</p>
-<p><code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> takes the opposite position and documents it in one sentence: it treats <code>NA</code> like <code>FALSE</code>. A row that might qualify is not a row that does qualify, so it does not come back. What you get is the 88 days <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> can vouch for, dates intact:</p>
+<p>Five missing dates, from a column that has no missing dates anywhere in the file. The output gives no indication of where they came from.</p>
+<p><code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> takes the other position and documents it: it keeps a row only where the condition is <code>TRUE</code>, so a row whose condition evaluates to <code>NA</code> is dropped. What you get is the 88 days on which the value is known to be below −30, with dates intact:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">low_retail_tidy</span><span class="op">$</span><span class="va">date</span>, <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-04-07" "2020-04-08" "2020-04-09" "2020-04-10" "2020-04-11"</span></span>
@@ -631,7 +631,7 @@ Figure&nbsp;7.1: Retail and recreation mobility, plotted without doing anything 
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">covid</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span>, <span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 88</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Three functions agree on 88. The single-bracket subscript is the odd one out, and it is the one that beginners are taught first.</p>
+<p>Three of the four expressions agree on 88. Single-bracket logical subsetting is the exception, and it is the form most people are taught first.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">quiet_days</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">30</span><span class="op">)</span></span>
@@ -658,10 +658,10 @@ Figure&nbsp;7.2: The 88 days on which retail and recreation mobility sat more th
 </div>
 </div>
 </div>
-<p>Eighty-eight is a defensible answer to the question that was asked. One hundred and twelve is 27% too large, and the 24 days it added are days on which nobody knows what Singapore’s retail mobility was, which is precisely why they should not be counted as days it was low.</p>
+<p>Eighty-eight answers the question that was asked. One hundred and twelve is 27% larger, and the 24 rows it adds stand for days on which Singapore’s retail mobility is unknown, so they cannot be counted as days on which it was low.</p>
 </section><section id="the-two-deaths-that-differencing-loses" class="level2" data-number="7.6"><h2 data-number="7.6" class="anchored" data-anchor-id="the-two-deaths-that-differencing-loses">
 <span class="header-section-number">7.6</span> The two deaths that differencing loses</h2>
-<p><a href="transform.html" class="quarto-xref"><span>Chapter 6</span></a> left you with a warning about <code>deaths</code>, and now you have the machinery to see it. Difference the cumulative death count exactly as you differenced cases:</p>
+<p><a href="transform.html" class="quarto-xref"><span>Chapter 6</span></a> ended with a caveat about <code>deaths</code>. The tools in this chapter account for it. Difference the cumulative death count exactly as you differenced cases:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deaths_daily</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -686,8 +686,8 @@ Figure&nbsp;7.2: The 88 days on which retail and recreation mobility sat more th
 <span><span class="co">#&gt; 4 2020-03-22      2            0</span></span>
 <span><span class="co">#&gt; 5 2020-03-23      2            0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>On 21 March the cumulative count goes from missing to 2. Two and not one, because the record shows both of Singapore’s first COVID-19 deaths on the same day. Subtracting the previous row gives <code>2 - NA</code>, which is <code>NA</code>, and <code>sum(na.rm = TRUE)</code> then quietly drops it. Two deaths, lost to a data-processing convention.</p>
-<p>Coalescing first fixes it, and now you can say out loud why that is legitimate rather than convenient:</p>
+<p>On 21 March the cumulative count goes from missing to 2. Two and not one, because the record shows both of Singapore’s first COVID-19 deaths on the same day. Subtracting the previous row gives <code>2 - NA</code>, which is <code>NA</code>, and <code>sum(na.rm = TRUE)</code> then drops it, along with the two deaths it stands for.</p>
+<p>Coalescing before differencing recovers them, and the substitution is legitimate for the reason given earlier in the chapter:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -701,7 +701,7 @@ Figure&nbsp;7.2: The 88 days on which retail and recreation mobility sat more th
 <span><span class="co">#&gt;   &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1    29</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The plain recipe, the one at the top of this section, does <em>not</em> do this. It differences <code>deaths</code> as the file supplies them, so its <code>daily_deaths</code> column carries <code>NA</code> for the first 60 days and sums to 27. That is a choice to stay close to what the file says rather than to what you believe about it, and it is defensible in the other direction. What is not defensible is summing that column with <code>na.rm = TRUE</code>, calling the result the 2020 death toll, and never noticing the two you dropped.</p>
+<p>The plain version at the top of this section does <em>not</em> do this. It differences <code>deaths</code> as the file supplies them, so its <code>daily_deaths</code> column carries <code>NA</code> for the first 60 days and sums to 27. That is a choice to stay close to what the file records rather than to what you infer about it, and it is defensible on those grounds. Either convention can be justified provided it is stated. What cannot is summing that column with <code>na.rm = TRUE</code> and reporting the result as the 2020 death toll without noting the two deaths it omits.</p>
 </section><section id="exercise" class="level2" data-number="7.7"><h2 data-number="7.7" class="anchored" data-anchor-id="exercise">
 <span class="header-section-number">7.7</span> Exercise</h2>
 <div id="exr-mobility-na" class="theorem exercise">

@@ -360,9 +360,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><a href="#other-formats" id="toc-other-formats" class="nav-link" data-scroll-target="#other-formats"><span class="header-section-number">5.4.1</span> Other formats</a></li>
   </ul>
 </li>
-  <li><a href="#sec-glimpse" id="toc-sec-glimpse" class="nav-link" data-scroll-target="#sec-glimpse"><span class="header-section-number">5.5</span> Always look at what you loaded</a></li>
+  <li><a href="#sec-glimpse" id="toc-sec-glimpse" class="nav-link" data-scroll-target="#sec-glimpse"><span class="header-section-number">5.5</span> Looking at what you loaded</a></li>
   <li><a href="#sec-read-covid" id="toc-sec-read-covid" class="nav-link" data-scroll-target="#sec-read-covid"><span class="header-section-number">5.6</span> The helper this book uses</a></li>
-  <li><a href="#sec-first-plot" id="toc-sec-first-plot" class="nav-link" data-scroll-target="#sec-first-plot"><span class="header-section-number">5.7</span> One plot, out of order</a></li>
+  <li><a href="#sec-first-plot" id="toc-sec-first-plot" class="nav-link" data-scroll-target="#sec-first-plot"><span class="header-section-number">5.7</span> A first plot</a></li>
   <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">5.8</span> Exercise</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/import.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/import.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
@@ -382,22 +382,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Everything in this book runs on one file: <code>sg_covid_data.csv</code>, 345 rows covering 22 January to 31 December 2020, one row per day. Up to now <code>read_covid()</code> has been handing it to you. This chapter opens the lid.</p>
-<p>Reading a file in is where more analyses go wrong than anywhere else, and the failures are quiet ones. A date column arrives as text and your time series plots in alphabetical order. A missing value coded as <code>-99</code> arrives as a number and your mean is nonsense. A leading zero disappears from a postcode. None of these announce themselves. The defence is to read what R tells you at import time instead of scrolling past it, which is why this book leaves import messages switched on.</p>
+</header><p>Everything in this book runs on one file: <code>sg_covid_data.csv</code>, 345 rows covering 22 January to 31 December 2020, one row per day. Up to now <code>read_covid()</code> has been supplying it. This chapter covers what that function does and what happens at import more generally.</p>
+<p>Import is a common source of errors, and most of them are silent. A date column arrives as text and the time series plots in alphabetical order. A missing value coded as <code>-99</code> arrives as a number and the mean is wrong. A leading zero disappears from a postcode. None of these raise an error. Most are caught by reading the messages R prints at import time, which is why this book leaves those messages switched on.</p>
 <section id="sec-paths" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="sec-paths">
 <span class="header-section-number">5.1</span> Where the file is</h2>
-<p>R has a working directory: the folder it treats as “here” when you hand it a relative path. The chapter on good practice told you never to write <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> in a script, and this is the payoff for obeying that. A script containing <code>setwd("/Users/swapnil/Documents/GitHub/r-intro")</code> runs on exactly one computer. Give it to a colleague, or move the folder, or open it on the machine in the teaching lab, and it fails on line one.</p>
-<p><code><a href="https://here.r-lib.org/reference/here.html">here::here()</a></code> solves it. The <code>here</code> package looks upward from wherever R happens to be until it finds the top of your project, identified by an <code>.Rproj</code> file, a <code>.git</code> directory or a <code>_quarto.yml</code>, and builds paths from there.</p>
+<p>R has a working directory: the folder it treats as “here” when you hand it a relative path. Scripts often set it explicitly, with a line such as <code>setwd("/Users/swapnil/Documents/GitHub/r-intro")</code>. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.</p>
+<p><code><a href="https://here.r-lib.org/reference/here.html">here::here()</a></code> avoids the problem. The <code>here</code> package looks upward from wherever R happens to be until it finds the top of the project, identified by an <code>.Rproj</code> file, a <code>.git</code> directory or a <code>_quarto.yml</code>, and builds paths from there.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">here</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "/Users/swapnil/Documents/GitHub/r-intro"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That is this project’s root on the machine that rendered this page; on yours it will be a different string, which is the entire point. Ask it for a file by naming the folders as separate arguments and it assembles a path that works on Windows, macOS and Linux without you thinking about which way the slashes lean.</p>
+<p>That is this project’s root on the machine that rendered this page; on another machine <code>here()</code> returns that machine’s project root, so paths built from it resolve to the same files. Naming the folders as separate arguments lets it assemble a path with the correct separator for Windows, macOS or Linux.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">here</span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "/Users/swapnil/Documents/GitHub/r-intro/data/sg_covid_data.csv"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Write <code>here("data", "sg_covid_data.csv")</code> in every script from now on. It costs a handful of extra characters and removes a whole category of Monday-morning email.</p>
+<p>Writing <code>here("data", "sg_covid_data.csv")</code> costs a few extra characters and leaves the script working on any machine where the project has been cloned, whatever directory R was started from.</p>
 </section><section id="sec-read-csv" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="sec-read-csv">
 <span class="header-section-number">5.2</span> <code>read_csv()</code>
 </h2>
@@ -414,14 +414,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; ℹ Use `spec()` to retrieve the full column specification for this data.</span></span>
 <span><span class="co">#&gt; ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>That block of text is a message rather than an error, and it repays reading line by line.</p>
+<p>That block of text is a message rather than an error, and each line of it is worth reading.</p>
 <p><code>Rows: 345 Columns: 13</code>. Check this against what you expect before you do anything else. If you were told the file covers a year of daily data and R reports 345 rows, that is 2020 from 22 January onward, and it adds up. If R had said 344, you would want to know which day went missing and why.</p>
 <p><code>Delimiter: ","</code>. readr worked out the separator by looking at the first few lines. Files exported from European locales often use a semicolon, because the comma is doing duty as a decimal point; <code>read_csv2()</code> handles those.</p>
-<p><code>chr (1)</code>, <code>dbl (11)</code>, <code>date (1)</code>. These are the guessed column types, and this is the part people skip. Three of them matter here.</p>
-<p><strong><code>date</code> came in as a real <code>Date</code>, not as text.</strong> readr recognises the ISO 8601 form <code>YYYY-MM-DD</code> and parses it. That single fact is why you can subtract one date from another, sort chronologically, and hand dates straight to <code>ggplot()</code> without ceremony.</p>
-<p><strong>Every count is <code>dbl</code>, not integer.</strong> readr’s guesser does not distinguish whole numbers from decimals; anything numeric arrives as a double. Nothing goes wrong as a result, and it is worth knowing when you wonder why <code>confirmed</code> is <code>&lt;dbl&gt;</code> when it obviously counts people.</p>
+<p><code>chr (1)</code>, <code>dbl (11)</code>, <code>date (1)</code>. These are the guessed column types. Three points matter here.</p>
+<p><strong><code>date</code> came in as a real <code>Date</code>, not as text.</strong> readr recognises the ISO 8601 form <code>YYYY-MM-DD</code> and parses it. Because of that, you can subtract one date from another, sort chronologically, and pass dates directly to <code>ggplot()</code>.</p>
+<p><strong>Every count is <code>dbl</code>, not integer.</strong> readr’s guesser does not distinguish whole numbers from decimals; anything numeric arrives as a double. Nothing goes wrong as a result, but it explains why <code>confirmed</code> is <code>&lt;dbl&gt;</code> when it counts people.</p>
 <p><strong>One column is <code>chr</code>.</strong> That is <code>administrative_area_level_1</code>, the constant “Singapore” you met in <a href="rectangles.html#sec-tidy" class="quarto-xref"><span>Section 4.4</span></a>.</p>
-<p>The two lines at the bottom are hints rather than complaints. <code>spec()</code> prints the full specification, one line per column, and it is the thing to look at when the summary is truncated with a <code>...</code>:</p>
+<p>The two lines at the bottom are hints rather than warnings. <code>spec()</code> prints the full specification, one line per column, which is what to use when the summary is truncated with a <code>...</code>:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spec</span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; cols(</span></span>
@@ -440,10 +440,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   residential_percent_change_from_baseline = col_double()</span></span>
 <span><span class="co">#&gt; )</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The empty <code>format = ""</code> on <code>date</code> means readr used its own ISO guesser rather than a format you supplied. The other hint offers you <code>show_col_types = FALSE</code> to silence the message. Take that offer only once you have read the message and pinned the types yourself. Silencing a check you have not performed is not the same as performing it.</p>
+<p>The empty <code>format = ""</code> on <code>date</code> means readr used its own ISO guesser rather than a format you supplied. The other hint offers <code>show_col_types = FALSE</code> to silence the message. That is reasonable once you have read the message and stated the types explicitly, as in <a href="#sec-col-types" class="quarto-xref"><span>Section 5.4</span></a>; before then the message is the only report you get on how the file was parsed.</p>
 <section id="the-dates-readr-cannot-guess" class="level3" data-number="5.2.1"><h3 data-number="5.2.1" class="anchored" data-anchor-id="the-dates-readr-cannot-guess">
 <span class="header-section-number">5.2.1</span> The dates readr cannot guess</h3>
-<p>readr guesses dates only for the ISO form. Hand it anything else and you get character, without a warning, because a column of text is a perfectly valid column of text.</p>
+<p>readr guesses dates only for the ISO form. Any other layout is read as character, without a warning, because text is a valid column type and there is nothing for readr to object to.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">read_csv</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="st">"date,cases\n07/04/2020,106\n08/04/2020,142\n"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 2 Columns: 2</span></span>
@@ -460,7 +460,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 1 07/04/2020   106</span></span>
 <span><span class="co">#&gt; 2 08/04/2020   142</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>&lt;chr&gt;</code>. And the trap is that <code>07/04/2020</code> is 7 April in Singapore and 4 July in Chicago, so nothing but your knowledge of the source can settle it. Tell readr the format explicitly with the same <code>%d</code>, <code>%m</code>, <code>%Y</code> codes that <code><a href="https://rdrr.io/r/base/strptime.html">strptime()</a></code> uses:</p>
+<p>The column comes in as <code>&lt;chr&gt;</code>. <code>07/04/2020</code> is 7 April under day-first conventions and 4 July under month-first ones, and only knowledge of the source can settle which was meant. State the format explicitly, using the same <code>%d</code>, <code>%m</code>, <code>%Y</code> codes that <code><a href="https://rdrr.io/r/base/strptime.html">strptime()</a></code> uses:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">read_csv</span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="st">"date,cases\n07/04/2020,106\n08/04/2020,142\n"</span><span class="op">)</span>,</span>
@@ -484,10 +484,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"NA"</span>, <span class="st">"N/A"</span>, <span class="st">"Not reported"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Get this wrong with a numeric sentinel such as <code>-99</code> and nothing will look broken. Your minimum will be <code>-99</code>, your mean will be dragged down, and every graph will still render. Check the minimum and maximum of every numeric column after import, every time.</p>
+<p>With a numeric sentinel such as <code>-99</code>, nothing will appear to be wrong: the minimum will be <code>-99</code>, the mean will be pulled downward, and every graph will still render. Checking the minimum and maximum of each numeric column after import will usually reveal a sentinel of this kind.</p>
 </section></section><section id="sec-base-read-csv" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="sec-base-read-csv">
 <span class="header-section-number">5.3</span> What <code>read.csv()</code> would have given you</h2>
-<p>Base R has its own reader, spelled with a dot instead of an underscore. Most older course notes use it, so you need to recognise it. The two names are close enough that you will type the wrong one at some point.</p>
+<p>Base R has its own reader, spelled with a dot instead of an underscore. Older course notes generally use it, so it is worth recognising, and the two names are similar enough to be typed interchangeably by mistake.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="fu">here</span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">old</span><span class="op">)</span></span>
@@ -497,19 +497,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">old</span><span class="op">$</span><span class="va">date</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2020-01-22" "2020-01-23" "2020-01-24"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>No message at all, a plain <code>data.frame</code> rather than a tibble, and <code>date</code> is a character vector of strings that happen to look like dates. R will not stop you doing something silly with them:</p>
+<p>No message at all, a plain <code>data.frame</code> rather than a tibble, and <code>date</code> is a character vector of strings that look like dates. Arithmetic on that column fails:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">old</span><span class="op">$</span><span class="va">date</span> <span class="op">-</span> <span class="va">old</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co">#&gt; Error in `old$date - old$date[1]`:</span></span>
 <span><span class="co">#&gt; ! non-numeric argument to binary operator</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>non-numeric argument to binary operator</code> is R saying you asked it to subtract text from text. This is why every base-R set of instructions you will ever read has a line like <code>df$date &lt;- as.Date(df$date)</code> near the top, and why you do not need one. <code>read_csv()</code> already did it.</p>
-<p>There are two smaller differences. <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> returns <code>int</code> for whole-number columns where <code>read_csv()</code> returns <code>dbl</code>, and before R 4.0.0 it turned character columns into factors, which is the historical accident described in <a href="rectangles.html#sec-tibbles" class="quarto-xref"><span>Section 4.3</span></a>. It is also slower on large files, though at 345 rows you will never notice.</p>
-<p><code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> is not broken and you may use it. The reason this book does not is that it tells you nothing on the way in.</p>
+<p><code>non-numeric argument to binary operator</code> reports that the subtraction was attempted on text. This is why base-R instructions usually include a line such as <code>df$date &lt;- as.Date(df$date)</code> near the top; with <code>read_csv()</code> the conversion has already happened.</p>
+<p>There are two smaller differences. <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> returns <code>int</code> for whole-number columns where <code>read_csv()</code> returns <code>dbl</code>, and before R 4.0.0 it converted character columns into factors, the historical default described in <a href="rectangles.html#sec-tibbles" class="quarto-xref"><span>Section 4.3</span></a>. It is also slower on large files, though at 345 rows the difference is not perceptible.</p>
+<p><code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> works and you may use it. This book uses <code>read_csv()</code> because it reports the column types it assigned, and <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> reports nothing.</p>
 </section><section id="sec-col-types" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="sec-col-types">
 <span class="header-section-number">5.4</span> Pinning the types</h2>
-<p>Guessing is right for exploring a new file and wrong for a script that runs every month. readr guesses from the first 1,000 rows by default, so a column that is numeric for a thousand rows and contains the word <code>pending</code> on row 1,500 will be guessed wrong. The following month’s file changes, the guess changes with it, and your code produces different numbers without saying anything.</p>
-<p>The fix is to state the types. <code>cols()</code> lets you name the ones you care about and set a fallback for the rest:</p>
+<p>Guessing is convenient when exploring a new file and less suitable for a script that runs every month. readr guesses from the first 1,000 rows by default, so a column that is numeric for a thousand rows and contains the word <code>pending</code> on row 1,500 will be guessed wrong. When the following month’s file differs, the guess differs with it, and the code produces different numbers without reporting the change.</p>
+<p>The remedy is to state the types. <code>cols()</code> lets you name the ones that matter and set a fallback for the rest:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid_pinned</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span></span>
 <span>  <span class="fu">here</span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span>,</span>
@@ -522,8 +522,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">covid_pinned</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 345  13</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>No specification message this time, because there was nothing to guess. The quickest way to write one of these is to read the file once, run <code>spec()</code>, and paste the output into your script as the <code>col_types</code> argument. From then on, the file has to match your expectations or you hear about it.</p>
-<p>Hearing about it looks like this. Insist that every column is numeric, including the two that are not:</p>
+<p>No specification message this time, because there was nothing to guess. The quickest way to write one of these is to read the file once, run <code>spec()</code>, and paste the output into the script as the <code>col_types</code> argument. The import then either matches the stated specification or reports where it does not.</p>
+<p>For example, state that every column is numeric, including the two that are not:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bad</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span></span>
 <span>  <span class="fu">here</span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span>,</span>
@@ -547,7 +547,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 5     4     1 a double Singapore  ""   </span></span>
 <span><span class="co">#&gt; 6     4     4 a double 2020-01-24 ""</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Row 2, column 1, expected a double, found <code>Singapore</code>. That is a report you can act on. Two columns times 345 rows is 690 failures, and if a real import produces a handful rather than hundreds, those handful are usually the interesting rows: the ones where somebody typed a note into a numeric field.</p>
+<p>Row 2, column 1, expected a double, found <code>Singapore</code>. Two columns times 345 rows is 690 failures here. When a real import produces a handful of failures rather than hundreds, those few rows are usually the ones worth inspecting: typically a note typed into a numeric field.</p>
 <p>When you only need part of a wide file, <code>cols_only()</code> reads the named columns and skips the rest, which on a large file saves both time and memory:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">read_csv</span><span class="op">(</span></span>
@@ -573,12 +573,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 10        13     NA 2020-01-31</span></span>
 <span><span class="co">#&gt; # ℹ 335 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The columns come back in the order they appear in the file, not the order you listed them, which catches people who then index by position.</p>
+<p>The columns come back in the order they appear in the file, not the order you listed them, which matters if any later code indexes columns by position.</p>
 <section id="other-formats" class="level3" data-number="5.4.1"><h3 data-number="5.4.1" class="anchored" data-anchor-id="other-formats">
 <span class="header-section-number">5.4.1</span> Other formats</h3>
-<p><code>read_tsv()</code> for tab-separated, <code>read_delim()</code> when you have to name the separator yourself, <code><a href="https://readxl.tidyverse.org/reference/read_excel.html">readxl::read_excel()</a></code> for <code>.xlsx</code> files including a <code>sheet</code> argument, and the <code>haven</code> package for Stata, SPSS and SAS files, which is the one that matters most in public health. All of them return tibbles, and <code>haven</code> keeps the variable labels that survey datasets carry.</p>
+<p><code>read_tsv()</code> for tab-separated files, <code>read_delim()</code> when the separator has to be named explicitly, <code><a href="https://readxl.tidyverse.org/reference/read_excel.html">readxl::read_excel()</a></code> for <code>.xlsx</code> files, which takes a <code>sheet</code> argument, and the <code>haven</code> package for Stata, SPSS and SAS files, which are common in public health. All of them return tibbles, and <code>haven</code> retains the variable labels that survey datasets carry.</p>
 </section></section><section id="sec-glimpse" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="sec-glimpse">
-<span class="header-section-number">5.5</span> Always look at what you loaded</h2>
+<span class="header-section-number">5.5</span> Looking at what you loaded</h2>
 <p><code>glimpse()</code> is the first thing to run after any import. It transposes the usual view: one line per column, running across the page, so a 13-column table fits on a screen.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">glimpse</span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span>
@@ -598,32 +598,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; $ workplaces_percent_change_from_baseline            &lt;dbl&gt; NA, NA, NA, NA, NA,…</span></span>
 <span><span class="co">#&gt; $ residential_percent_change_from_baseline           &lt;dbl&gt; NA, NA, NA, NA, NA,…</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Read it as three answers at once. The dimensions confirm the import. The type in angle brackets after each name confirms the parse. And the first handful of values confirms the content, which is where the interesting news usually is.</p>
-<p>Look down the first values here and seven of the thirteen columns open with <code>NA</code>. Two different things are going on, and they are missing for different lengths of time.</p>
+<p>It answers three questions at once. The dimensions confirm the import. The type in angle brackets after each name confirms the parse. The first few values show the content.</p>
+<p>In the values here, seven of the thirteen columns open with <code>NA</code>. Two separate things are going on, and the columns are missing for different lengths of time.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">deaths</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 59</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">parks_percent_change_from_baseline</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 24</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p><code>deaths</code> is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020, and it goes straight to 2 without ever passing through 1. Everything before that is stored as missing rather than as zero. Those are different claims. Zero says nobody died; <code>NA</code> says the source is not telling you. The distinction costs you two deaths the moment you difference the column to recover daily deaths: the first recorded value is 2 with <code>NA</code> behind it, so the subtraction that would have caught those two has nothing to subtract from, and the daily figures add up to 27 against a recorded total of 29.</p>
-<p>The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google’s Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file. Both are the source declining to state something it does not have, which is the honest thing for it to do and the awkward thing for you, and <code>glimpse()</code> put both of them in front of you within seconds of loading it.</p>
-<p>Three more worth having in your fingers. <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> and <code><a href="https://rdrr.io/r/utils/head.html">tail()</a></code> show the first and last rows, and <code><a href="https://rdrr.io/r/utils/head.html">tail()</a></code> is the one that catches the summary row somebody left at the bottom of a spreadsheet. <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> gives a five-number summary of every numeric column plus a count of <code>NA</code>s. <code><a href="https://rdrr.io/r/utils/View.html">View()</a></code> opens the spreadsheet viewer in RStudio, which is the fastest way to eyeball a small file and useless on a large one; keep it at the console and never in a script, because it does nothing in a rendered document.</p>
+<p><code>deaths</code> is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020; the series goes straight to 2 without passing through 1. Everything before that is stored as missing rather than as zero. The two are different claims: zero would state that nobody died, while <code>NA</code> states that the source does not report a figure. The distinction costs two deaths as soon as the column is differenced to recover daily deaths, because the first recorded value of 2 has <code>NA</code> behind it and there is nothing to subtract from. The daily figures then sum to 27 against a recorded total of 29.</p>
+<p>The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google’s Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file; in both cases the source has no value to report. <code>glimpse()</code> makes both visible immediately after loading.</p>
+<p>Three further functions are worth knowing. <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> and <code><a href="https://rdrr.io/r/utils/head.html">tail()</a></code> show the first and last rows, and <code><a href="https://rdrr.io/r/utils/head.html">tail()</a></code> is the one that catches a summary row left at the bottom of a spreadsheet. <code><a href="https://rdrr.io/r/base/summary.html">summary()</a></code> gives a five-number summary of every numeric column plus a count of <code>NA</code>s. <code><a href="https://rdrr.io/r/utils/View.html">View()</a></code> opens the spreadsheet viewer in RStudio, which is convenient for a small file and unhelpful on a large one; keep it at the console rather than in a script, because it does nothing in a rendered document.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/View.html">View</a></span><span class="op">(</span><span class="va">covid</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="sec-read-covid" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="sec-read-covid">
 <span class="header-section-number">5.6</span> The helper this book uses</h2>
-<p>Now <code>read_covid()</code> should hold no mystery. It calls <code>read_csv()</code> on this file via <code>here()</code>, with the column-types message switched off because you have just read it:</p>
+<p><code>read_covid()</code> does nothing beyond what this chapter has covered. It calls <code>read_csv()</code> on this file via <code>here()</code>, with the column-types message switched off because the specification is set out above:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">read_covid</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html">here</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"sg_covid_data.csv"</span><span class="op">)</span>, show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Nothing is cleaned, nothing is repaired. Counts are still cumulative, <code>NA</code>s are still <code>NA</code>s. Every chapter that fixes something fixes it where you can watch.</p>
+<p>Nothing is cleaned and nothing is repaired. Counts are still cumulative and <code>NA</code>s are still <code>NA</code>s. Where a later chapter corrects something, it does so in code you can read.</p>
 </section><section id="sec-first-plot" class="level2" data-number="5.7"><h2 data-number="5.7" class="anchored" data-anchor-id="sec-first-plot">
-<span class="header-section-number">5.7</span> One plot, out of order</h2>
-<p>You have not been taught <code>ggplot()</code> yet. Run this anyway.</p>
+<span class="header-section-number">5.7</span> A first plot</h2>
+<p><code>ggplot()</code> is covered in a later chapter. The code below is included here so that the file can be seen as a whole before any of it is transformed.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -657,7 +657,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Fifty-eight thousand confirmed cases by the end of December, and a curve that turns sharply upward in April and flattens through the second half of the year. The shaded band is Singapore’s circuit breaker, 7 April to 1 June 2020.</p>
-<p>The curve is honest and almost useless for reading an epidemic, because a cumulative total can only go up. You cannot see when transmission accelerated or when it stopped. What you want instead is the daily difference, each day’s total minus the day before’s, kept in a column of its own. On 20 April that column holds 1,426 new cases; the cumulative line for the same day holds 8,014, which is a fact about January to April rather than about 20 April.</p>
+<p>The curve records the file accurately, but a cumulative total can only increase, so it shows neither when transmission accelerated nor when it stopped. The quantity that does is the daily difference, each day’s total minus the previous day’s, held in a column of its own. On 20 April that column holds 1,426 new cases; the cumulative line for the same day holds 8,014, which describes January to April rather than 20 April.</p>
 </section><section id="exercise" class="level2" data-number="5.8"><h2 data-number="5.8" class="anchored" data-anchor-id="exercise">
 <span class="header-section-number">5.8</span> Exercise</h2>
 <div id="exr-first-look" class="theorem exercise">

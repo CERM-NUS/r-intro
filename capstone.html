@@ -351,10 +351,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <a href="#april-2020-worked" id="toc-april-2020-worked" class="nav-link" data-scroll-target="#april-2020-worked"><span class="header-section-number">13.3</span> April 2020, worked</a>
   <ul class="collapse">
 <li><a href="#a-script-that-stands-on-its-own" id="toc-a-script-that-stands-on-its-own" class="nav-link" data-scroll-target="#a-script-that-stands-on-its-own"><span class="header-section-number">13.3.1</span> A script that stands on its own</a></li>
-  <li><a href="#how-heavy-was-the-month" id="toc-how-heavy-was-the-month" class="nav-link" data-scroll-target="#how-heavy-was-the-month"><span class="header-section-number">13.3.2</span> How heavy was the month</a></li>
+  <li><a href="#the-headline-numbers" id="toc-the-headline-numbers" class="nav-link" data-scroll-target="#the-headline-numbers"><span class="header-section-number">13.3.2</span> The headline numbers</a></li>
   <li><a href="#the-table" id="toc-the-table" class="nav-link" data-scroll-target="#the-table"><span class="header-section-number">13.3.3</span> The table</a></li>
   <li><a href="#the-first-figure-the-epidemic-curve" id="toc-the-first-figure-the-epidemic-curve" class="nav-link" data-scroll-target="#the-first-figure-the-epidemic-curve"><span class="header-section-number">13.3.4</span> The first figure: the epidemic curve</a></li>
-  <li><a href="#the-second-figure-what-people-actually-did" id="toc-the-second-figure-what-people-actually-did" class="nav-link" data-scroll-target="#the-second-figure-what-people-actually-did"><span class="header-section-number">13.3.5</span> The second figure: what people actually did</a></li>
+  <li><a href="#the-second-figure-mobility" id="toc-the-second-figure-mobility" class="nav-link" data-scroll-target="#the-second-figure-mobility"><span class="header-section-number">13.3.5</span> The second figure: mobility</a></li>
   <li><a href="#the-three-sentences" id="toc-the-three-sentences" class="nav-link" data-scroll-target="#the-three-sentences"><span class="header-section-number">13.3.6</span> The three sentences</a></li>
   </ul>
 </li>
@@ -378,34 +378,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>Up to now every chapter has handed you a question with the shape of the answer already showing. Filter this, group by that, plot the result. Real analysis doesn’t arrive in that shape. It arrives as a request from someone who wants to know what happened, by Friday, in a form they can put in front of a committee.</p>
-<p>So here is the request. You pick a month of Singapore’s 2020 and write the report. I’ll do April first so you can see where the bar is, then August is yours.</p>
+</header><p>Up to now every chapter has handed you a question with the shape of the answer already showing: filter this, group by that, plot the result. Requests in practice are less specified. They arrive from someone who wants to know what happened, by a deadline, in a form they can put in front of a committee.</p>
+<p>The request in this chapter is of that kind: pick a month of Singapore’s 2020 and write the report. April is worked through first, to set out what the finished report looks like, and August is left to you.</p>
 <section id="the-brief" class="level2" data-number="13.1"><h2 data-number="13.1" class="anchored" data-anchor-id="the-brief">
 <span class="header-section-number">13.1</span> The brief</h2>
-<p>One month. One page. On that page:</p>
-<p>a table that gives the reader the month in numbers, two figures that show something the table can’t, and three sentences of interpretation. Three sentences, not three paragraphs. The sentence limit is the hard part and it’s deliberate. Anyone can produce eight paragraphs of hedged description. Deciding which three things matter is the work.</p>
+<p>The report covers one month and occupies one page. That page carries a table that gives the reader the month in numbers, two figures that show something the table cannot, and three sentences of interpretation. Three sentences, not three paragraphs: the limit is deliberate, because choosing which three findings matter takes more work than writing several paragraphs of hedged description.</p>
 <p>Assume the reader is a public health officer who knows Singapore and does not know R. They will not read your code. They will look at the figures first, the table second, and your sentences only if the figures made them curious.</p>
 </section><section id="what-a-good-report-contains" class="level2" data-number="13.2"><h2 data-number="13.2" class="anchored" data-anchor-id="what-a-good-report-contains">
 <span class="header-section-number">13.2</span> What a good report contains</h2>
 <p>There are six things I look for, and they are all things you already know how to do.</p>
 <ol type="1">
 <li>
-<strong>The month is stated, and so is the denominator.</strong> How many days does the month have, and how many of them carry data? Every month in this file is complete, but saying so is what separates a report from an assumption.</li>
+<strong>The month is stated, and so is the denominator.</strong> How many days does the month have, and how many of them carry data? Every month in this file is complete, but state that rather than leaving the reader to assume it.</li>
 <li>
-<strong>A count and a shape.</strong> A total tells you the size of the month. A median, a maximum and the date of the maximum tell you whether that total came from a steady grind or one bad day. Report both.</li>
+<strong>A count and a shape.</strong> A total tells you the size of the month. A median, a maximum and the date of the maximum tell you whether that total accumulated steadily or came from a small number of large days. Report both.</li>
 <li>
-<strong>A table with a unit the reader can hold.</strong> Days are too fine for a monthly table and the month itself is too coarse. Weeks work.</li>
+<strong>A table at a unit the reader can take in.</strong> Days are too fine for a monthly table and the month itself is too coarse. Weeks are the workable grain.</li>
 <li>
 <strong>Two figures that answer different questions.</strong> Two views of the case curve is one figure drawn twice. Pair the epidemic curve with something else in the file: mobility, the stringency index, the severity mix.</li>
 <li>
-<strong>Every figure has a title that states a finding.</strong> “Daily cases, April 2020” is a label. “Cases rose for 13 days after the circuit breaker began” is a finding. Titles that make a claim force you to check the claim.</li>
+<strong>Every figure has a title that states a finding.</strong> “Daily cases, April 2020” is a label. “Cases rose for 13 days after the circuit breaker began” is a finding. A title that makes a claim has to be checked against the data before it can stand.</li>
 <li>
 <strong>At least one caveat that comes from looking at the data, not from a template.</strong> “Data may be incomplete” is a template. “The 5 August count is four times the next highest August day and needs an explanation before it goes in a mean” is analysis.</li>
 </ol></section><section id="april-2020-worked" class="level2" data-number="13.3"><h2 data-number="13.3" class="anchored" data-anchor-id="april-2020-worked">
 <span class="header-section-number">13.3</span> April 2020, worked</h2>
 <section id="a-script-that-stands-on-its-own" class="level3" data-number="13.3.1"><h3 data-number="13.3.1" class="anchored" data-anchor-id="a-script-that-stands-on-its-own">
 <span class="header-section-number">13.3.1</span> A script that stands on its own</h3>
-<p>Your report script must be readable from the top without any hidden state. That means it reads the file and builds its own columns, in view, before it uses them. This is exactly the pipeline from the conditionals chapter, written out once so nothing in the report depends on something you can’t see.</p>
+<p>Your report script must be readable from the top without any hidden state. That means it reads the file and builds its own columns, in view, before it uses them. This is exactly the pipeline from the conditionals chapter, written out once so nothing in the report depends on something you cannot see.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -421,8 +420,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    month <span class="op">=</span> <span class="fu">floor_date</span><span class="op">(</span><span class="va">date</span>, <span class="st">"month"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>If you’re writing this in a script of your own rather than inside the book’s project, swap <code>read_covid()</code> for <code>read_csv(here("data", "sg_covid_data.csv"))</code>. That helper exists so the chapters don’t repeat a file path forty times, and nothing else in the pipeline depends on it.</p>
-<p>Then pick the month once, at the top, in a named object. When August comes round you change one line rather than hunting for <code>"2020-04"</code> scattered through twenty chunks.</p>
+<p>If you are writing this in a script of your own rather than inside the book’s project, swap <code>read_covid()</code> for <code>read_csv(here("data", "sg_covid_data.csv"))</code>. That helper exists so that the chapters do not repeat a file path in every chunk, and nothing else in the pipeline depends on it.</p>
+<p>Then pick the month once, at the top, in a named object. When you move to August you change one line rather than hunting for <code>"2020-04"</code> scattered through twenty chunks.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">report_month</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-04-01"</span><span class="op">)</span></span>
 <span></span>
@@ -432,9 +431,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">april</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 30</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Thirty rows for a thirty-day month. That check takes two seconds and it is the cheapest error you will ever catch.</p>
-</section><section id="how-heavy-was-the-month" class="level3" data-number="13.3.2"><h3 data-number="13.3.2" class="anchored" data-anchor-id="how-heavy-was-the-month">
-<span class="header-section-number">13.3.2</span> How heavy was the month</h3>
+<p>Thirty rows for a thirty-day month. The check is one line, and it catches a mis-specified filter before anything is computed from it.</p>
+</section><section id="the-headline-numbers" class="level3" data-number="13.3.2"><h3 data-number="13.3.2" class="anchored" data-anchor-id="the-headline-numbers">
+<span class="header-section-number">13.3.2</span> The headline numbers</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -445,7 +444,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>April 2020 has one day that dwarfs the rest. Write down the date you think it fell on before you read the next output. Most people put it in the first week, on the theory that the circuit breaker started on 7 April and things improved from there.</p>
+<p>April 2020 has one day far larger than the rest. Write down the date you think it fell on before you read the next output. Most people put it in the first week, on the reasoning that the circuit breaker started on 7 April and things improved from there.</p>
 </div>
 </div>
 <div class="cell">
@@ -464,9 +463,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;int&gt; &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;      &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1    30 15243       508.         488.  1426 2020-04-20     12</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The peak is 20 April, thirteen days after the circuit breaker began. Cases went up, and kept going up, for two weeks after Singapore closed workplaces and told everyone to stay home.</p>
-<p>That is not a paradox and it is worth being precise about why. Reported cases are the output of a testing programme, not a direct measurement of infection. Through April, testing in the migrant-worker dormitories was expanding fast, and the dormitory outbreak dominated the national count from April to August. A rising reported curve during that period is partly transmission and partly the swab rate catching up with infections that had already happened. You cannot separate the two from this file, which is a thing to say in your report rather than a thing to hide.</p>
-<p>Two small notes on that output. <code>median_daily</code> prints as <code>488.</code> with a trailing full stop, which is the tibble telling you the value isn’t a whole number. It’s 487.5, the average of the two middle days. And <code>deaths</code> is 12 here, which is trustworthy for April because the <code>deaths</code> column has no missing values from 21 March onwards. Earlier in the year it does, 59 leading <code>NA</code>s, and lag-differencing across them recovers only 27 of the year’s 29 deaths. If your chosen month is January, February or March, say that out loud.</p>
+<p>The peak is 20 April, thirteen days after the circuit breaker began. Reported cases continued to rise for two weeks after Singapore closed workplaces and required people to stay at home.</p>
+<p>That is not a paradox and it is worth being precise about why. Reported cases are the output of a testing programme, not a direct measurement of infection. Through April, testing in the migrant-worker dormitories was expanding fast, and the dormitory outbreak dominated the national count from April to August. A rising reported curve during that period is partly transmission and partly the swab rate catching up with infections that had already happened. The two cannot be separated from this file, and the report should say so.</p>
+<p>Two small notes on that output. <code>median_daily</code> prints as <code>488.</code> with a trailing full stop, which is the tibble telling you the value is not a whole number. It is 487.5, the average of the two middle days. And <code>deaths</code> is 12 here, which is reliable for April because the <code>deaths</code> column has no missing values from 21 March onwards. Earlier in the year it does, 59 leading <code>NA</code>s, and lag-differencing across them recovers only 27 of the year’s 29 deaths. If your chosen month is January, February or March, state that in the report.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">april</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">count</span><span class="op">(</span><span class="va">severity</span><span class="op">)</span></span>
@@ -477,10 +476,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 Medium       7</span></span>
 <span><span class="co">#&gt; 3 High        18</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Eighteen of April’s thirty days were over 300 cases. Across the whole year only 77 days were, so April holds nearly a quarter of the year’s worst days in a single month.</p>
+<p>Eighteen of April’s thirty days were over 300 cases. Across the whole year only 77 days were, so April holds nearly a quarter of the year’s highest-count days in a single month.</p>
 </section><section id="the-table" class="level3" data-number="13.3.3"><h3 data-number="13.3.3" class="anchored" data-anchor-id="the-table">
 <span class="header-section-number">13.3.3</span> The table</h3>
-<p>Weeks are the right grain for a monthly table. <code>floor_date(date, "week", week_start = 1)</code> puts each date on its Monday. I set <code>week_start</code> explicitly because lubridate’s default is Sunday and half the people reading this expect Monday. Making the assumption visible costs one argument.</p>
+<p>Weeks are the right grain for a monthly table. <code>floor_date(date, "week", week_start = 1)</code> puts each date on its Monday. I set <code>week_start</code> explicitly because lubridate’s default is Sunday and many readers will expect Monday. Setting it explicitly makes the assumption visible at the cost of one argument.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">april_weeks</span> <span class="op">&lt;-</span> <span class="va">april</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>week <span class="op">=</span> <span class="fu">floor_date</span><span class="op">(</span><span class="va">date</span>, <span class="st">"week"</span>, week_start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -504,7 +503,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 4 2020-04-20     7  7036       1005  1426    -67       77.6</span></span>
 <span><span class="co">#&gt; 5 2020-04-27     4  2545        636   799    -67       76.8</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Look at the <code>days</code> column before you look at anything else. The first row covers five days, not seven, because April 2020 started on a Wednesday and the week beginning 30 March mostly belongs to March. The last row covers four. Any comparison of <code>cases</code> across those rows is comparing different amounts of time, which is why <code>mean_daily</code> is in the table and why <code>days</code> is in it too. Leave <code>days</code> out and a reader will read 383 against 1,223 as a threefold rise when part of it is nothing more than two extra days.</p>
+<p>Look at the <code>days</code> column before you look at anything else. The first row covers five days, not seven, because April 2020 started on a Wednesday and the week beginning 30 March mostly belongs to March. The last row covers four. Any comparison of <code>cases</code> across those rows is comparing different amounts of time, which is why <code>mean_daily</code> is in the table and why <code>days</code> is in it too. Leave <code>days</code> out and a reader will read 383 against 1,223 as a threefold rise when part of the difference is two extra days.</p>
 <p>The rest of the table tells a fairly clean story. Weekly totals climb from 383 to 7,036 and then fall back. Mean retail mobility drops from 23% below baseline in the first partial week to 67% below in each of the last two. Mean stringency goes from 41.7 to 71 in one step and sits in the seventies for the rest of the month.</p>
 </section><section id="the-first-figure-the-epidemic-curve" class="level3" data-number="13.3.4"><h3 data-number="13.3.4" class="anchored" data-anchor-id="the-first-figure-the-epidemic-curve">
 <span class="header-section-number">13.3.4</span> The first figure: the epidemic curve</h3>
@@ -538,10 +537,10 @@ Figure&nbsp;13.1: Daily reported cases in Singapore, April 2020, with the start 
 </div>
 <p>Columns rather than a line, because these are counts of things that happened on discrete days and a line implies you could read a value off it halfway between two dates. The dashed rule and the label do the work that a paragraph of text would otherwise have to do. The caption carries the source and the one warning the reader most needs.</p>
 <p>The date breaks are weekly and the labels are <code>"%d %b"</code>, so the axis reads 06 Apr, 13 Apr, 20 Apr.&nbsp;Left to itself ggplot2 would have chosen something reasonable but not necessarily aligned with the weeks in your table, and a reader who is trying to match figure to table will notice.</p>
-</section><section id="the-second-figure-what-people-actually-did" class="level3" data-number="13.3.5"><h3 data-number="13.3.5" class="anchored" data-anchor-id="the-second-figure-what-people-actually-did">
-<span class="header-section-number">13.3.5</span> The second figure: what people actually did</h3>
-<p>The case curve says what was reported. The mobility columns say what people did, which is a different question and the reason this file is more interesting than a case line on its own.</p>
-<p>Two series on one set of axes means one row per series per date, so the two columns have to become one column of values plus one column of labels. <code>pivot_longer()</code> does that. It’s from tidyr, which came in with the tidyverse, and it’s the only function in this chapter you haven’t already met.</p>
+</section><section id="the-second-figure-mobility" class="level3" data-number="13.3.5"><h3 data-number="13.3.5" class="anchored" data-anchor-id="the-second-figure-mobility">
+<span class="header-section-number">13.3.5</span> The second figure: mobility</h3>
+<p>The case curve records what was reported. The mobility columns record where people went, which is a different question and the reason this file supports more than a case series on its own.</p>
+<p>Two series on one set of axes means one row per series per date, so the two columns have to become one column of values plus one column of labels. <code>pivot_longer()</code> does that. It is from tidyr, which came in with the tidyverse, and it is the only function in this chapter you have not already met.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">april_mobility</span> <span class="op">&lt;-</span> <span class="va">april</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span></span>
@@ -567,7 +566,7 @@ Figure&nbsp;13.1: Daily reported cases in Singapore, April 2020, with the start 
 <span><span class="co">#&gt; 10 2020-04-05 Workplaces               -10</span></span>
 <span><span class="co">#&gt; # ℹ 50 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Renaming inside <code>select()</code> is what gets you a readable legend without a second call. Backticks around <code>Retail and recreation</code> because it has spaces in it; R will accept a name like that as long as you quote it that way, and here it’s worth it because that string goes straight onto the plot.</p>
+<p>Renaming inside <code>select()</code> is what gets you a readable legend without a second call. Backticks are needed around <code>Retail and recreation</code> because it contains spaces; R will accept a name like that as long as you quote it that way, and it is worth doing here because that string goes straight onto the plot.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">april_mobility</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">change</span>, colour <span class="op">=</span> <span class="va">series</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="va">nus_colours</span><span class="op">[[</span><span class="st">"muted"</span><span class="op">]</span><span class="op">]</span>, linewidth <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
@@ -592,8 +591,8 @@ Figure&nbsp;13.2: Retail and workplace mobility in April 2020, as percent change
 </div>
 </div>
 </div>
-<p>The step at 7 April is the whole point of the figure. Retail goes from 15% below baseline on 6 April to 51% below on 7 April; workplaces go from 24% below to 52% below on the same day. Behaviour changed overnight. The case curve took a fortnight to turn.</p>
-<p>Now the two things in that figure that are not what they look like. The deep spike down to 83% below baseline is 10 April, which was Good Friday, a public holiday. The eight deepest workplace-mobility days in the entire year are all public holidays, so any dip you see in this series should be checked against a calendar before it’s called a policy effect.</p>
+<p>The step at 7 April is what the figure is for. Retail goes from 15% below baseline on 6 April to 51% below on 7 April; workplaces go from 24% below to 52% below on the same day. Behaviour changed within a day, while the case curve took a fortnight to turn.</p>
+<p>Two features of that figure are not what they appear to be. The deep spike down to 83% below baseline is 10 April, which was Good Friday, a public holiday. The eight deepest workplace-mobility days in the entire year are all public holidays, so any dip you see in this series should be checked against a calendar before it is called a policy effect.</p>
 <p>The regular bumps upwards are weekends, and they run the opposite way to intuition. Google’s baseline is a median computed separately for each day of the week, so a Sunday is compared with pre-pandemic Sundays. Workplace activity on a normal Sunday was already low, which leaves less room to fall.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">april</span> <span class="op">%&gt;%</span></span>
@@ -615,8 +614,8 @@ Figure&nbsp;13.2: Retail and workplace mobility in April 2020, as percent change
 <span><span class="co">#&gt; 6 Fri         3      -71.7</span></span>
 <span><span class="co">#&gt; 7 Sat         3      -52.3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Weekdays sit between 63 and 72 points below baseline. Saturday and Sunday sit around 50. Nobody went back to the office at the weekend. The denominator changed.</p>
-<p>If you want the two figures stacked as a single image for a one-page PDF, patchwork will do it with <code>p_cases / p_mobility</code> once you’ve assigned each plot to a name. I’ve kept them separate here so each keeps its full height on screen.</p>
+<p>Weekdays sit between 63 and 72 points below baseline. Saturday and Sunday sit around 50. Workplace activity did not return at the weekend; the baseline it is compared against is lower.</p>
+<p>If you want the two figures stacked as a single image for a one-page PDF, patchwork will do it with <code>p_cases / p_mobility</code> once you have assigned each plot to a name. I have kept them separate here so that each keeps its full height on screen.</p>
 </section><section id="the-three-sentences" class="level3" data-number="13.3.6"><h3 data-number="13.3.6" class="anchored" data-anchor-id="the-three-sentences">
 <span class="header-section-number">13.3.6</span> The three sentences</h3>
 <blockquote class="blockquote">
@@ -624,21 +623,21 @@ Figure&nbsp;13.2: Retail and workplace mobility in April 2020, as percent change
 <p>Reported cases kept climbing for 13 days after the circuit breaker took effect on 7 April, peaking at 1,426 on 20 April, a pattern that reflects the pace of testing in the migrant-worker dormitories as much as the timing of infection.</p>
 <p>Movement changed the day the rules did, with retail activity falling from 15% below baseline on 6 April to 51% below on 7 April and staying within a few points of its floor for the rest of the month, so the behavioural response was immediate even though the case curve was not.</p>
 </blockquote>
-<p>Three sentences, three different jobs. The first sizes the month against the year. The second addresses the thing a reader will get wrong if you don’t. The third brings in the second data source and draws the contrast that makes the report worth reading.</p>
-<p>Notice what isn’t in there. No recommendation, because nothing in this file supports one. No claim that the circuit breaker worked or didn’t, because a single month of a single country with no counterfactual cannot tell you. A situation report describes the situation. Resist the pull to conclude.</p>
+<p>The three sentences do three different jobs. The first sizes the month against the year. The second addresses the point a reader would otherwise misread. The third brings in the second data source and sets the behavioural response against the case curve.</p>
+<p>Two things are absent. There is no recommendation, because nothing in this file supports one, and no claim that the circuit breaker did or did not work, because a single month of a single country with no counterfactual cannot establish either. The purpose of a situation report is description rather than causal inference.</p>
 </section></section><section id="what-this-analysis-does-not-tell-you" class="level2" data-number="13.4"><h2 data-number="13.4" class="anchored" data-anchor-id="what-this-analysis-does-not-tell-you">
 <span class="header-section-number">13.4</span> What this analysis does not tell you</h2>
-<p>This section is not decoration. Write a version of it for your own month, and make it specific.</p>
-<p><strong>Raw counts ignore population.</strong> Fifteen thousand cases is a number of people, not a rate. To turn it into a rate you need a denominator, and the honest denominator here is not obvious. Roughly 323,000 work-permit holders lived in dormitories of all types in 2020, of whom about 200,000 were in the 43 purpose-built dormitories. A case rate computed over the national population and a case rate computed over the dormitory-resident population are different quantities, and in April 2020 they were not remotely close. This file gives you neither denominator.</p>
-<p><strong>Raw counts ignore testing volume.</strong> A reported case requires a test, a positive result and a report. Change the number of tests and the case count changes without a single extra infection. There’s no test-count column in this file, so you cannot compute test positivity, which is the standard way of asking whether a rise in cases is a rise in transmission or a rise in looking. When your curve rises, you are entitled to say that reported cases rose. You are not entitled to say that infections rose.</p>
-<p><strong>One national count is averaging two epidemics.</strong> From April to August 2020 the dormitory outbreak dominated Singapore’s case counts, and it had different dynamics from transmission in the wider community: different living density, different age structure, different testing regime, different intervention. MOH’s own daily updates reported those streams separately at the time. This file carries a single national total, so every mean you compute over those months is a weighted average of two processes, with weights you can’t see and that change from week to week. That is a limitation of the file, not of the epidemiology, and you should say which one you’re reporting.</p>
-<p>5 August 2020 is the sharpest example. That day records 908 cases, against an August median of 91 and a next-highest August day of 313. Nine hundred and three of those 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. MOH attributed the day’s numbers to clearance testing in dormitories picking up past infections. Put that day in a mean without comment and you have published a wave that did not happen on that day.</p>
-<p>One more, and I’m flagging it as my own reading rather than something you can verify from the data. Google’s mobility series are built from location history on the phones of users who have that setting switched on, and Google does not publish these series broken down by nationality or work-permit status. Whether the movement of people confined to dormitories under quarantine appears in these curves at all is not a question this file can answer. I would not lean on mobility to describe what happened inside the dormitories in April. That is the difference between running the code and doing the epidemiology: the code will compute a mean of anything you hand it.</p>
+<p>Write a version of this section for your own month, and make it specific to that month.</p>
+<p><strong>Raw counts ignore population.</strong> Fifteen thousand cases is a number of people, not a rate. To turn it into a rate you need a denominator, and the appropriate denominator here is not obvious. Roughly 323,000 work-permit holders lived in dormitories of all types in 2020, of whom about 200,000 were in the 43 purpose-built dormitories. A case rate computed over the national population and a case rate computed over the dormitory-resident population are different quantities, and in April 2020 they were not close. This file gives you neither denominator.</p>
+<p><strong>Raw counts ignore testing volume.</strong> A reported case requires a test, a positive result and a report. Change the number of tests and the case count changes without a single extra infection. There is no test-count column in this file, so you cannot compute test positivity, which is the standard way of asking whether a rise in cases reflects a rise in transmission or a rise in testing. A rising curve supports the statement that reported cases rose. It does not support the statement that infections rose.</p>
+<p><strong>One national count is averaging two epidemics.</strong> From April to August 2020 the dormitory outbreak dominated Singapore’s case counts, and it had different dynamics from transmission in the wider community: different living density, different age structure, different testing regime, different intervention. MOH’s own daily updates reported those streams separately at the time. This file carries a single national total, so every mean you compute over those months is a weighted average of two processes, with weights you cannot see and that change from week to week. That is a limitation of the file, not of the epidemiology, and you should say which one you are reporting.</p>
+<p>5 August 2020 is the clearest example. That day records 908 cases, against an August median of 91 and a next-highest August day of 313. Nine hundred and three of those 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. MOH attributed the day’s numbers to clearance testing in dormitories picking up past infections. A mean that includes that day without comment describes a change in reporting as though it were a change in incidence.</p>
+<p>One further point, flagged as my own reading rather than something you can verify from the data. Google’s mobility series are built from location history on the phones of users who have that setting switched on, and Google does not publish these series broken down by nationality or work-permit status. Whether the movement of people confined to dormitories under quarantine appears in these curves at all is not a question this file can answer. I would not rely on the mobility series to describe what happened inside the dormitories in April. R will compute a mean of any column it is given; whether the column supports the question is a separate judgement.</p>
 </section><section id="your-turn" class="level2" data-number="13.5"><h2 data-number="13.5" class="anchored" data-anchor-id="your-turn">
 <span class="header-section-number">13.5</span> Your turn</h2>
 <div id="exr-sitrep" class="theorem exercise">
 <p><span class="theorem-title"><strong>Exercise 13.1 (Write the August 2020 situation report)</strong></span> Produce the one-page report for August 2020: a table, two figures, three sentences of interpretation, and a short note on what your analysis does not tell you.</p>
-<p>August is a harder month than April, and not because the code is harder. The code is the same code. August is harder because the month contains a decision that April doesn’t, and how you handle it is most of what separates a good report from a competent one.</p>
+<p>August is a harder month than April, though not because the code is harder; the code is the same. August is harder because the month contains a decision that April does not, and the report has to address that decision explicitly.</p>
 <p>You are done when someone who has never seen the data could read your page and come away with a correct impression of what August 2020 was like.</p>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -653,12 +652,12 @@ Figure&nbsp;13.2: Retail and workplace mobility in April 2020, as percent change
 </div>
 <div id="callout-2" class="callout-2-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Compute the maximum, the median and the date of the maximum before you compute anything else, and put those three numbers next to each other. If a single day is several times the next highest day, the mean is describing that day rather than the month, and your report has to decide out loud what to do about it.</p>
+<p>Compute the maximum, the median and the date of the maximum before you compute anything else, and put those three numbers next to each other. If a single day is several times the next highest day, the mean is describing that day rather than the month, and your report has to state explicitly what it does about that.</p>
 </div>
 </div>
 </div>
 <p><a href="./solutions.html#sec-sol-sitrep">Worked solution</a></p>
-<p>If you want a second month after that, September 2020 is the quiet counterpart: 30 days, every one of them under 100 cases, a mean of 31.8. Writing an interesting report about a month where nothing happens is its own skill, and you will be asked for one eventually.</p>
+<p>If you want a second month after that, September 2020 is the quiet counterpart: 30 days, every one of them under 100 cases, a mean of 31.8. Reporting on a month in which little changed is a separate skill, and one that is required regularly.</p>
 
 
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
