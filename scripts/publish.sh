@@ -38,6 +38,31 @@ fi
 branch=$(git rev-parse --abbrev-ref HEAD)
 [ "$branch" = "main" ] || fail "on branch '$branch'. Publish from main."
 
+# Quarto will not create the branch for you when running non-interactively:
+# with --no-prompt it stops with "the remote origin does not have a branch
+# named gh-pages" and tells you to run it interactively once. Do that job here
+# instead, so a fresh clone can publish without a manual first step.
+if ! git ls-remote --exit-code --heads origin gh-pages > /dev/null 2>&1; then
+  echo "==> origin has no gh-pages branch; creating an empty one"
+  tmp=$(mktemp -d)
+  git worktree add --detach "$tmp" > /dev/null 2>&1 || fail "could not create a temporary worktree"
+  (
+    set -euo pipefail
+    cd "$tmp"
+    git checkout --orphan gh-pages > /dev/null 2>&1
+    git rm -rf . > /dev/null 2>&1 || true
+    : > .nojekyll
+    git add .nojekyll
+    git commit -q -m "Initialise gh-pages
+
+Empty starting point. quarto publish gh-pages replaces the contents of this
+branch on every publish; nothing here is edited by hand."
+    git push -q -u origin gh-pages
+  ) || { git worktree remove --force "$tmp" 2>/dev/null; fail "could not initialise the gh-pages branch"; }
+  git worktree remove --force "$tmp" 2>/dev/null || true
+  echo "    created and pushed."
+fi
+
 echo "==> rendering and publishing to gh-pages"
 quarto publish gh-pages --no-prompt --no-browser || fail "quarto publish exited non-zero. Read the output above."
 
