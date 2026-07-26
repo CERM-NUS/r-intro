@@ -18,15 +18,15 @@ dim(covid)
 
 ## Where it came from
 
-Three sources, stitched together into one rectangle.
+The file combines three sources into a single rectangle.
 
 The **case and death counts** come from the [COVID-19 Data Hub](https://covid19datahub.io) (Guidotti and Ardia, 2020), an R package and web service that collects national COVID-19 reporting into a single schema, so that a query for Singapore returns columns with the same names as a query for Italy. The Hub does not generate numbers. It collects what national authorities publish, sometimes by way of an intermediate aggregator, and reshapes it. For Singapore the chain ends at the Ministry of Health's daily reporting. If you need to say exactly which feed the Hub was reading on a given date, that is documented country by country on the Hub's own site, and that documentation, rather than this appendix, is what you should cite.
 
 The three **index columns** are the Oxford COVID-19 Government Response Tracker, usually written OxCGRT (Hale et al., 2021). A team of coders read government announcements and scored each country each day on a fixed list of policy indicators: school closures, workplace closures, restrictions on gatherings, testing policy, contact tracing, income support, and so on. The indices are weighted averages of those indicator scores, rescaled to run from 0 to 100. In this extract they range from `r min(covid$stringency_index)` to `r max(covid$stringency_index)`.
 
-The six **mobility columns** are Google's COVID-19 Community Mobility Reports, built from location history for users who had that setting switched on. Each value is a percentage change against a baseline, and the definition of the baseline is the single most important thing to know about these columns. It is the **median value for that day of the week over the five weeks from 3 January to 6 February 2020**. Not a single day, not the whole of January, and not a rolling window. Google stopped updating the reports in October 2022, so these series will never be revised again.
+The six **mobility columns** are Google's COVID-19 Community Mobility Reports, built from location history for users who had that setting switched on. Each value is a percentage change against a baseline, and the definition of that baseline governs how the columns can be read. It is the **median value for that day of the week over the five weeks from 3 January to 6 February 2020**. Not a single day, not the whole of January, and not a rolling window. Google stopped updating the reports in October 2022, so these series will never be revised again.
 
-Google's column names are passed through unchanged, which is why they are 50 characters long and end in `percent_change_from_baseline`. You will be typing them a lot. Tab completion in RStudio exists for exactly this reason.
+Google's column names are passed through unchanged, which is why they are 50 characters long and end in `percent_change_from_baseline`. You will be typing them often, and RStudio's tab completion handles them.
 
 ### Citing the sources
 
@@ -50,7 +50,7 @@ library(COVID19)
 sg <- covid19(country = "Singapore", level = 1)
 ```
 
-Run that today and you will not get this file back byte for byte. Countries revise historical counts long after the fact, and the Hub's own upstream source for a given country has changed over the years. That is normal rather than corruption, and it is a large part of why the snapshot lives in the repository instead of being downloaded at render time. A book whose numbers move under it is not a book you can teach from.
+Run that today and you will not get this file back byte for byte. Countries revise historical counts long after the fact, and the Hub's own upstream source for a given country has changed over the years. That is normal rather than corruption, and it is a large part of why the snapshot lives in the repository instead of being downloaded at render time: the numbers quoted in the text stay fixed between renders.
 
 ## What one row is
 
@@ -81,7 +81,7 @@ covid %>%
 count(covid, administrative_area_level_1)
 ```
 
-It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because a student who later pulls three countries and forgets to group by this column will produce a very confident, very wrong national total.
+It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because a student who later pulls three countries and forgets to group by this column will produce a national total that silently pools them.
 
 ## The counts are cumulative
 
@@ -96,11 +96,11 @@ covid %>%
 
 58,599 is the total number of confirmed cases in Singapore in 2020, not the number on 31 December. The number on 31 December is 30, and you get it by subtracting the previous row. That subtraction is what `lag()` is for, and it is done in the transform chapter.
 
-Two consequences follow, and both bite people.
+Two consequences follow, and both catch people out.
 
 The first is that a plot of `confirmed` against `date` is a monotone rising line for any epidemic anywhere. It cannot show you a peak, a wave, or a circuit breaker, because it never goes down. It looks informative and tells you almost nothing about tempo.
 
-The second is arithmetic. `max(confirmed)` is the annual total. `sum(confirmed)` is a number with no meaning at all, and R will compute it for you without a murmur.
+The second is arithmetic. `max(confirmed)` is the annual total. `sum(confirmed)` adds up 345 running totals and means nothing, and R computes it without complaint.
 
 ## The columns
 
@@ -165,7 +165,7 @@ sum(diff(na.omit(covid$deaths)))
 max(covid$deaths, na.rm = TRUE)
 ```
 
-Twenty-seven against twenty-nine. That gap is small and real, and if you report daily deaths from this file you should say so in a footnote rather than hope nobody adds them up.
+Twenty-seven against twenty-nine. The gap is small and real, and a report of daily deaths from this file should state it in a footnote.
 
 **All six mobility columns have 24 missing values, on the same 24 days.**
 
@@ -228,7 +228,7 @@ The mobility columns need the same caution and it is harder to apply. Google bui
 
 **The indices are step functions.** OxCGRT scores change on the day a policy changes and then sit flat, sometimes for weeks. `stringency_index` takes only `r n_distinct(covid$stringency_index)` distinct values across the whole year. A line plot of it is a staircase, and any smoothing you apply is inventing intermediate values that never existed.
 
-**Small index movements are not evidence of much.** There are 23 changes in `stringency_index` after 1 July alone, most of them tiny, and the coding of a single indicator being revised looks exactly the same in the data as a real policy shift. A one-day tick is not a policy announcement. If you want to attribute a movement to a decision, go and find the decision.
+**Small index movements are not evidence of much.** There are 23 changes in `stringency_index` after 1 July alone, most of them tiny, and the coding of a single indicator being revised looks exactly the same in the data as a real policy shift. A one-day tick is not evidence of a policy announcement. Attributing a movement in the index to a decision means finding the decision.
 
 **The mobility series have a strong weekly cycle.** Workplaces drop every weekend and every public holiday, by a lot. Comparing a Tuesday with a Sunday tells you which day of the week it is. Google's baseline is computed per weekday partly to control for this, but the residual cycle is still the largest signal in several of these columns, and it will drown whatever you were actually looking for unless you handle it.
 

@@ -6,29 +6,29 @@
 source("_common.R")
 ```
 
-Everything in this book runs on one file: `sg_covid_data.csv`, 345 rows covering 22 January to 31 December 2020, one row per day. Up to now `read_covid()` has been handing it to you. This chapter opens the lid.
+Everything in this book runs on one file: `sg_covid_data.csv`, 345 rows covering 22 January to 31 December 2020, one row per day. Up to now `read_covid()` has been supplying it. This chapter covers what that function does and what happens at import more generally.
 
-Reading a file in is where more analyses go wrong than anywhere else, and the failures are quiet ones. A date column arrives as text and your time series plots in alphabetical order. A missing value coded as `-99` arrives as a number and your mean is nonsense. A leading zero disappears from a postcode. None of these announce themselves. The defence is to read what R tells you at import time instead of scrolling past it, which is why this book leaves import messages switched on.
+Import is a common source of errors, and most of them are silent. A date column arrives as text and the time series plots in alphabetical order. A missing value coded as `-99` arrives as a number and the mean is wrong. A leading zero disappears from a postcode. None of these raise an error. Most are caught by reading the messages R prints at import time, which is why this book leaves those messages switched on.
 
 ## Where the file is {#sec-paths}
 
-R has a working directory: the folder it treats as "here" when you hand it a relative path. The chapter on good practice told you never to write `setwd()` in a script, and this is the payoff for obeying that. A script containing `setwd("/Users/swapnil/Documents/GitHub/r-intro")` runs on exactly one computer. Give it to a colleague, or move the folder, or open it on the machine in the teaching lab, and it fails on line one.
+R has a working directory: the folder it treats as "here" when you hand it a relative path. Scripts often set it explicitly, with a line such as `setwd("/Users/swapnil/Documents/GitHub/r-intro")`. That path is specific to one machine, so the script fails for a colleague, after the folder is moved, or on a teaching-lab computer.
 
-`here::here()` solves it. The `here` package looks upward from wherever R happens to be until it finds the top of your project, identified by an `.Rproj` file, a `.git` directory or a `_quarto.yml`, and builds paths from there.
+`here::here()` avoids the problem. The `here` package looks upward from wherever R happens to be until it finds the top of the project, identified by an `.Rproj` file, a `.git` directory or a `_quarto.yml`, and builds paths from there.
 
 ```{r}
 #| label: here-root
 here()
 ```
 
-That is this project's root on the machine that rendered this page; on yours it will be a different string, which is the entire point. Ask it for a file by naming the folders as separate arguments and it assembles a path that works on Windows, macOS and Linux without you thinking about which way the slashes lean.
+That is this project's root on the machine that rendered this page; on another machine `here()` returns that machine's project root, so paths built from it resolve to the same files. Naming the folders as separate arguments lets it assemble a path with the correct separator for Windows, macOS or Linux.
 
 ```{r}
 #| label: here-path
 here("data", "sg_covid_data.csv")
 ```
 
-Write `here("data", "sg_covid_data.csv")` in every script from now on. It costs a handful of extra characters and removes a whole category of Monday-morning email.
+Writing `here("data", "sg_covid_data.csv")` costs a few extra characters and leaves the script working on any machine where the project has been cloned, whatever directory R was started from.
 
 ## `read_csv()` {#sec-read-csv}
 
@@ -39,39 +39,39 @@ readr's `read_csv()` takes a path and returns a tibble.
 covid <- read_csv(here("data", "sg_covid_data.csv"))
 ```
 
-That block of text is a message rather than an error, and it repays reading line by line.
+That block of text is a message rather than an error, and each line of it is worth reading.
 
 `Rows: 345 Columns: 13`. Check this against what you expect before you do anything else. If you were told the file covers a year of daily data and R reports 345 rows, that is 2020 from 22 January onward, and it adds up. If R had said 344, you would want to know which day went missing and why.
 
 `Delimiter: ","`. readr worked out the separator by looking at the first few lines. Files exported from European locales often use a semicolon, because the comma is doing duty as a decimal point; `read_csv2()` handles those.
 
-`chr (1)`, `dbl (11)`, `date (1)`. These are the guessed column types, and this is the part people skip. Three of them matter here.
+`chr (1)`, `dbl (11)`, `date (1)`. These are the guessed column types. Three points matter here.
 
-**`date` came in as a real `Date`, not as text.** readr recognises the ISO 8601 form `YYYY-MM-DD` and parses it. That single fact is why you can subtract one date from another, sort chronologically, and hand dates straight to `ggplot()` without ceremony.
+**`date` came in as a real `Date`, not as text.** readr recognises the ISO 8601 form `YYYY-MM-DD` and parses it. Because of that, you can subtract one date from another, sort chronologically, and pass dates directly to `ggplot()`.
 
-**Every count is `dbl`, not integer.** readr's guesser does not distinguish whole numbers from decimals; anything numeric arrives as a double. Nothing goes wrong as a result, and it is worth knowing when you wonder why `confirmed` is `<dbl>` when it obviously counts people.
+**Every count is `dbl`, not integer.** readr's guesser does not distinguish whole numbers from decimals; anything numeric arrives as a double. Nothing goes wrong as a result, but it explains why `confirmed` is `<dbl>` when it counts people.
 
 **One column is `chr`.** That is `administrative_area_level_1`, the constant "Singapore" you met in @sec-tidy.
 
-The two lines at the bottom are hints rather than complaints. `spec()` prints the full specification, one line per column, and it is the thing to look at when the summary is truncated with a `...`:
+The two lines at the bottom are hints rather than warnings. `spec()` prints the full specification, one line per column, which is what to use when the summary is truncated with a `...`:
 
 ```{r}
 #| label: spec
 spec(covid)
 ```
 
-The empty `format = ""` on `date` means readr used its own ISO guesser rather than a format you supplied. The other hint offers you `show_col_types = FALSE` to silence the message. Take that offer only once you have read the message and pinned the types yourself. Silencing a check you have not performed is not the same as performing it.
+The empty `format = ""` on `date` means readr used its own ISO guesser rather than a format you supplied. The other hint offers `show_col_types = FALSE` to silence the message. That is reasonable once you have read the message and stated the types explicitly, as in @sec-col-types; before then the message is the only report you get on how the file was parsed.
 
 ### The dates readr cannot guess
 
-readr guesses dates only for the ISO form. Hand it anything else and you get character, without a warning, because a column of text is a perfectly valid column of text.
+readr guesses dates only for the ISO form. Any other layout is read as character, without a warning, because text is a valid column type and there is nothing for readr to object to.
 
 ```{r}
 #| label: date-guess
 read_csv(I("date,cases\n07/04/2020,106\n08/04/2020,142\n"))
 ```
 
-`<chr>`. And the trap is that `07/04/2020` is 7 April in Singapore and 4 July in Chicago, so nothing but your knowledge of the source can settle it. Tell readr the format explicitly with the same `%d`, `%m`, `%Y` codes that `strptime()` uses:
+The column comes in as `<chr>`. `07/04/2020` is 7 April under day-first conventions and 4 July under month-first ones, and only knowledge of the source can settle which was meant. State the format explicitly, using the same `%d`, `%m`, `%Y` codes that `strptime()` uses:
 
 ```{r}
 #| label: date-format
@@ -97,11 +97,11 @@ read_csv(
 )
 ```
 
-Get this wrong with a numeric sentinel such as `-99` and nothing will look broken. Your minimum will be `-99`, your mean will be dragged down, and every graph will still render. Check the minimum and maximum of every numeric column after import, every time.
+With a numeric sentinel such as `-99`, nothing will appear to be wrong: the minimum will be `-99`, the mean will be pulled downward, and every graph will still render. Checking the minimum and maximum of each numeric column after import will usually reveal a sentinel of this kind.
 
 ## What `read.csv()` would have given you {#sec-base-read-csv}
 
-Base R has its own reader, spelled with a dot instead of an underscore. Most older course notes use it, so you need to recognise it. The two names are close enough that you will type the wrong one at some point.
+Base R has its own reader, spelled with a dot instead of an underscore. Older course notes generally use it, so it is worth recognising, and the two names are similar enough to be typed interchangeably by mistake.
 
 ```{r}
 #| label: base-read
@@ -111,7 +111,7 @@ class(old$date)
 head(old$date, 3)
 ```
 
-No message at all, a plain `data.frame` rather than a tibble, and `date` is a character vector of strings that happen to look like dates. R will not stop you doing something silly with them:
+No message at all, a plain `data.frame` rather than a tibble, and `date` is a character vector of strings that look like dates. Arithmetic on that column fails:
 
 ```{r}
 #| label: date-arithmetic
@@ -119,17 +119,17 @@ No message at all, a plain `data.frame` rather than a tibble, and `date` is a ch
 old$date - old$date[1]
 ```
 
-`non-numeric argument to binary operator` is R saying you asked it to subtract text from text. This is why every base-R set of instructions you will ever read has a line like `df$date <- as.Date(df$date)` near the top, and why you do not need one. `read_csv()` already did it.
+`non-numeric argument to binary operator` reports that the subtraction was attempted on text. This is why base-R instructions usually include a line such as `df$date <- as.Date(df$date)` near the top; with `read_csv()` the conversion has already happened.
 
-There are two smaller differences. `read.csv()` returns `int` for whole-number columns where `read_csv()` returns `dbl`, and before R 4.0.0 it turned character columns into factors, which is the historical accident described in @sec-tibbles. It is also slower on large files, though at 345 rows you will never notice.
+There are two smaller differences. `read.csv()` returns `int` for whole-number columns where `read_csv()` returns `dbl`, and before R 4.0.0 it converted character columns into factors, the historical default described in @sec-tibbles. It is also slower on large files, though at 345 rows the difference is not perceptible.
 
-`read.csv()` is not broken and you may use it. The reason this book does not is that it tells you nothing on the way in.
+`read.csv()` works and you may use it. This book uses `read_csv()` because it reports the column types it assigned, and `read.csv()` reports nothing.
 
 ## Pinning the types {#sec-col-types}
 
-Guessing is right for exploring a new file and wrong for a script that runs every month. readr guesses from the first 1,000 rows by default, so a column that is numeric for a thousand rows and contains the word `pending` on row 1,500 will be guessed wrong. The following month's file changes, the guess changes with it, and your code produces different numbers without saying anything.
+Guessing is convenient when exploring a new file and less suitable for a script that runs every month. readr guesses from the first 1,000 rows by default, so a column that is numeric for a thousand rows and contains the word `pending` on row 1,500 will be guessed wrong. When the following month's file differs, the guess differs with it, and the code produces different numbers without reporting the change.
 
-The fix is to state the types. `cols()` lets you name the ones you care about and set a fallback for the rest:
+The remedy is to state the types. `cols()` lets you name the ones that matter and set a fallback for the rest:
 
 ```{r}
 #| label: col-types
@@ -144,9 +144,9 @@ covid_pinned <- read_csv(
 dim(covid_pinned)
 ```
 
-No specification message this time, because there was nothing to guess. The quickest way to write one of these is to read the file once, run `spec()`, and paste the output into your script as the `col_types` argument. From then on, the file has to match your expectations or you hear about it.
+No specification message this time, because there was nothing to guess. The quickest way to write one of these is to read the file once, run `spec()`, and paste the output into the script as the `col_types` argument. The import then either matches the stated specification or reports where it does not.
 
-Hearing about it looks like this. Insist that every column is numeric, including the two that are not:
+For example, state that every column is numeric, including the two that are not:
 
 ```{r}
 #| label: bad-types
@@ -163,7 +163,7 @@ A warning rather than an error, and the data still loads, with `NA` wherever a v
 head(problems(bad))
 ```
 
-Row 2, column 1, expected a double, found `Singapore`. That is a report you can act on. Two columns times 345 rows is 690 failures, and if a real import produces a handful rather than hundreds, those handful are usually the interesting rows: the ones where somebody typed a note into a numeric field.
+Row 2, column 1, expected a double, found `Singapore`. Two columns times 345 rows is 690 failures here. When a real import produces a handful of failures rather than hundreds, those few rows are usually the ones worth inspecting: typically a note typed into a numeric field.
 
 When you only need part of a wide file, `cols_only()` reads the named columns and skips the rest, which on a large file saves both time and memory:
 
@@ -179,13 +179,13 @@ read_csv(
 )
 ```
 
-The columns come back in the order they appear in the file, not the order you listed them, which catches people who then index by position.
+The columns come back in the order they appear in the file, not the order you listed them, which matters if any later code indexes columns by position.
 
 ### Other formats
 
-`read_tsv()` for tab-separated, `read_delim()` when you have to name the separator yourself, `readxl::read_excel()` for `.xlsx` files including a `sheet` argument, and the `haven` package for Stata, SPSS and SAS files, which is the one that matters most in public health. All of them return tibbles, and `haven` keeps the variable labels that survey datasets carry.
+`read_tsv()` for tab-separated files, `read_delim()` when the separator has to be named explicitly, `readxl::read_excel()` for `.xlsx` files, which takes a `sheet` argument, and the `haven` package for Stata, SPSS and SAS files, which are common in public health. All of them return tibbles, and `haven` retains the variable labels that survey datasets carry.
 
-## Always look at what you loaded {#sec-glimpse}
+## Looking at what you loaded {#sec-glimpse}
 
 `glimpse()` is the first thing to run after any import. It transposes the usual view: one line per column, running across the page, so a 13-column table fits on a screen.
 
@@ -194,9 +194,9 @@ The columns come back in the order they appear in the file, not the order you li
 glimpse(covid)
 ```
 
-Read it as three answers at once. The dimensions confirm the import. The type in angle brackets after each name confirms the parse. And the first handful of values confirms the content, which is where the interesting news usually is.
+It answers three questions at once. The dimensions confirm the import. The type in angle brackets after each name confirms the parse. The first few values show the content.
 
-Look down the first values here and seven of the thirteen columns open with `NA`. Two different things are going on, and they are missing for different lengths of time.
+In the values here, seven of the thirteen columns open with `NA`. Two separate things are going on, and the columns are missing for different lengths of time.
 
 ```{r}
 #| label: na-counts
@@ -204,11 +204,11 @@ sum(is.na(covid$deaths))
 sum(is.na(covid$parks_percent_change_from_baseline))
 ```
 
-`deaths` is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020, and it goes straight to 2 without ever passing through 1. Everything before that is stored as missing rather than as zero. Those are different claims. Zero says nobody died; `NA` says the source is not telling you. The distinction costs you two deaths the moment you difference the column to recover daily deaths: the first recorded value is 2 with `NA` behind it, so the subtraction that would have caught those two has nothing to subtract from, and the daily figures add up to 27 against a recorded total of 29.
+`deaths` is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020; the series goes straight to 2 without passing through 1. Everything before that is stored as missing rather than as zero. The two are different claims: zero would state that nobody died, while `NA` states that the source does not report a figure. The distinction costs two deaths as soon as the column is differenced to recover daily deaths, because the first recorded value of 2 has `NA` behind it and there is nothing to subtract from. The daily figures then sum to 27 against a recorded total of 29.
 
-The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file. Both are the source declining to state something it does not have, which is the honest thing for it to do and the awkward thing for you, and `glimpse()` put both of them in front of you within seconds of loading it.
+The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file; in both cases the source has no value to report. `glimpse()` makes both visible immediately after loading.
 
-Three more worth having in your fingers. `head()` and `tail()` show the first and last rows, and `tail()` is the one that catches the summary row somebody left at the bottom of a spreadsheet. `summary()` gives a five-number summary of every numeric column plus a count of `NA`s. `View()` opens the spreadsheet viewer in RStudio, which is the fastest way to eyeball a small file and useless on a large one; keep it at the console and never in a script, because it does nothing in a rendered document.
+Three further functions are worth knowing. `head()` and `tail()` show the first and last rows, and `tail()` is the one that catches a summary row left at the bottom of a spreadsheet. `summary()` gives a five-number summary of every numeric column plus a count of `NA`s. `View()` opens the spreadsheet viewer in RStudio, which is convenient for a small file and unhelpful on a large one; keep it at the console rather than in a script, because it does nothing in a rendered document.
 
 ```{r}
 #| label: view
@@ -218,7 +218,7 @@ View(covid)
 
 ## The helper this book uses {#sec-read-covid}
 
-Now `read_covid()` should hold no mystery. It calls `read_csv()` on this file via `here()`, with the column-types message switched off because you have just read it:
+`read_covid()` does nothing beyond what this chapter has covered. It calls `read_csv()` on this file via `here()`, with the column-types message switched off because the specification is set out above:
 
 ```{r}
 #| label: helper
@@ -228,11 +228,11 @@ read_covid <- function() {
 }
 ```
 
-Nothing is cleaned, nothing is repaired. Counts are still cumulative, `NA`s are still `NA`s. Every chapter that fixes something fixes it where you can watch.
+Nothing is cleaned and nothing is repaired. Counts are still cumulative and `NA`s are still `NA`s. Where a later chapter corrects something, it does so in code you can read.
 
-## One plot, out of order {#sec-first-plot}
+## A first plot {#sec-first-plot}
 
-You have not been taught `ggplot()` yet. Run this anyway.
+`ggplot()` is covered in a later chapter. The code below is included here so that the file can be seen as a whole before any of it is transformed.
 
 ```{r}
 #| label: reward-plot
@@ -264,7 +264,7 @@ ggplot(covid, aes(x = date, y = confirmed)) +
 
 Fifty-eight thousand confirmed cases by the end of December, and a curve that turns sharply upward in April and flattens through the second half of the year. The shaded band is Singapore's circuit breaker, 7 April to 1 June 2020.
 
-The curve is honest and almost useless for reading an epidemic, because a cumulative total can only go up. You cannot see when transmission accelerated or when it stopped. What you want instead is the daily difference, each day's total minus the day before's, kept in a column of its own. On 20 April that column holds 1,426 new cases; the cumulative line for the same day holds 8,014, which is a fact about January to April rather than about 20 April.
+The curve records the file accurately, but a cumulative total can only increase, so it shows neither when transmission accelerated nor when it stopped. The quantity that does is the daily difference, each day's total minus the previous day's, held in a column of its own. On 20 April that column holds 1,426 new cases; the cumulative line for the same day holds 8,014, which describes January to April rather than 20 April.
 
 ## Exercise
 

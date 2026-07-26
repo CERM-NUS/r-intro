@@ -12,9 +12,9 @@ source("_common.R")
 covid <- covid_daily()
 ```
 
-Most introductions to the tidyverse skip loops, or mention them once with an apology. This one does not, and the reason is on your timetable. Later in this course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and there is no dplyr verb that expresses that. If your only tool is `mutate()`, you will be stuck.
+Most introductions to the tidyverse skip loops, or mention them only in passing. This chapter covers them, because later in the course you will build compartmental models, and a compartmental model is a loop: the state of the epidemic tomorrow is computed from the state today, and no dplyr verb expresses that dependency.
 
-So we do it in the awkward order. Write the loop first, watch it work, then see the one-liner that replaces it, and understand what you gained and what you gave up.
+The order here is loop first, then the vectorised expression that replaces it, then an account of what each of the two gives you.
 
 ## The loop the worksheet asked for
 
@@ -37,11 +37,11 @@ for (i in seq_along(daily)) {
 head(daily, 8)
 ```
 
-Read it slowly, because every piece is doing something.
+Each part of that loop is doing something specific.
 
 `daily <- numeric(nrow(covid))` creates the answer *before* filling it: a vector of 345 zeros, ready to be overwritten. `for (i in seq_along(daily))` runs the body once for each position, with `i` taking the values 1, 2, 3 and so on. The `if (i == 1)` branch exists because there is no day before the first one, so `covid$confirmed[0]` would give you nothing at all rather than a zero. And on day one the answer is `confirmed[1]`, which in this dataset is 0, because Singapore's first record on 22 January had a cumulative count of zero. That day really did have no new cases. It is not missing.
 
-The result: 0, 1, 2, 0, 1, 1, 2, 0. Small numbers in a country that had not yet noticed what was coming.
+The first eight daily counts are 0, 1, 2, 0, 1, 1, 2, 0, covering 22 to 29 January.
 
 ## The one-liner
 
@@ -58,7 +58,7 @@ head(vectorised, 8)
 
 `lag()` shifts a vector down by one position, so `lag(confirmed)` on day `i` is `confirmed` on day `i - 1`. The whole subtraction happens at once, across all 345 rows, with no index variable anywhere. `default = 0` is what replaces the `if (i == 1)` branch: it says what to use where there is no previous value, and 0 is right here for the reason given above. Leave the default out and day one becomes `NA`, which propagates into every count and every plot downstream.
 
-Same numbers? Do not take my word for it:
+The two results can be compared directly:
 
 ```{r}
 #| label: prove-identical
@@ -74,13 +74,13 @@ And both agree with the column `covid_daily()` built for you:
 identical(daily, covid$daily_cases)
 ```
 
-## Being fair to the loop
+## What the loop costs and what it gives
 
-The loop is eight lines and the `mutate()` is one. The loop has three places to get an index wrong: `seq_along(daily)`, `covid$confirmed[i]` and `covid$confirmed[i - 1]`. Get the last one wrong by writing `i + 1` and R will happily run it, hand you `NA` in the final position, and say nothing. The vectorised version has no indices at all, so it cannot have index bugs.
+The loop is eight lines and the `mutate()` is one. The loop has three places to get an index wrong: `seq_along(daily)`, `covid$confirmed[i]` and `covid$confirmed[i - 1]`. Get the last one wrong by writing `i + 1` and R will run it, return `NA` in the final position, and give no warning. The vectorised version has no indices at all, so it cannot have index bugs.
 
-That is a real advantage and it is why the tidyverse exists. But the loop buys you two things the one-liner cannot.
+That is a substantial advantage, and it is a large part of why the tidyverse verbs exist. The loop offers two things in return.
 
-The first is that you can see every step. `lag()` is a black box until you have written the shift yourself; once you have, it stops being magic.
+The first is that every step is visible. `lag()` performs the shift internally; writing the shift out yourself is what shows you what the function is doing.
 
 The second is that you can stop it and look around. Put `browser()` inside the body and R drops you into an interactive prompt at that iteration, with `i` and every other local variable available to inspect:
 
@@ -99,7 +99,7 @@ The rule most people settle on: reach for the vectorised version by default, and
 
 ## Pre-allocate
 
-`daily <- numeric(nrow(covid))` was not decoration. Compare it with the way people write loops when nobody has told them otherwise:
+`daily <- numeric(nrow(covid))` allocates the answer vector before the loop starts. Compare that with the alternative, which is to grow the vector one element at a time:
 
 ```{r}
 #| label: grow-vs-prealloc
@@ -125,24 +125,22 @@ tibble(
   mutate(grow_vs_previous_row = round(grow_secs / lag(grow_secs), 1))
 ```
 
-The last column is `lag()` again, earning its keep outside a mutate on the COVID data. Each doubling of `n` multiplies the growing version's time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: `x <- c(x, i)` does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of `x` into it, adds the new value, and throws the old one away. Do that `n` times and you have copied roughly `n²/2` values.
+The last column uses `lag()` again, this time outside a `mutate()` on the COVID data. Each doubling of `n` multiplies the growing version's time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: `x <- c(x, i)` does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of `x` into it, adds the new value, and throws the old one away. Do that `n` times and you have copied roughly `n²/2` values.
 
 `prealloc_secs` barely moves, because `x[i] <- value` writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.
 
-Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations it is the difference between a coffee break and lunch, and it is the single most common performance bug in student R code.
+Your exact seconds will differ from mine. On a 345-day dataset none of this matters. On a stochastic simulation with 100,000 iterations the gap is large enough to be worth avoiding, and growing a vector inside a loop is a common cause of slow R code.
 
 ## `seq_along()`, `seq_len()`, and the 1:0 trap
 
-You will see `1:length(x)` and `1:nrow(df)` everywhere, including in code written by people who know better. They are wrong in exactly one case, and it is a case that happens.
-
-`:` counts downwards if it has to.
+You will see `1:length(x)` and `1:nrow(df)` in a great deal of R code, including code written by experienced users. They fail in one case, which does occur in practice: `:` counts downwards when the second value is smaller than the first.
 
 ```{r}
 #| label: one-to-zero
 1:0
 ```
 
-Not empty. A vector of length two, counting down. So a loop written as `1:nrow(df)` over a data frame with no rows runs **twice**, with `i` equal to 1 and then 0.
+The result is a vector of length two counting down, not an empty vector. So a loop written as `1:nrow(df)` over a data frame with no rows runs **twice**, with `i` equal to 1 and then 0.
 
 Here is a filter that finds nothing, because Singapore never recorded more than 1,426 cases in a day:
 
@@ -166,7 +164,7 @@ for (i in 1:nrow(quiet)) {
 }
 ```
 
-Two lines, and neither is true. The first is `i = 1`, and asking a zero-row tibble for its first row gives `NA`. The second is `i = 0`, and index zero in R returns a zero-length vector, which `cat()` prints as nothing at all. No error. If that loop had been accumulating a total instead of printing, you would now have `NA` where the right answer was "there were no such days".
+Two lines are printed, and neither is correct. The first is `i = 1`, and asking a zero-row tibble for its first row gives `NA`. The second is `i = 0`, and index zero in R returns a zero-length vector, which `cat()` prints as nothing at all. No error. If that loop had been accumulating a total instead of printing, you would now have `NA` where the right answer was "there were no such days".
 
 `seq_len()` and `seq_along()` never count backwards. They return an empty sequence when there is nothing to iterate over, and a loop over an empty sequence does not run:
 
@@ -204,7 +202,7 @@ i
 nrow(covid) - i
 ```
 
-Half the year's cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry is the dormitory outbreak, and it is worth sitting with for a moment.
+Half the year's cases had accumulated by 20 May, on day 120 of 345, with 225 days of the year still to run. That asymmetry comes from the dormitory outbreak, which concentrated most of the year's cases into April to August.
 
 Two things about `while`. Something inside the body must change the condition, or it runs forever; here it is `i <- i + 1`, and forgetting that line is the classic way to hang your R session. (Escape, or the stop button in RStudio, gets you out.) And the condition must eventually become false. If no day had crossed the target, `i` would keep climbing past 345 and `covid$confirmed[346]` would be `NA`, at which point R stops with a real error rather than looping forever:
 
@@ -213,7 +211,7 @@ Error in while (covid$confirmed[i] < target) { :
   missing value where TRUE/FALSE needed
 ```
 
-That message is worth memorising. It nearly always means a comparison produced `NA`, and `NA` is neither true nor false, so `while` and `if` refuse to guess.
+That message nearly always means a comparison produced `NA`, and `NA` is neither true nor false, so `while` and `if` refuse to guess.
 
 ## `map()` and friends
 
@@ -249,7 +247,7 @@ all_months <- unique(covid$month)
 all_months
 ```
 
-Now the payoff for having made it return a one-row tibble:
+Because `month_summary()` returns a one-row tibble, twelve calls can be stacked into a table:
 
 ```{r}
 #| label: map-list-rbind
@@ -294,9 +292,7 @@ walk(all_months, function(m) {
 
 ## The loop you cannot vectorise
 
-Here is the case that justifies the whole chapter.
-
-Contact tracing has a capacity. Whatever the team's size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today's new cases, minus what the team got through. And it stops at zero, because a team that clears its desk by lunchtime cannot bank the spare afternoon against next month.
+Contact tracing has a capacity. Whatever the team's size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today's new cases, minus what the team got through. The queue also stops at zero: unused capacity on a quiet day is not carried forward to the next one.
 
 $$
 Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
@@ -338,11 +334,11 @@ max(naive)
 max(backlog)
 ```
 
-Zero. The cumulative sum says the tracing team never fell behind on a single day of 2020, while the loop has them 19,172 cases deep in the middle of June.
+The cumulative version peaks at zero: it has the tracing team never falling behind on any day of 2020, while the loop has them 19,172 cases behind in the middle of June.
 
 The damage is done in the first eighty-two days. Singapore did not record more than 300 cases in a day until 13 April, and every day before that hands `cumsum()` a negative number to bank. By 12 April the running total sits at -22,068, and the dormitory outbreak has to work all of that off before the sum turns positive. Across the whole year it never manages it: 58,599 cases against 345 days of 300 is 103,500. So `pmax()` on the outside flattens everything to zero.
 
-Wrapping the clamp around the outside is the mistake. `max(0, ...)` has to happen at every step, because $Q_t$ depends on the *clamped* $Q_{t-1}$, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; `cumsum()` by construction never forgets a term it has already added. Take the clamp out and `cumsum()` is exactly right, which is the thing to notice. One specific piece of the model forces the loop, and being able to point at which piece is how you tell a calculation that needs a loop from one you have not thought about hard enough.
+Wrapping the clamp around the outside is the mistake. `max(0, ...)` has to happen at every step, because $Q_t$ depends on the *clamped* $Q_{t-1}$, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; `cumsum()` by construction retains every term it has already added. Without the clamp, `cumsum()` gives the right answer. The clamp is the one feature of the model that forces the loop, and identifying which part of a calculation does that is how you tell a genuinely sequential problem from one that only looks sequential.
 
 purrr does have a function that holds running state for you. `accumulate()` gives the identical vector:
 
@@ -357,7 +353,7 @@ acc <- accumulate(
 identical(backlog, acc)
 ```
 
-That is a real convenience, and you should be clear about what it buys. `accumulate()` moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.
+`accumulate()` is a convenience, and it is worth being clear about what it changes. It moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.
 
 ```{r}
 #| label: queue-plot
@@ -377,7 +373,7 @@ queue %>%
 
 The queue builds through the dormitory outbreak, peaks at 19,172 on 14 June and does not empty until 14 October, having been non-zero on 184 of 345 days. The date of that peak is the interesting part. Cases peaked on 20 April, and the workload peaked 55 days later, because a queue keeps growing for as long as arrivals exceed capacity rather than for as long as arrivals are rising. You cannot read that off the case curve. It only appears once you carry the state forward day by day.
 
-The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today's state to tomorrow's, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is the argument for spending an evening on `for` in a course that otherwise spends its time on `mutate()`.
+The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today's state to tomorrow's, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is why a course otherwise built on `mutate()` spends an evening on `for`.
 
 ## Exercises
 
@@ -408,7 +404,7 @@ Then answer from your own output. Doubling the team from 300 a day to 600 a day 
 ::: {.callout-note collapse="true"}
 ## Stuck? Open for a hint (not the answer)
 
-This is `month_summary()` and `map()` again: a function of one argument that returns a one-row tibble, then `map()` and `list_rbind()` to stack five of them. `which.max()` gives you the position of the peak, and for "did it clear" you want whether any value *after* that position is zero. Keep `max(0, ...)` inside the loop, which is the whole point of the section above. If the last question will not come, compare `sum(covid$daily_cases > 300)` against `sum(covid$daily_cases > 600)`.
+This is `month_summary()` and `map()` again: a function of one argument that returns a one-row tibble, then `map()` and `list_rbind()` to stack five of them. `which.max()` gives you the position of the peak, and for "did it clear" you want whether any value *after* that position is zero. Keep `max(0, ...)` inside the loop, for the reason given in the section above. If the last question will not come, compare `sum(covid$daily_cases > 300)` against `sum(covid$daily_cases > 600)`.
 :::
 
 [Worked solution](solutions.qmd#sec-sol-tracing-backlog)

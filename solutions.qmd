@@ -13,9 +13,9 @@ covid     <- covid_daily()
 covid_raw <- read_covid()
 ```
 
-Every exercise in the book has an answer here, and every answer on this page was executed to produce the output you see. If a number in a solution disagrees with a number you got, one of us has a bug, and finding out which is more useful than either of us being right.
+Every exercise in the book has an answer here, and every answer on this page was executed to produce the output you see. If a number in a solution disagrees with a number you got, one of us has a bug, and the discrepancy is worth tracking down.
 
-Read the exercise first and have a go. A solution you have already attempted teaches you something; a solution you read cold teaches you that R exists.
+Attempt the exercise before reading the solution. These pages work better as a check on an attempt than as a first exposure to the material.
 
 Two objects are set up once at the top of this page and used throughout. `covid` is `covid_daily()`, the file with `daily_cases`, `daily_deaths`, `severity` and `month` already built. `covid_raw` is `read_covid()`, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is fine rather than a sign you have gone wrong.
 
@@ -66,7 +66,7 @@ The arithmetic now fails:
 labelled * 2
 ```
 
-`non-numeric argument to binary operator` is the error you will meet most often in your first month of R, and nine times out of ten the cause is exactly this: a stray label, a footnote marker, or a `"N/A"` typed by hand into a spreadsheet column, coercing an entire column of numbers to text on import.
+`non-numeric argument to binary operator` is one of the errors you will meet most often in your first month of R, and the usual cause is exactly this: a stray label, a footnote marker, or a `"N/A"` typed by hand into a spreadsheet column, coercing an entire column of numbers to text on import.
 
 Part four:
 
@@ -261,7 +261,7 @@ cb
 
 Two `filter()` conditions separated by a comma are combined with AND, which is what you want for a date range. Writing `filter(date >= start & date <= end)` is identical; the comma is the house style because it reads as a list of requirements.
 
-`arrange(workplaces)` sorts ascending, and mobility drops are negative, so ascending puts the deepest drops first. If you wanted the same thing for a series where bigger means worse, you would need `arrange(desc(...))`. Getting this backwards is worth checking every time, because a sorted table always looks convincing.
+`arrange(workplaces)` sorts ascending, and mobility drops are negative, so ascending puts the deepest drops first. If you wanted the same thing for a series where bigger means worse, you would need `arrange(desc(...))`. Check the direction every time, because a sorted table looks equally convincing either way round.
 
 How many rows:
 
@@ -302,7 +302,7 @@ The first check, for negative values:
 any(deaths_daily$daily_deaths < 0)
 ```
 
-`NA`, not `FALSE`. This is the part of the exercise worth slowing down for. `NA < 0` is `NA`, because R has no idea whether the missing value was negative. `any()` then has a vector containing `NA`s and `FALSE`s and no `TRUE` at all, and the honest answer to "is at least one of these true?" when some of them are unknown is "I cannot tell". So it returns `NA`.
+`NA`, not `FALSE`. `NA < 0` is `NA`, because R has no idea whether the missing value was negative. `any()` then has a vector containing `NA`s and `FALSE`s and no `TRUE` at all, and the honest answer to "is at least one of these true?" when some of them are unknown is "I cannot tell". So it returns `NA`.
 
 Tell it to ignore the unknowns and you get the answer you wanted:
 
@@ -336,7 +336,7 @@ deaths_daily %>%
   select(date, deaths, daily_deaths)
 ```
 
-Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of `na.rm = TRUE` puts it back. The repair is a decision about what those leading `NA`s mean rather than a piece of code. Read them as "no deaths had occurred yet" and 21 March's increment is 2, the daily figures add to 29, and the check passes. Read them as "not reported" and the honest total is 27 with a footnote. Both are defensible; only one of them can be in your report.
+Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of `na.rm = TRUE` puts it back. The repair is a decision about what those leading `NA`s mean rather than a piece of code. Read them as "no deaths had occurred yet" and 21 March's increment is 2, the daily figures add to 29, and the check passes. Read them as "not reported" and the honest total is 27 with a footnote. Both are defensible, and the report has to state which reading it uses.
 
 The largest single-day rise:
 
@@ -347,7 +347,7 @@ deaths_daily %>%
   select(date, deaths, daily_deaths)
 ```
 
-Two days tie at two deaths, so `slice_max(n = 1)` returns both. `with_ties = FALSE` would give you one arbitrarily, which is fine when you want a single row and wrong when the tie is the finding. In a year with 29 deaths, the fact that no day recorded more than two is worth a sentence on its own.
+Two days tie at two deaths, so `slice_max(n = 1)` returns both. `with_ties = FALSE` would give you one arbitrarily, which is fine when you want a single row and wrong when the existence of the tie is part of what you are reporting. In a year with 29 deaths, the fact that no day recorded more than two is worth a sentence on its own.
 
 ## Interrogate the mobility gap {#sec-sol-mobility-na}
 
@@ -486,7 +486,7 @@ sapply(90:105, function(t) identical(relabel(t), as_written))
 
 What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they *can* argue is what happens at 50, or at 500, where the gap is wide enough to carry real days across a boundary.
 
-## Move the cutoffs and watch the headline move {#sec-sol-move-cutoffs}
+## Move the cutoffs {#sec-sol-move-cutoffs}
 
 > Also from the chapter on making decisions: rebuild `severity` with cutoffs at 50 and 500, compare the counts with 215 / 53 / 77, and write a defensible sentence under each rule.
 
@@ -526,7 +526,7 @@ Two sentences, both true of the same 345 days:
 
 Neither is false. The first invites the reader to conclude that a fifth of Singapore's 2020 was a bad day. The second invites them to conclude that high-burden days were rare. A reader who sees only one of the two takes away a different impression of the same year.
 
-A threshold is an argument, and the place for an argument is your methods section, next to a reason. "300 was chosen because it is roughly the daily capacity of the contact-tracing system" is a cutoff you can defend. "300 was on the worksheet" is not, and until somebody asks you, nobody will know which one you had.
+A threshold is a choice, and it belongs in your methods section next to the reason for it. "300 was chosen because it is roughly the daily capacity of the contact-tracing system" is a cutoff you can defend. "300 was on the worksheet" is not, and a reader cannot tell the two apart unless you say which one applies.
 
 ## High-severity days by month {#sec-sol-monthly-high}
 
@@ -568,7 +568,7 @@ May wins both. Every one of its 31 days was above 300 cases, and it carried 18,7
 
 They can come apart, and August is the near-miss that shows how. August has 4 High days and 4,607 cases, more than September through December combined, while March has 0 High days and 824. A count of days above a threshold is insensitive to how far above the threshold those days sat, so a month of steady 320s and a month carrying one 908 can produce very different High counts for similar totals. Report both, or report the one whose question you are answering.
 
-## A monthly alert table you can defend {#sec-sol-monthly-alert}
+## A monthly alert table {#sec-sol-monthly-alert}
 
 > Also from the chapter on grouping and summarising: three statuses instead of two, then the same table under a rate-based rule, and which of the two you would defend.
 
@@ -612,7 +612,7 @@ One month changes: August, "Watch" under the day-count rule and "Alert" under th
 
 Which rule I would rather defend: the day-count rule, and not because it is kinder to August. A count of days above a threshold cannot be moved by one extreme value, and 5 August is an extreme value with a known cause. MOH attributed the day's numbers to clearance testing in the dormitories picking up past infections, 903 of the 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. A rule that escalates a whole month on the strength of one day of retrospective testing is a rule that will escalate again the next time a backlog clears.
 
-The honest version of the answer is that I would report both columns and let the meeting see the disagreement, because the disagreement is the finding. A single status column hides the fact that August was one thing by one measure and another thing by another.
+The honest version of the answer is that I would report both columns and let the meeting see the disagreement. A single status column hides the fact that August is classified one way by one measure and the other way by another.
 
 ## Cross-check a month that is not September {#sec-sol-september}
 
@@ -669,7 +669,7 @@ month_mean_telescoped(covid, "2020-01-01")
 
 `numeric(0)`. Not an error, not `NA`, an empty vector. There is no December 2019 in this file, so `prev` has zero rows, `pull(confirmed)` returns a length-zero vector, and arithmetic between a length-1 vector and a length-0 vector gives length 0. R does exactly what it was asked and the answer has nothing in it.
 
-That is worse than an error, because `numeric(0)` will travel. Put it in a `mutate()` and you get a length mismatch three steps later. Print it in a report and you get a blank cell nobody notices.
+That is harder to catch than an error, because `numeric(0)` propagates. Put it in a `mutate()` and you get a length mismatch three steps later. Print it in a report and you get a blank cell.
 
 The fix uses a fact about this specific file:
 
@@ -820,9 +820,9 @@ ggplot(covid, aes(x = daily_cases)) +
   )
 ```
 
-Read the warning, because it writes your caption for you. `Removed 55 rows containing non-finite outside the scale range` is the exact count: `xlim()` does not crop the picture, it drops the rows before the bins are computed, so those 55 days are not in this figure at all. They are the 55 days above 400 cases, which between them carry 36,379 of the year's 58,599 cases. A figure that omits 62% of the epidemic needs to say so, and the caption above does. The second warning, about 2 rows removed by `geom_bar()`, is the two bins that straddle the edge of the new limits.
+The warning gives you the number for the caption. `Removed 55 rows containing non-finite outside the scale range` is the exact count: `xlim()` does not crop the picture, it drops the rows before the bins are computed, so those 55 days are not in this figure at all. They are the 55 days above 400 cases, which between them carry 36,379 of the year's 58,599 cases. A figure that omits 62% of the epidemic needs to say so, and the caption above does. The second warning, about 2 rows removed by `geom_bar()`, is the two bins that straddle the edge of the new limits.
 
-`coord_cartesian(xlim = c(0, 400))` is the alternative and behaves differently: it zooms the finished plot instead of filtering the data, so the bins are computed over all 345 days, nothing is removed, and you cannot see past 400. No warning appears, which is convenient and is also why I prefer `xlim()` here. The warning is a receipt.
+`coord_cartesian(xlim = c(0, 400))` is the alternative and behaves differently: it zooms the finished plot instead of filtering the data, so the bins are computed over all 345 days, nothing is removed, and you cannot see past 400. No warning appears, which is convenient and is also why I prefer `xlim()` here: the warning is a record of what was dropped.
 
 Now the faceted version. The factor is what puts the panels in calendar order:
 
@@ -844,7 +844,7 @@ covid %>%
 
 `month.name` is a base R constant holding the twelve month names in order. Without the `factor()` call the panels come out April, August, December, February, and the plot looks broken for a reason that has nothing to do with plotting.
 
-Which one goes in the report: the faceted one, if the question is about how the year changed. The single histogram answers "what did a typical day in 2020 look like", and the answer, that most days were under 100 cases, is true and close to useless, because 2020 in Singapore was not one epidemic curve at one intensity. The facets show January to March sitting flat against the axis, April to July spread right across it, August straddling both with its one 908-case day out on its own, and September to December back where the year started. That contrast is the finding, and a single histogram flattens it into a shape that describes no month in particular.
+Which one goes in the report: the faceted one, if the question is about how the year changed. The single histogram answers "what did a typical day in 2020 look like", and the answer, that most days were under 100 cases, is true and close to useless, because 2020 in Singapore was not one epidemic curve at one intensity. The facets show January to March sitting flat against the axis, April to July spread right across it, August straddling both with its one 908-case day out on its own, and September to December back where the year started. A single histogram flattens that contrast into a shape that describes no month in particular.
 
 ## Put policy next to cases {#sec-sol-stringency}
 
@@ -889,7 +889,7 @@ covid %>%
   select(date, stringency_index, daily_cases)
 ```
 
-The maximum of 82.41 is reached on three separate days and the first is 10 April 2020. `slice_max()` would give you the same three rows, which is why the exercise warns you about it: with `n = 1` and default `with_ties = TRUE` you get all three, and `arrange(date)` then puts the earliest first. Taking `slice_max(..., n = 1, with_ties = FALSE)` and calling the result "the date" would be a guess dressed as an answer.
+The maximum of 82.41 is reached on three separate days and the first is 10 April 2020. `slice_max()` would give you the same three rows, which is why the exercise warns you about it: with `n = 1` and default `with_ties = TRUE` you get all three, and `arrange(date)` then puts the earliest first. Taking `slice_max(..., n = 1, with_ties = FALSE)` and calling the result "the date" would report one of three tied dates as though it were the only one.
 
 Cases had not peaked on 10 April. The peak was 1,426 on 20 April, ten days later, and on 10 April the count was 198:
 
@@ -1000,7 +1000,7 @@ month_summary(covid, "2020-09-01")
 month_summary(covid, "2020-04-01")
 ```
 
-September: 30 days, 953 cases, a mean of 31.8, a peak of 86, zero High days, "All clear". April: 15,243 cases, a peak of 1,426 on the 20th, 18 High days, "Escalate". Both verdicts match what the case counts say, which is the check the exercise asked for and is not a formality. Run this on twelve months and one of them will surprise you, and that is when you find out whether the rule or the data is wrong.
+September: 30 days, 953 cases, a mean of 31.8, a peak of 86, zero High days, "All clear". April: 15,243 cases, a peak of 1,426 on the 20th, 18 High days, "Escalate". Both verdicts match what the case counts say, which is the check the exercise asked for. Running the function across all twelve months, below, is what shows whether the rule behaves sensibly over the whole year.
 
 Is five defensible? Not on the evidence in this file. Look at the whole year:
 
@@ -1010,11 +1010,11 @@ list_rbind(map(unique(covid$month), function(m) month_summary(covid, m))) %>%
   select(month, days, total, mean_daily, high_days, verdict)
 ```
 
-Across the twelve months, `high_days` only ever takes the values 0, 4, 12, 18 and 31. Nothing sits between 4 and 12. Five splits the year into four escalating months and eight clear ones, and so does any cut-off from 4 up to 11. Drop to 3 and August joins the escalating group; go up to 12 and June and July leave it. The rule is stable against small changes, which is reassuring, and the data gives you no reason to prefer five over any other number in that range, which is not.
+Across the twelve months, `high_days` only ever takes the values 0, 4, 12, 18 and 31. Nothing sits between 4 and 12. Five splits the year into four escalating months and eight clear ones, and so does any cut-off from 4 up to 11. Drop to 3 and August joins the escalating group; go up to 12 and June and July leave it. So the rule is stable against small changes in the cut-off, and the data gives no reason to prefer five over any other number between 4 and 11.
 
 August is where it bites. Four High days, so "All clear", on a month that recorded 4,607 cases, more than September through December put together. The rule counts days over 300 and August's burden was distributed differently.
 
-That is why `high_cut` is an argument rather than a hard-coded 5. Not because the caller will change it often, but because a number that appears in a function signature with a default is a number somebody chose, and a number buried in the body is a number nobody can find. Set it once, at the top, where a reviewer can argue with it:
+That is why `high_cut` is an argument rather than a hard-coded 5. Not because the caller will change it often, but because a default in the signature is visible to anyone reading the function, whereas the same number written into the body has to be hunted for. Set it once, at the top, where a reviewer can see it and disagree with it:
 
 ```{r}
 #| label: sol-month-summary-3
@@ -1106,7 +1106,7 @@ backlog_run <- function(cases, capacity) {
 }
 ```
 
-Nothing clever, and that is the point. Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode @sec-functions is about. `max(0, ...)` stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.
+Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode @sec-functions is about. `max(0, ...)` stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.
 
 Then the summary function returns one row, so five of them stack:
 
@@ -1135,7 +1135,7 @@ teams
 
 `cleared` has to look only at the days after the peak. Every one of these runs starts at zero and stays there through the quiet first months, so asking "was the queue ever empty" would answer `TRUE` for all five and tell you nothing.
 
-The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year's mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an average is how you end up permanently underwater, because the average is a summary of a series whose median is 40 and whose maximum is 1,426.
+The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year's mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an annual mean leaves the team permanently behind, because that mean summarises a series whose median is 40 and whose maximum is 1,426.
 
 The two runs the question asks about, drawn together:
 
@@ -1243,7 +1243,7 @@ august %>%
   )
 ```
 
-Without 5 August the mean falls from 148.6 to 123.3 and the median barely moves, from 91 to 89. The median was already telling you what a typical August day looked like. That is the argument for putting a median in every monthly table.
+Without 5 August the mean falls from 148.6 to 123.3 and the median barely moves, from 91 to 89. The median was already describing a typical August day, which is the reason to report one alongside the mean in a monthly table.
 
 Deaths are 0 for August. The cumulative column reads 27 on 31 July and 27 on 31 August, so this is a real zero and not a gap, and August is late enough in the year that the leading `NA` problem in `deaths` does not touch it.
 
@@ -1323,7 +1323,7 @@ ggplot(august_mobility, aes(x = date, y = change, colour = series)) +
 
 Retail sits between 15% and 27% below baseline all month with no trend in it. Workplaces oscillate with the week, and the one deep trough, 73% below baseline on 10 August, is National Day observed rather than anything epidemiological. Stringency moves almost as little: 50.93 on 28 of the 31 days, with three scattered days at 56.48 that are exactly the one-day ticks @sec-visualise warns against reading as announcements.
 
-The weekly median more than halved while neither of those series went anywhere. That constrains the explanations available and it does not identify a cause, which is a sentence worth writing down rather than talking yourself out of.
+The weekly median more than halved while neither of those series moved. That constrains the explanations available without identifying a cause, and the report should say as much.
 
 ### The three sentences
 

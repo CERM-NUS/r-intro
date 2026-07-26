@@ -6,7 +6,7 @@
 source("_common.R")
 ```
 
-Books used to end with a note about the paper, the press and the typeface. The software equivalent is more useful than the paper one ever was, because a version number is the first thing anybody needs when your code produces a different answer from mine.
+Books used to end with a note about the paper, the press and the typeface. The software equivalent is a record of versions, which is the first thing anybody needs when your code produces a different answer from mine.
 
 ## What produced this page
 
@@ -36,9 +36,9 @@ The first five are the series colours. `ink`, `muted` and `rule` are for text an
 
 The palette was tested rather than eyeballed. `scripts/check_palette.R` simulates protanopia, deuteranopia and tritanopia (Machado et al. 2009, full severity) and scores every pair by CIEDE2000, where the worst case is dE00 18.9, between blue and teal under deuteranopia. It checks that adjacent colours sit at least 8 L\* apart, so the series survive a photocopy. And it checks thin-line contrast against white under WCAG 1.4.11: the first four clear the 3:1 threshold at 10.7, 8.1, 4.8 and 3.1, while the fifth manages 1.7 and is restricted to filled areas, never lines or points.
 
-Five is the ceiling. `nus_pal()` raises an error rather than recycle a sixth colour, because a plot with two indistinguishable series is worse than a plot that refused to be drawn.
+Five is the ceiling. `nus_pal()` raises an error rather than recycle a sixth colour, since two series drawn in the same colour cannot be told apart in the finished figure.
 
-Figures are SVG rather than PNG.
+Figures are SVG rather than PNG, so plot text stays sharp at any zoom.
 
 ## Licence
 
@@ -77,9 +77,9 @@ Please do. An error in a textbook propagates into every assignment written from 
 
 The fastest route is the "Report an issue" link in the right-hand margin of the page you are on. It opens a GitHub issue with the page already identified. If you can see the fix, "Edit this page" opens the source file directly and turns your correction into a pull request.
 
-A report that lets me reproduce the problem contains four things: which page and section, the code you ran, the complete error or warning text pasted rather than described, and the output of `sessioninfo::session_info()`. The third one is the one people trim, and it is the one that matters. "It said something about an object not found" and "Error: object 'daily_cases' not found" are different amounts of information.
+A report that lets me reproduce the problem contains four things: which page and section, the code you ran, the complete error or warning text pasted rather than described, and the output of `sessioninfo::session_info()`. The third is the one most often trimmed, and it carries most of the information: "It said something about an object not found" and "Error: object 'daily_cases' not found" are different amounts of information.
 
-Reports that a paragraph is confusing are as welcome as reports that a number is wrong, and considerably harder to write. If you read something three times and still had to guess, that is a defect, and it is mine rather than yours.
+Reports that a paragraph is confusing are as welcome as reports that a number is wrong, and considerably harder to write. If you read something three times and still had to guess, that is a defect in the writing.
 
 ## Acknowledgements
 

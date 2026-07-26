@@ -12,22 +12,22 @@ source("_common.R")
 covid <- covid_daily()
 ```
 
-Up to now every chapter has handed you a question with the shape of the answer already showing.
-Filter this, group by that, plot the result. Real analysis doesn't arrive in that shape. It
-arrives as a request from someone who wants to know what happened, by Friday, in a form they can
-put in front of a committee.
+Up to now every chapter has handed you a question with the shape of the answer already showing:
+filter this, group by that, plot the result. Requests in practice are less specified. They arrive
+from someone who wants to know what happened, by a deadline, in a form they can put in front of a
+committee.
 
-So here is the request. You pick a month of Singapore's 2020 and write the report. I'll do April
-first so you can see where the bar is, then August is yours.
+The request in this chapter is of that kind: pick a month of Singapore's 2020 and write the
+report. April is worked through first, to set out what the finished report looks like, and August
+is left to you.
 
 ## The brief
 
-One month. One page. On that page:
-
-a table that gives the reader the month in numbers, two figures that show something the table
-can't, and three sentences of interpretation. Three sentences, not three paragraphs. The
-sentence limit is the hard part and it's deliberate. Anyone can produce eight paragraphs of
-hedged description. Deciding which three things matter is the work.
+The report covers one month and occupies one page. That page carries a table that gives the
+reader the month in numbers, two figures that show something the table cannot, and three
+sentences of interpretation. Three sentences, not three paragraphs: the limit is deliberate,
+because choosing which three findings matter takes more work than writing several paragraphs of
+hedged description.
 
 Assume the reader is a public health officer who knows Singapore and does not know R. They will
 not read your code. They will look at the figures first, the table second, and your sentences
@@ -38,19 +38,19 @@ only if the figures made them curious.
 There are six things I look for, and they are all things you already know how to do.
 
 1. **The month is stated, and so is the denominator.** How many days does the month have, and
-   how many of them carry data? Every month in this file is complete, but saying so is what
-   separates a report from an assumption.
+   how many of them carry data? Every month in this file is complete, but state that rather than
+   leaving the reader to assume it.
 2. **A count and a shape.** A total tells you the size of the month. A median, a maximum and
-   the date of the maximum tell you whether that total came from a steady grind or one bad day.
-   Report both.
-3. **A table with a unit the reader can hold.** Days are too fine for a monthly table and the
-   month itself is too coarse. Weeks work.
+   the date of the maximum tell you whether that total accumulated steadily or came from a small
+   number of large days. Report both.
+3. **A table at a unit the reader can take in.** Days are too fine for a monthly table and the
+   month itself is too coarse. Weeks are the workable grain.
 4. **Two figures that answer different questions.** Two views of the case curve is one figure
    drawn twice. Pair the epidemic curve with something else in the file: mobility, the
    stringency index, the severity mix.
 5. **Every figure has a title that states a finding.** "Daily cases, April 2020" is a label.
-   "Cases rose for 13 days after the circuit breaker began" is a finding. Titles that make a
-   claim force you to check the claim.
+   "Cases rose for 13 days after the circuit breaker began" is a finding. A title that makes a
+   claim has to be checked against the data before it can stand.
 6. **At least one caveat that comes from looking at the data, not from a template.** "Data may
    be incomplete" is a template. "The 5 August count is four times the next highest August day
    and needs an explanation before it goes in a mean" is analysis.
@@ -62,7 +62,7 @@ There are six things I look for, and they are all things you already know how to
 Your report script must be readable from the top without any hidden state. That means it reads
 the file and builds its own columns, in view, before it uses them. This is exactly the pipeline
 from the conditionals chapter, written out once so nothing in the report depends on something
-you can't see.
+you cannot see.
 
 ```{r}
 #| label: build
@@ -81,11 +81,11 @@ covid <- read_covid() %>%
   )
 ```
 
-If you're writing this in a script of your own rather than inside the book's project, swap
-`read_covid()` for `read_csv(here("data", "sg_covid_data.csv"))`. That helper exists so the
-chapters don't repeat a file path forty times, and nothing else in the pipeline depends on it.
+If you are writing this in a script of your own rather than inside the book's project, swap
+`read_covid()` for `read_csv(here("data", "sg_covid_data.csv"))`. That helper exists so that the
+chapters do not repeat a file path in every chunk, and nothing else in the pipeline depends on it.
 
-Then pick the month once, at the top, in a named object. When August comes round you change one
+Then pick the month once, at the top, in a named object. When you move to August you change one
 line rather than hunting for `"2020-04"` scattered through twenty chunks.
 
 ```{r}
@@ -98,16 +98,16 @@ april <- covid %>%
 nrow(april)
 ```
 
-Thirty rows for a thirty-day month. That check takes two seconds and it is the cheapest error
-you will ever catch.
+Thirty rows for a thirty-day month. The check is one line, and it catches a mis-specified filter
+before anything is computed from it.
 
-### How heavy was the month
+### The headline numbers
 
 ::: {.callout-important}
 ## Predict before you run this
 
-April 2020 has one day that dwarfs the rest. Write down the date you think it fell on before you
-read the next output. Most people put it in the first week, on the theory that the circuit
+April 2020 has one day far larger than the rest. Write down the date you think it fell on before
+you read the next output. Most people put it in the first week, on the reasoning that the circuit
 breaker started on 7 April and things improved from there.
 :::
 
@@ -125,23 +125,22 @@ april %>%
   )
 ```
 
-The peak is 20 April, thirteen days after the circuit breaker began. Cases went up, and kept
-going up, for two weeks after Singapore closed workplaces and told everyone to stay home.
+The peak is 20 April, thirteen days after the circuit breaker began. Reported cases continued to
+rise for two weeks after Singapore closed workplaces and required people to stay at home.
 
 That is not a paradox and it is worth being precise about why. Reported cases are the output of
 a testing programme, not a direct measurement of infection. Through April, testing in the
 migrant-worker dormitories was expanding fast, and the dormitory outbreak dominated the national
 count from April to August. A rising reported curve during that period is partly transmission
-and partly the swab rate catching up with infections that had already happened. You cannot
-separate the two from this file, which is a thing to say in your report rather than a thing to
-hide.
+and partly the swab rate catching up with infections that had already happened. The two cannot be
+separated from this file, and the report should say so.
 
 Two small notes on that output. `median_daily` prints as `488.` with a trailing full stop, which
-is the tibble telling you the value isn't a whole number. It's 487.5, the average of the two
-middle days. And `deaths` is 12 here, which is trustworthy for April because the `deaths` column
+is the tibble telling you the value is not a whole number. It is 487.5, the average of the two
+middle days. And `deaths` is 12 here, which is reliable for April because the `deaths` column
 has no missing values from 21 March onwards. Earlier in the year it does, 59 leading `NA`s, and
 lag-differencing across them recovers only 27 of the year's 29 deaths. If your chosen month is
-January, February or March, say that out loud.
+January, February or March, state that in the report.
 
 ```{r}
 #| label: severity-mix
@@ -150,13 +149,14 @@ april %>%
 ```
 
 Eighteen of April's thirty days were over 300 cases. Across the whole year only 77 days were,
-so April holds nearly a quarter of the year's worst days in a single month.
+so April holds nearly a quarter of the year's highest-count days in a single month.
 
 ### The table
 
 Weeks are the right grain for a monthly table. `floor_date(date, "week", week_start = 1)` puts
 each date on its Monday. I set `week_start` explicitly because lubridate's default is Sunday and
-half the people reading this expect Monday. Making the assumption visible costs one argument.
+many readers will expect Monday. Setting it explicitly makes the assumption visible at the cost
+of one argument.
 
 ```{r}
 #| label: weekly-table
@@ -179,8 +179,8 @@ Look at the `days` column before you look at anything else. The first row covers
 seven, because April 2020 started on a Wednesday and the week beginning 30 March mostly belongs
 to March. The last row covers four. Any comparison of `cases` across those rows is comparing
 different amounts of time, which is why `mean_daily` is in the table and why `days` is in it too.
-Leave `days` out and a reader will read 383 against 1,223 as a threefold rise when part of it is
-nothing more than two extra days.
+Leave `days` out and a reader will read 383 against 1,223 as a threefold rise when part of the
+difference is two extra days.
 
 The rest of the table tells a fairly clean story. Weekly totals climb from 383 to 7,036 and then
 fall back. Mean retail mobility drops from 23% below baseline in the first partial week to 67%
@@ -219,14 +219,14 @@ The date breaks are weekly and the labels are `"%d %b"`, so the axis reads 06 Ap
 Apr. Left to itself ggplot2 would have chosen something reasonable but not necessarily aligned
 with the weeks in your table, and a reader who is trying to match figure to table will notice.
 
-### The second figure: what people actually did
+### The second figure: mobility
 
-The case curve says what was reported. The mobility columns say what people did, which is a
-different question and the reason this file is more interesting than a case line on its own.
+The case curve records what was reported. The mobility columns record where people went, which is
+a different question and the reason this file supports more than a case series on its own.
 
 Two series on one set of axes means one row per series per date, so the two columns have to
-become one column of values plus one column of labels. `pivot_longer()` does that. It's from
-tidyr, which came in with the tidyverse, and it's the only function in this chapter you haven't
+become one column of values plus one column of labels. `pivot_longer()` does that. It is from
+tidyr, which came in with the tidyverse, and it is the only function in this chapter you have not
 already met.
 
 ```{r}
@@ -243,9 +243,9 @@ april_mobility
 ```
 
 Renaming inside `select()` is what gets you a readable legend without a second call. Backticks
-around `Retail and recreation` because it has spaces in it; R will accept a name like that as
-long as you quote it that way, and here it's worth it because that string goes straight onto the
-plot.
+are needed around `Retail and recreation` because it contains spaces; R will accept a name like
+that as long as you quote it that way, and it is worth doing here because that string goes
+straight onto the plot.
 
 ```{r}
 #| label: fig-april-mobility
@@ -264,14 +264,14 @@ ggplot(april_mobility, aes(date, change, colour = series)) +
   )
 ```
 
-The step at 7 April is the whole point of the figure. Retail goes from 15% below baseline on 6
+The step at 7 April is what the figure is for. Retail goes from 15% below baseline on 6
 April to 51% below on 7 April; workplaces go from 24% below to 52% below on the same day.
-Behaviour changed overnight. The case curve took a fortnight to turn.
+Behaviour changed within a day, while the case curve took a fortnight to turn.
 
-Now the two things in that figure that are not what they look like. The deep spike down to 83%
+Two features of that figure are not what they appear to be. The deep spike down to 83%
 below baseline is 10 April, which was Good Friday, a public holiday. The eight deepest
 workplace-mobility days in the entire year are all public holidays, so any dip you see in this
-series should be checked against a calendar before it's called a policy effect.
+series should be checked against a calendar before it is called a policy effect.
 
 The regular bumps upwards are weekends, and they run the opposite way to intuition. Google's
 baseline is a median computed separately for each day of the week, so a Sunday is compared with
@@ -290,12 +290,12 @@ april %>%
   )
 ```
 
-Weekdays sit between 63 and 72 points below baseline. Saturday and Sunday sit around 50. Nobody
-went back to the office at the weekend. The denominator changed.
+Weekdays sit between 63 and 72 points below baseline. Saturday and Sunday sit around 50. Workplace
+activity did not return at the weekend; the baseline it is compared against is lower.
 
 If you want the two figures stacked as a single image for a one-page PDF, patchwork will do it
-with `p_cases / p_mobility` once you've assigned each plot to a name. I've kept them separate
-here so each keeps its full height on screen.
+with `p_cases / p_mobility` once you have assigned each plot to a name. I have kept them separate
+here so that each keeps its full height on screen.
 
 ### The three sentences
 
@@ -310,57 +310,56 @@ here so each keeps its full height on screen.
 > on 6 April to 51% below on 7 April and staying within a few points of its floor for the rest
 > of the month, so the behavioural response was immediate even though the case curve was not.
 
-Three sentences, three different jobs. The first sizes the month against the year. The second
-addresses the thing a reader will get wrong if you don't. The third brings in the second data
-source and draws the contrast that makes the report worth reading.
+The three sentences do three different jobs. The first sizes the month against the year. The
+second addresses the point a reader would otherwise misread. The third brings in the second data
+source and sets the behavioural response against the case curve.
 
-Notice what isn't in there. No recommendation, because nothing in this file supports one. No
-claim that the circuit breaker worked or didn't, because a single month of a single country with
-no counterfactual cannot tell you. A situation report describes the situation. Resist the pull
-to conclude.
+Two things are absent. There is no recommendation, because nothing in this file supports one, and
+no claim that the circuit breaker did or did not work, because a single month of a single country
+with no counterfactual cannot establish either. The purpose of a situation report is description
+rather than causal inference.
 
 ## What this analysis does not tell you
 
-This section is not decoration. Write a version of it for your own month, and make it specific.
+Write a version of this section for your own month, and make it specific to that month.
 
 **Raw counts ignore population.** Fifteen thousand cases is a number of people, not a rate. To
-turn it into a rate you need a denominator, and the honest denominator here is not obvious.
+turn it into a rate you need a denominator, and the appropriate denominator here is not obvious.
 Roughly 323,000 work-permit holders lived in dormitories of all types in 2020, of whom about
 200,000 were in the 43 purpose-built dormitories. A case rate computed over the national
 population and a case rate computed over the dormitory-resident population are different
-quantities, and in April 2020 they were not remotely close. This file gives you neither
+quantities, and in April 2020 they were not close. This file gives you neither
 denominator.
 
 **Raw counts ignore testing volume.** A reported case requires a test, a positive result and a
 report. Change the number of tests and the case count changes without a single extra infection.
-There's no test-count column in this file, so you cannot compute test positivity, which is the
-standard way of asking whether a rise in cases is a rise in transmission or a rise in looking.
-When your curve rises, you are entitled to say that reported cases rose. You are not entitled to
-say that infections rose.
+There is no test-count column in this file, so you cannot compute test positivity, which is the
+standard way of asking whether a rise in cases reflects a rise in transmission or a rise in
+testing. A rising curve supports the statement that reported cases rose. It does not support the
+statement that infections rose.
 
 **One national count is averaging two epidemics.** From April to August 2020 the dormitory
 outbreak dominated Singapore's case counts, and it had different dynamics from transmission in
 the wider community: different living density, different age structure, different testing
 regime, different intervention. MOH's own daily updates reported those streams separately at the
 time. This file carries a single national total, so every mean you compute over those months is
-a weighted average of two processes, with weights you can't see and that change from week to
+a weighted average of two processes, with weights you cannot see and that change from week to
 week. That is a limitation of the file, not of the epidemiology, and you should say which one
-you're reporting.
+you are reporting.
 
-5 August 2020 is the sharpest example. That day records 908 cases, against an August median of
+5 August 2020 is the clearest example. That day records 908 cases, against an August median of
 91 and a next-highest August day of 313. Nine hundred and three of those 908 were dormitory
 residents, and 581 were linked to a single cluster at Acacia Lodge. MOH attributed the day's
-numbers to clearance testing in dormitories picking up past infections. Put that day in a mean
-without comment and you have published a wave that did not happen on that day.
+numbers to clearance testing in dormitories picking up past infections. A mean that includes that
+day without comment describes a change in reporting as though it were a change in incidence.
 
-One more, and I'm flagging it as my own reading rather than something you can verify from the
+One further point, flagged as my own reading rather than something you can verify from the
 data. Google's mobility series are built from location history on the phones of users who have
 that setting switched on, and Google does not publish these series broken down by nationality or
 work-permit status. Whether the movement of people confined to dormitories under quarantine
-appears in these curves at all is not a question this file can answer. I would not lean on
-mobility to describe what happened inside the dormitories in April. That is the difference
-between running the code and doing the epidemiology: the code will compute a mean of anything
-you hand it.
+appears in these curves at all is not a question this file can answer. I would not rely on the
+mobility series to describe what happened inside the dormitories in April. R will compute a mean
+of any column it is given; whether the column supports the question is a separate judgement.
 
 ## Your turn
 
@@ -370,9 +369,9 @@ you hand it.
 Produce the one-page report for August 2020: a table, two figures, three sentences of
 interpretation, and a short note on what your analysis does not tell you.
 
-August is a harder month than April, and not because the code is harder. The code is the same
-code. August is harder because the month contains a decision that April doesn't, and how you
-handle it is most of what separates a good report from a competent one.
+August is a harder month than April, though not because the code is harder; the code is the same.
+August is harder because the month contains a decision that April does not, and the report has to
+address that decision explicitly.
 
 You are done when someone who has never seen the data could read your page and come away with a
 correct impression of what August 2020 was like.
@@ -384,11 +383,11 @@ correct impression of what August 2020 was like.
 Compute the maximum, the median and the date of the maximum before you compute anything else,
 and put those three numbers next to each other. If a single day is several times the next
 highest day, the mean is describing that day rather than the month, and your report has to
-decide out loud what to do about it.
+state explicitly what it does about that.
 :::
 
 [Worked solution](solutions.qmd#sec-sol-sitrep)
 
 If you want a second month after that, September 2020 is the quiet counterpart: 30 days, every
-one of them under 100 cases, a mean of 31.8. Writing an interesting report about a month where
-nothing happens is its own skill, and you will be asked for one eventually.
+one of them under 100 cases, a mean of 31.8. Reporting on a month in which little changed is a
+separate skill, and one that is required regularly.

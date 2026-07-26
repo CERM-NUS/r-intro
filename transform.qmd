@@ -6,9 +6,9 @@
 source("_common.R")
 ```
 
-The file you read in the last chapter has 345 rows and 13 columns, and the number you most want is in none of them. `confirmed` is a running total. It tells you how many cases Singapore had confirmed by the end of each day, cumulatively, since the first one. Nowhere in the file is there a column saying how many cases were confirmed *on* a given day, which is the quantity every epidemic curve, every reproduction number and every situation report is built from.
+The file you read in the last chapter has 345 rows and 13 columns. `confirmed` is a running total: it records how many cases Singapore had confirmed by the end of each day, cumulatively, since the first one. There is no column giving the number of cases confirmed *on* a given day, and that is the quantity epidemic curves, reproduction number estimates and situation reports are built from.
 
-Getting it takes one line of dplyr. Getting it *right* takes understanding what that line assumes, which is most of this chapter.
+Computing it takes one line of dplyr. Most of this chapter is about the assumptions that line makes.
 
 Start where the last chapter finished.
 
@@ -19,9 +19,9 @@ covid
 
 ## One verb, one job
 
-dplyr is built on a small number of functions with deliberately boring names. Each one takes a data frame as its first argument, does one thing to it, and returns a data frame. They are called verbs because they are things you do to a table.
+dplyr is built on a small number of functions with deliberately plain names. Each one takes a data frame as its first argument, does one thing to it, and returns a data frame. They are called verbs because they are things you do to a table.
 
-You need five of them for almost everything.
+Five of them cover most routine work.
 
 ### `filter()` keeps rows
 
@@ -31,26 +31,26 @@ Singapore's circuit breaker ran from 7 April to 1 June 2020. To look at only tho
 filter(covid, date >= "2020-04-07", date <= "2020-06-01")
 ```
 
-Fifty-six rows, which is 7 April to 1 June counted inclusively. Two things are happening in that call that deserve a moment.
+Fifty-six rows, which is 7 April to 1 June counted inclusively. Two things in that call are worth noting.
 
-The first is that several conditions separated by commas are combined with **and**. Every condition has to hold for a row to survive. If you want **or**, you have to say so with `|`, because a comma will never mean that.
+The first is that several conditions separated by commas are combined with **and**: every condition has to hold for a row to be kept. For **or** you need `|`, because a comma is only ever read as *and*.
 
-The second is that `date` is a proper `Date` column and you compared it to a piece of text. R quietly converted the text to a date for you, which works because `"2020-04-07"` is in ISO order: year, month, day. Write the date the way most of the world writes it and R does not complain, it gets a different answer:
+The second is that `date` is a `Date` column compared against a piece of text. R converts the text to a date, which gives the intended result because `"2020-04-07"` is in ISO order: year, month, day. A date written in the day/month/year order used across much of the world is also accepted, without complaint, and interpreted differently:
 
 ```{r}
 as.Date("07/04/2020")
 ```
 
-The seventh of April, 2020, has become the twentieth of April in the year 7. R read `07` as the year, `04` as the month and `2020` as the day, then rolled the impossible day number forward. No error, no warning, and a `filter()` built on that comparison would return all 345 rows while looking entirely reasonable. Use ISO dates. This is the reason the standard exists.
+The seventh of April, 2020, has become the twentieth of April in the year 7. R read `07` as the year, `04` as the month and `2020` as the day, then rolled the impossible day number forward. There is no error and no warning, and a `filter()` built on that comparison would return all 345 rows while looking reasonable. Writing dates in ISO order avoids this.
 
-There is one more thing about `filter()` that catches everyone exactly once:
+One further point about `filter()`:
 
 ```{r}
 #| error: true
 filter(covid, date = "2020-04-07")
 ```
 
-One equals sign is assignment, two is comparison. dplyr recognises the mistake and tells you which one you meant, which is kinder than most of R. Base R would have silently treated it as an argument name.
+One equals sign is assignment, two is comparison. dplyr recognises the mistake and reports which one you meant. Base R would have treated `date` as the name of an argument instead, without an error.
 
 ### `arrange()` reorders rows
 
@@ -60,14 +60,14 @@ arrange(covid, desc(stringency_index))
 
 The Oxford stringency index peaked at 82.41, and three separate days sit at that peak. Sorting does not deduplicate; it puts equal things next to each other and leaves them in the order it found them.
 
-`desc()` looks like clutter until you try the obvious alternative:
+`desc()` may look like clutter on a numeric column, but the obvious alternative does not work:
 
 ```{r}
 #| error: true
 arrange(covid, -date)
 ```
 
-`unary - is not defined for "Date" objects`. Negating a number to reverse the sort works for numbers, and dates are stored as numbers underneath, but R refuses to let you do arithmetic that would produce a nonsense date. `desc()` works on anything that can be sorted, including text and factors, so use it and stop thinking about it.
+`unary - is not defined for "Date" objects`. Negating a value to reverse the sort works for numbers, and dates are stored as numbers underneath, but R does not permit arithmetic that would produce a meaningless date. `desc()` works on anything that can be sorted, including text and factors.
 
 ### `select()` keeps columns
 
@@ -81,17 +81,17 @@ The order you name them is the order you get, so `select()` doubles as a way to 
 select(covid, date, ends_with("_percent_change_from_baseline"))
 ```
 
-`starts_with()`, `ends_with()` and `contains()` all work inside `select()` and nowhere else, which is confusing the first time. They are part of a small language called tidyselect that only makes sense in the context of choosing columns. A leading minus drops instead of keeps:
+`starts_with()`, `ends_with()` and `contains()` work inside `select()` and in the other places where columns are chosen by name, but not on their own at the console. They belong to a small language called tidyselect, which is only defined in that context. A leading minus drops instead of keeps:
 
 ```{r}
 select(covid, -administrative_area_level_1)
 ```
 
-That column is the string `"Singapore"` in all 345 rows. It is there because the data hub serves many countries from one schema, and it carries no information at all once you have filtered down to one of them.
+That column is the string `"Singapore"` in all 345 rows. It is there because the data hub serves many countries from one schema, and it carries no information once you have filtered down to one of them.
 
 ### `rename()` changes column names
 
-`retail_and_recreation_percent_change_from_baseline` is fifty characters long, and you will type it more times in an afternoon's work than you would like. Google named it, not you, and the name is descriptive rather than convenient.
+`retail_and_recreation_percent_change_from_baseline` is fifty characters long. The name comes from Google's published series and is descriptive rather than convenient to type.
 
 ```{r}
 mob <- rename(
@@ -107,9 +107,9 @@ mob <- rename(
 select(mob, date, retail, workplaces, residential)
 ```
 
-New name on the left, old name on the right, which is the opposite of the order most people guess. The way to remember it is that `rename()` behaves like `mutate()` and every other function that makes columns: the thing being created is always on the left of the `=`.
+New name on the left, old name on the right. This matches `mutate()` and the other functions that create columns: the thing being created sits on the left of the `=`.
 
-The code in this book keeps the long names, because that is what the file ships with and because a chapter that renames things in secret is a chapter you cannot copy code out of. In your own analysis, rename early and rename once.
+The code in this book keeps the long names, because they are what the file ships with and because renaming columns partway through a chapter would make the code harder to copy out. In your own analysis it is simpler to rename once, near the start.
 
 ### `mutate()` makes new columns
 
@@ -120,13 +120,13 @@ select(
 )
 ```
 
-`mutate()` works on whole columns at a time. There is no loop over rows; `deaths / confirmed` divides two vectors of 345 numbers element by element and hands back a third. This is the single biggest habit shift coming from a spreadsheet, and once it clicks, most of R gets easier.
+`mutate()` works on whole columns at a time. There is no loop over rows; `deaths / confirmed` divides two vectors of 345 numbers element by element and hands back a third. This is the main habit shift coming from a spreadsheet, where a formula is written for one cell and then copied down.
 
-The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is a very low number by any international comparison of that year, and the reason is demographic before it is clinical: the great majority of Singapore's 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults. The ratio does not mean much until you say that.
+The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the reason is demographic before it is clinical: the great majority of Singapore's 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.
 
 ## Stringing verbs together
 
-Look at what that last call became. To make a column and then choose four columns, the code reads inside out: `mutate()` is buried in the middle, `select()` wraps around it, and the data frame you started from is somewhere in the interior. Add a `filter()` and an `arrange()` and it becomes unreadable:
+That last call nests one verb inside another. To make a column and then choose four columns, the code reads inside out: `mutate()` sits in the middle, `select()` wraps around it, and the data frame you started from is in the interior. Adding a `filter()` and an `arrange()` makes it harder still to follow:
 
 ```{r}
 head(
@@ -141,7 +141,7 @@ head(
 )
 ```
 
-You have to read that from the innermost bracket outwards, which is backwards from the order the operations happen and backwards from how you thought about the problem. The pipe fixes it:
+That has to be read from the innermost bracket outwards, which is the reverse of the order in which the operations happen. The pipe removes the nesting:
 
 ```{r}
 covid %>%
@@ -155,7 +155,7 @@ covid %>%
 
 Read `%>%` as "and then". Take covid, and then keep the circuit-breaker days, and then keep three columns, and then sort by stringency, and then show me four rows. That is the order the sentence happens in and the order the code is written in.
 
-Some habits worth forming now. Put the `%>%` at the end of the line, never at the start of the next one, because R needs to see that the line is unfinished. Indent the continuation lines. Build the chain one verb at a time, running it after each addition, rather than writing eight lines and then trying to work out which one broke. RStudio has a keyboard shortcut for the pipe: Ctrl+Shift+M on Windows and Linux, Cmd+Shift+M on a Mac.
+A few conventions are worth adopting now. Put the `%>%` at the end of the line rather than the start of the next one, because R needs to see that the line is unfinished. Indent the continuation lines. Build the chain one verb at a time, running it after each addition, rather than writing eight lines before running any of them. RStudio has a keyboard shortcut for the pipe: Ctrl+Shift+M on Windows and Linux, Cmd+Shift+M on a Mac.
 
 ::: {.callout-note}
 ## The other pipe
@@ -165,11 +165,11 @@ R gained a pipe of its own in version 4.1, written `|>`. It does the same basic 
 
 ## Cumulative counts are not incidence
 
-Here is the epidemiology that the rest of the chapter exists to support.
+The rest of the chapter depends on the distinction between two quantities.
 
-`confirmed` only ever goes up. It went up when Singapore was recording three cases a day in February, it went up when Singapore recorded 1,426 in a single day in April, and it went up in December when the epidemic was essentially over. A cumulative curve cannot fall, so it can never show you a peak or a turn. What it shows is the total damage so far, which is a real quantity and almost never the one you want.
+`confirmed` only ever increases. It increased when Singapore was recording three cases a day in February, when it recorded 1,426 in a single day in April, and again in December when transmission had largely stopped. A cumulative curve cannot fall, so it cannot show a peak or a turning point. What it shows is the total to date, which is a real quantity but rarely the one an analysis needs.
 
-Incidence is the number of new cases per unit time. It is what an epidemic *is*: a rate, going up and coming down. It is what you fit a model to and what you compute a reproduction number from, and it is the only one of the two that can tell you whether last week was better than the week before.
+Incidence is the number of new cases per unit time: a rate, which rises and falls. It is the quantity models are fitted to and reproduction numbers are computed from, and it is the one of the two that can show whether last week was better than the week before.
 
 Both curves below are made from the same 345 numbers.
 
@@ -194,15 +194,15 @@ p_inc <- ggplot(covid_inc, aes(date, daily_cases)) +
 p_cum / p_inc
 ```
 
-The top panel is the shape every dashboard showed in 2020, and for judging anything it is close to useless. It rises steeply through the middle of the year and flattens at the right-hand edge, and that is all it can ever do. The peak is invisible in it. So is the fact that half the year's cases had been confirmed by 20 May.
+The top panel is the shape most dashboards showed in 2020. It rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year's cases had been confirmed by 20 May.
 
-The bottom panel shows an epidemic. It climbs through April to a single highest day of 1,426 on 20 April, stays high through May, then falls unevenly until the week of 5 July, before a second rise carries it back up through late July into early August and it dies away from mid-August onwards. The tall isolated spike is 5 August, which recorded 908 cases against an August median of 91 and a next-highest August day of 313. Singapore's Ministry of Health attributed that day to clearance testing in the dormitories detecting past infections. Whatever you make of the explanation, a cumulative curve would never have prompted the question.
+The bottom panel shows the shape of the epidemic. It climbs through April to a single highest day of 1,426 on 20 April, stays high through May, then falls unevenly until the week of 5 July, before a second rise carries it back up through late July into early August and it dies away from mid-August onwards. The tall isolated spike is 5 August, which recorded 908 cases against an August median of 91 and a next-highest August day of 313. Singapore's Ministry of Health attributed that day to clearance testing in the dormitories detecting past infections. On the cumulative curve that day appears only as a slight change of slope, where it would be easy to miss.
 
-There is a rhetorical consequence worth being alert to. A cumulative curve flatters every intervention, because after any intervention it keeps rising and can always be described as "flattening". An incidence curve makes the claim falsifiable: either the number came down or it did not.
+The two presentations also differ in what they allow to be claimed. A cumulative curve continues to rise after an intervention whatever the intervention did, so it can usually be described as flattening. An incidence curve makes the claim checkable: the number either came down or it did not.
 
-## `lag()`, and the precondition nobody states
+## `lag()` and row order
 
-The line that did the work was this:
+The line that computed the daily counts was this:
 
 ```{r}
 #| eval: false
@@ -219,9 +219,9 @@ x - lag(x)
 
 Element two of `lag(x)` is element one of `x`. Subtracting gives the difference between consecutive elements: the increments. The first element has nothing before it, so `lag()` puts `NA` there, and the subtraction propagates it.
 
-Now the part that matters. **`lag()` is positional, not date-aware.** It has no idea that your data has a `date` column. It takes the row physically above, whatever that row happens to be. If your rows are in some other order, `lag()` will not warn you, will not error, and will happily compute differences between days that are months apart.
+There is a precondition here. **`lag()` is positional, not date-aware.** It does not inspect the `date` column; it takes the row physically above, whatever that row contains. If the rows are in some other order, `lag()` neither warns nor errors, and the differences it returns can be between days that are months apart.
 
-Suppose you had sorted by stringency index earlier in your session, for a perfectly good reason, and then computed daily cases without re-sorting.
+Suppose you had sorted by stringency index earlier in the session, for some other purpose, and then computed daily cases without re-sorting.
 
 ::: {.callout-important}
 ## Predict before you run
@@ -238,11 +238,11 @@ sum(scrambled$daily_cases < 0)
 median(scrambled$daily_cases)
 ```
 
-Eight. Eight rows out of 345 are negative, and the median of the wrong answer is 42 against a true value of 40. Sort the table by anything other than date and roughly 97% of the resulting daily counts still look like plausible daily counts. Some of them are even right, by accident, wherever two adjacent rows happened to be adjacent days.
+Eight rows out of 345 are negative, and the median of the wrong answer is 42 against a true value of 40. With the table sorted by something other than date, roughly 97% of the resulting daily counts still look like plausible daily counts, and some are correct by accident, wherever two adjacent rows happened to be adjacent days.
 
-This is what makes the mistake dangerous. A bug that produces obvious garbage gets caught in the first thirty seconds. A bug that produces 337 plausible numbers and 8 impossible ones gets caught when a reviewer asks about a negative value in a figure, three months later.
+That is what makes the error hard to catch. A bug that produces obvious nonsense is noticed at once; a bug that produces 337 plausible numbers and 8 impossible ones may not surface until a reviewer asks about a negative value in a figure.
 
-So: put `arrange(date)` in the chain, immediately before the `mutate()`, every time. It costs one line. It does nothing at all when the data was already sorted, which this file is.
+Put `arrange(date)` in the chain immediately before the `mutate()`. It costs one line, and it does nothing when the data is already sorted by date, which this file is.
 
 ```{r}
 covid <- covid %>%
@@ -254,23 +254,23 @@ covid %>% select(date, confirmed, daily_cases)
 
 ## What belongs in the first row
 
-`lag()` on its own leaves `NA` at the top, because there is no previous row to subtract. The `default = 0` argument fills that gap with a zero instead. Whether that is right is a question about your data, not a question about R, and it is the kind of decision that gets made by accident far more often than it gets made on purpose.
+`lag()` on its own leaves `NA` at the top, because there is no previous row to subtract. The `default = 0` argument fills that gap with a zero instead. Whether that is appropriate depends on the data rather than on R.
 
-Here it is right, and you can see why in the first row of the table:
+Here it is appropriate, for a reason visible in the first row of the table:
 
 ```{r}
 covid %>% select(date, confirmed, daily_cases) %>% head(3)
 ```
 
-`confirmed` is 0 on 22 January 2020. Zero cases had been confirmed by the end of that day, so zero cases were confirmed *during* it. That is a real observation, not a gap. Recording it as `NA` would throw away a genuine zero and quietly shorten the series by one day in every count, sum and plot downstream.
+`confirmed` is 0 on 22 January 2020. Zero cases had been confirmed by the end of that day, so zero cases were confirmed *during* it. That is an observation, not a gap. Recording it as `NA` would discard a genuine zero and shorten the series by one day in every count, sum and plot downstream.
 
-The picture changes completely if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then `default = 0` would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the honest answer is `NA`, because you have no information about how many cases occurred on the first day of a window you did not observe the start of.
+The situation differs if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then `default = 0` would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the appropriate value is `NA`, because the data carry no information about how many cases occurred on the first day of a window whose start was not observed.
 
-Two conventions, two different datasets, and no default to memorise. Look at the first value. If it is zero, `default = 0` records a true zero. If it is not, plain `lag()` and an `NA` tells the truth about what you do not know. This file starts at zero, which is the only reason `default = 0` belongs in the code above, and it is the sort of reason worth writing in a comment beside it.
+The choice therefore depends on the series rather than on a rule to memorise. Look at the first value: if it is zero, `default = 0` records a true zero; if it is not, plain `lag()` leaves an `NA`, which is an accurate statement of what is not known. This file starts at zero, which is why `default = 0` is used in the code above, and that reason is worth writing in a comment beside it.
 
-## Two checks worth running every time
+## Two checks on a differenced series
 
-Derived columns are where quiet errors live, because nothing about them looks different from data that came out of a file. Two cheap checks catch most of what can go wrong with a difference of a cumulative series.
+A derived column looks no different from one that came out of the file, so errors in it are easy to miss. Two inexpensive checks catch most of what can go wrong when differencing a cumulative series.
 
 The first is that a difference of a non-decreasing count cannot be negative. If a negative appears, either the rows are out of order or the source revised its figures downward.
 
@@ -278,7 +278,7 @@ The first is that a difference of a non-decreasing count cannot be negative. If 
 covid %>% filter(daily_cases < 0)
 ```
 
-Zero rows. What comes back is an empty tibble rather than nothing at all, and the empty tibble still knows its column names and types, which is how you can tell the check ran instead of failing silently.
+Zero rows. What comes back is an empty tibble rather than nothing at all, and the empty tibble still carries its column names and types, so you can see that the check ran rather than failed.
 
 The second is that the daily numbers must add back up to the cumulative total. The increments telescope: every intermediate value cancels, leaving the last one.
 
@@ -293,9 +293,9 @@ sum(covid$daily_cases)
 sum(scrambled$daily_cases) == max(scrambled$confirmed)
 ```
 
-A test that fails when the code is wrong and passes when it is right is worth the two lines it takes to write. Keep both of these near the top of any script that differences a cumulative series.
+The check passes on the sorted table and fails on the scrambled one, which is what makes it worth the two lines it takes to write. Both checks are worth keeping in any script that differences a cumulative series.
 
-One warning about applying the same recipe to `deaths`. That column is missing for the first 59 days of 2020, and the second check will not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason is the `lag()` you have just met. Singapore's first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is `2 - NA`, which is `NA`, and a sum told to skip missing values skips those two deaths along with them. Differencing recovers changes; it cannot recover the level a series started at. That is a property of the file rather than a mistake you made, and what to do about it is a decision about what a blank in that column means rather than a change to the code.
+One caveat about applying the same recipe to `deaths`. That column is missing for the first 59 days of 2020, and the second check does not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason lies in the `lag()`. Singapore's first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is `2 - NA`, which is `NA`, and a sum told to skip missing values skips those two deaths along with it. Differencing recovers changes; it cannot recover the level a series started at. This is a property of the file rather than an error in the code, and what to do about it is a decision about what a blank in that column means.
 
 ## Exercises
 
@@ -322,13 +322,13 @@ Apply the same pattern you used for cases to the `deaths` column: sort by date, 
 
 Then run both of the checks from this chapter on it. Are there any negative values? Does the total of the daily numbers equal the final cumulative figure? Report exactly what you get from each check, including anything R does with missing values along the way.
 
-Finally, find the largest single-day increase in deaths and the date it happened. Leave the shortfall unrepaired. What the exercise wants is the row it went astray on, named exactly.
+Finally, find the largest single-day increase in deaths and the date it happened. Leave the shortfall unrepaired; what the exercise asks for is the row on which it arises, identified exactly.
 :::
 
 ::: {.callout-note collapse="true"}
 ## Stuck? Open for a hint (not the answer)
 
-`sum()` on a vector containing `NA` returns `NA`, so you will need to decide what to tell it to do about that, and the decision is part of the answer. Look at the rows around the first date on which `deaths` is not missing.
+`sum()` on a vector containing `NA` returns `NA`, so you will need to decide what to tell it to do about that, and the decision is part of the answer. Look at the rows either side of the first date on which `deaths` is not missing.
 :::
 
 [Worked solution](solutions.qmd#sec-sol-daily-cases)

@@ -41,9 +41,9 @@ r-intro/
 └── _freeze/               cached chunk output, committed on purpose
 ```
 
-The rendered site is not in that list, and its absence is the whole publishing strategy; there is a section on it further down. `_freeze/` is generated and in version control anyway, which is unusual enough that it gets a section of its own too.
+The rendered site is not in that list. Its absence is deliberate, and the publishing section below explains it. `_freeze/` is generated and in version control anyway, which is unusual enough that it gets a section of its own too.
 
-One file per chapter, and the chapter list in `_quarto.yml` is the only place the reading order is written down. Renaming a file means editing `_quarto.yml`, and forgetting to means the chapter silently disappears from the book while still sitting in the repository. It is the most common way to lose a page.
+One file per chapter, and the chapter list in `_quarto.yml` is the only place the reading order is written down. Renaming a file means editing `_quarto.yml`, and forgetting to means the chapter silently disappears from the book while still sitting in the repository. That is an easy way to lose a page.
 
 ## `_quarto.yml`, section by section
 
@@ -55,7 +55,7 @@ The whole build is one YAML file. It opens with a warning to future me:
 # /Applications/quarto/share/schema/definitions.yml before adding one.
 ```
 
-That is worth reading twice. Under `project:` and `book:`, Quarto validates keys against a fixed schema. A typo does not get ignored, and it does not warn. The render stops. The schema files shipped with your Quarto installation are the authority, and they are more reliable than a blog post about a different version.
+Under `project:` and `book:`, Quarto validates keys against a fixed schema. A typo does not get ignored, and it does not warn. The render stops. The schema files shipped with your Quarto installation are the authority, and they are more reliable than a blog post about a different version.
 
 ### `project:`
 
@@ -79,7 +79,7 @@ There is no `output-dir`, which is a decision rather than an omission. Quarto th
 
 Metadata first: title, subtitle, author, `date: today` with an explicit `date-format`, and a description that becomes the page's meta description and the social preview text.
 
-`site-url` and `repo-url` together are what make the "Edit this page", "Report an issue" and "View source" links work. `repo-actions: [edit, issue, source]` turns all three on. They appear in the right-hand margin of every page, and they are the cheapest error-reporting mechanism a teaching resource can have. A student who spots a wrong number is two clicks from telling me, and one of those clicks lands them in a text editor with the offending line in front of them.
+`site-url` and `repo-url` together are what make the "Edit this page", "Report an issue" and "View source" links work. `repo-actions: [edit, issue, source]` turns all three on. They appear in the right-hand margin of every page, and they cost nothing to maintain. A student who spots a wrong number is two clicks from reporting it, and one of those clicks lands them in a text editor with the offending line in front of them.
 
 `repo-branch: main` matters because Quarto builds the edit URL from it. Point it at a branch that does not exist and every edit link 404s, on every page, silently.
 
@@ -114,7 +114,7 @@ format:
     theme: [litera, scss/nus.scss]
 ```
 
-Bootswatch `litera` underneath, the project's own SCSS on top. `litera` was chosen for a reason that has nothing to do with taste: it is one of the few bundled themes that does not fetch a web font from `fonts.googleapis.com`. The book renders the same on a plane as it does on a fast connection. For a course whose first session is often held on university wifi, that is worth more than a nicer typeface.
+Bootswatch `litera` underneath, the project's own SCSS on top. `litera` was chosen for a reason that has nothing to do with taste: it is one of the few bundled themes that does not fetch a web font from `fonts.googleapis.com`. The book therefore renders the same offline as it does on a fast connection, which matters for a course taught on university wifi.
 
 The rest of the HTML block, in the order it appears:
 
@@ -122,11 +122,11 @@ The rest of the HTML block, in the order it appears:
 
 `code-copy: true` puts a copy button on every code block. `code-overflow: scroll` gives a long line its own horizontal scrollbar rather than wrapping it, which is the less obvious choice of the two. This dataset has column names 49 characters long — `retail_and_recreation_percent_change_from_baseline` is one — and wrapping breaks them mid-identifier, so the name a student is meant to read and retype arrives in two halves.
 
-`code-link: true` is the good one. It turns every function call in every code block into a link to that function's documentation, so `filter()` in a chunk is clickable and lands on the dplyr reference page. It needs `downlit` and `xml2` installed. Neither is called by name anywhere in the book, so both are in the lockfile only because `_dependencies.R` names them, which is a trap the renv section comes back to.
+`code-link: true` turns every function call in every code block into a link to that function's documentation, so `filter()` in a chunk is clickable and lands on the dplyr reference page. It needs `downlit` and `xml2` installed. Neither is called by name anywhere in the book, so both are in the lockfile only because `_dependencies.R` names them, which is a trap the renv section comes back to.
 
 `code-annotations: hover` is how the numbered callouts in code blocks behave.
 
-`df-print: default` is a deliberate refusal. Set it to `kable` and every data frame in the book renders as a tidy HTML table with proper borders. It would look better. It would also look nothing like what the student sees in their own console, and a beginner comparing the book to their screen would conclude they had done something wrong. Console output stays console output.
+`df-print: default` is deliberate. Set it to `kable` and every data frame in the book renders as a tidy HTML table with proper borders, which looks better but looks nothing like what the student sees in their own console. A beginner comparing the book against their screen would then have to work out which difference matters. Console output stays console output.
 
 Figures: `fig-width: 7`, `fig-height: 4.2`, `fig-align: center`, `fig-format: svg`. SVG because plot text stays sharp at any zoom and the files are usually smaller than PNG for this kind of chart. `tbl-cap-location: bottom` follows the usual convention of captions below tables and above figures.
 
@@ -140,7 +140,7 @@ execute:
   message: true
 ```
 
-Warnings and messages are on, globally and on purpose. `read_csv()`'s column specification, `geom_histogram()`'s note about picking 30 bins, and `summarise()`'s `.groups` notice are all messages, and the book teaches students to read all three. A chapter that sets `message: false` to make its output tidy is deleting the lesson.
+Warnings and messages are on, globally and on purpose. `read_csv()`'s column specification, `geom_histogram()`'s note about picking 30 bins, and `summarise()`'s `.groups` notice are all messages, and the book teaches students to read all three. A chapter that sets `message: false` to tidy its output removes material the text refers to.
 
 Because these are set globally, chapters should not set them again. Repeating `#| echo: true` on a chunk is harmless but noisy; repeating it inconsistently is how a chapter ends up with three different behaviours for no reason anybody can reconstruct later. The same goes for `comment`, `collapse`, and the figure dimensions, all of which are set once in the `knitr:` block at the bottom:
 
@@ -154,7 +154,7 @@ knitr:
 
 `comment: "#>"` prefixes every line of output. It means you can select a whole block, code and output together, paste it into your console, and have it run: the output lines are comments. `collapse: true` puts code and its output in one block rather than two.
 
-Two per-chunk options are used, and only these two. `#| eval: false` for anything that must not run during a render, which means `install.packages()`, `renv::` calls, `setwd()` demonstrations, `View()`. `#| error: true` for chunks that are supposed to fail, where the error message is the point.
+Two per-chunk options are used, and only these two. `#| eval: false` for anything that must not run during a render, which means `install.packages()`, `renv::` calls, `setwd()` demonstrations, `View()`. `#| error: true` for chunks that are supposed to fail, where the error message is what the reader is meant to see.
 
 ## `_common.R`
 
@@ -174,7 +174,7 @@ The repetition is not laziness. Quarto's freeze machinery gives each chapter its
 
 The leading underscore is a Quarto convention: files and directories starting with `_` are not treated as book content and are not copied to the output.
 
-## renv, and the one that will get you
+## renv and the lockfile
 
 `renv` records the exact version of every package the book was built with. It does this in `renv.lock`, a JSON file with one entry per package:
 
@@ -237,9 +237,7 @@ renv finds dependencies by scanning source files for `library()` calls. Its scan
 
 `_dependencies.R` is a file that exists only to be scanned. It is never sourced and never rendered. It lists the packages the chapters use plus the ones the toolchain needs but nothing calls by name: `knitr`, `rmarkdown`, `downlit`, `xml2`, `sessioninfo`. If you add a package to a chapter, add it there too, or it will work on your machine and nowhere else.
 
-### The gotcha
-
-This is the one that cost me an evening.
+### Rendering from another project's directory
 
 Quarto decides which renv to activate by reading `.Rprofile` **relative to the directory you invoked it from**, not relative to the project you asked it to render. So this is fine:
 
@@ -257,7 +255,7 @@ quarto render ../r-intro
 
 The second one starts R in `~/sph5421-course`, reads that project's `.Rprofile`, activates that project's library, and then renders this book against whatever versions happen to be sitting there. `execute-dir: project` moves the working directory afterwards, so `here()` and every relative path still work, and the render completes.
 
-That is what makes it dangerous. The versions in a neighbouring project are usually close enough that most of the book builds, and you find out three chapters later when a `dplyr` deprecation warning appears on a page that never had one.
+Nothing fails visibly. The versions in a neighbouring project are usually close enough that most of the book builds, and the problem surfaces three chapters later when a `dplyr` deprecation warning appears on a page that never had one.
 
 So `_common.R` checks, before it does anything else:
 
@@ -306,9 +304,9 @@ If that path does not contain `r-intro/renv`, the guard has a bug, which would a
 
 `freeze: auto` means a chapter's R code is executed when the chapter's `.qmd` changes, and not otherwise. The output of every chunk is cached under `_freeze/`, and `_freeze/` is committed.
 
-The payoff is that anyone can clone the repository and rebuild the site without R, without renv, and without the several minutes of computation. It also means a one-word fix to chapter 9 does not re-execute chapters 1 through 8, which turns a two-minute render into a five-second one and is the difference between previewing your changes and not bothering.
+The payoff is that anyone can clone the repository and rebuild the site without R, without renv, and without the several minutes of computation. It also means a one-word fix to chapter 9 does not re-execute chapters 1 through 8, which turns a two-minute render into a five-second one and makes previewing a small change practical.
 
-The cost is a trap. **Freeze watches the `.qmd` file, not the things it depends on.** Edit `_common.R`, change the colour palette in `R/nus_theme.R`, or replace the CSV, and nothing re-runs. The book will render happily and every page will still show the old output. There is no warning, because from Quarto's point of view nothing changed.
+The cost is a failure mode. **Freeze watches the `.qmd` file, not the things it depends on.** Edit `_common.R`, change the colour palette in `R/nus_theme.R`, or replace the CSV, and nothing re-runs. The book will render happily and every page will still show the old output. There is no warning, because from Quarto's point of view nothing changed.
 
 There is no command-line flag to force it. When you have changed something shared, delete the cache:
 
@@ -329,23 +327,23 @@ Publishing is one command:
 ./scripts/publish.sh
 ```
 
-It renders the book and hands the result to `quarto publish gh-pages --no-prompt`, which pushes the output onto `gh-pages`. Then it checks what actually went out: that the expected number of pages exist, that no page got stranded at the project root, that `search.json` is present, since a missing search index makes the search box return nothing rather than fail visibly, and that every `solutions.html#sec-sol-…` link in the book has an anchor waiting for it in `solutions.html`. In a book that cross-links every exercise to its worked answer, a dead link is a worse defect than a failed render, because a failed render tells you.
+It renders the book and hands the result to `quarto publish gh-pages --no-prompt`, which pushes the output onto `gh-pages`. Then it checks what actually went out: that the expected number of pages exist, that no page got stranded at the project root, that `search.json` is present, since a missing search index makes the search box return nothing rather than fail visibly, and that every `solutions.html#sec-sol-…` link in the book has an anchor waiting for it in `solutions.html`. A failed render announces itself; a dead cross-link does not, and this book cross-links every exercise to its worked answer, so the script checks them.
 
 It refuses to start in three cases. If a `quarto preview` is running, because the preview watches the same files, races the render, and has left the output half-moved. If you are not on `main`. And if the working tree is dirty, which is the interesting one and needs the next section first.
 
 ### What the split buys, and what it costs
 
-The reason to keep the site off `main` is diffs. Generated HTML is not source. A re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and `git log` on that chapter becomes something you scroll past rather than read. It gets worse than untidy as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files nobody can resolve by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.
+The reason to keep the site off `main` is diffs. Generated HTML is not source. A re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and `git log` on that chapter becomes something you scroll past rather than read. The problem stops being cosmetic as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files nobody can resolve by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.
 
 The cost is real and worth naming, because the previous arrangement was better at one thing. When the site was committed alongside the source, forgetting to rebuild was impossible to miss: you edited a chapter and the working tree stayed dirty until you rendered. Staleness announced itself for free.
 
-Split source from output and that goes away. `main` is clean whether or not you have ever published. You can edit a chapter, commit, push, watch GitHub show your change, and have the live site still serving last month's text with nothing anywhere hinting at it. That is a quiet failure of exactly the kind this book keeps warning about, and it is why the three small scripts below exist. They are compensation for the visibility the split threw away.
+Split source from output and that goes away. `main` is clean whether or not you have ever published. You can edit a chapter, commit, push, watch GitHub show your change, and have the live site still serving last month's text with nothing anywhere indicating it. The three small scripts below exist to replace the visibility the split removed.
 
 `scripts/stamp-build.sh` runs as the `post-render` step and writes `build-info.json` into the output: the commit HEAD was at, whether the tree was dirty at the time, the build timestamp, and the Quarto version. Rendered HTML has no idea which revision of the source produced it, and this is how it is told.
 
 `scripts/check-pages-sync.sh` reads that file off `gh-pages` and compares the commit in it against the tip of `main`. It exits 0 in sync, 1 when the site is stale, and 2 when it cannot tell — no `gh-pages` branch yet, no `build-info.json` in it, no network. `--local` skips the fetch and works with the refs you already have. `publish.sh` runs it at the end as its own last check.
 
-The part of that script worth copying is the part that stays quiet. It does not compare commit counts. It compares the *files* that changed since the publish against a list of things the rendered site is actually built from — the `.qmd` files, `_quarto.yml`, `_common.R`, `R/`, `scss/`, `data/`, `assets/` — and if the only commits since were a README edit or a licence tweak, the site is still correct and it says so. A check that shouted "stale" every time you fixed a typo in a comment would be ignored inside a week, and an ignored check is worse than no check, because it leaves you believing something is being watched.
+The part of that script worth copying is the part that stays quiet. It does not compare commit counts. It compares the *files* that changed since the publish against a list of things the rendered site is actually built from — the `.qmd` files, `_quarto.yml`, `_common.R`, `R/`, `scss/`, `data/`, `assets/` — and if the only commits since were a README edit or a licence tweak, the site is still correct and it says so. A check that reported "stale" every time you fixed a typo in a comment would be ignored within a week, and an ignored check still leaves you believing something is being watched.
 
 `scripts/hooks/pre-push` prints a reminder when the commits you are pushing touch anything on that list. It is not installed by default; enable it with:
 
@@ -353,11 +351,11 @@ The part of that script worth copying is the part that stays quiet. It does not 
 git config core.hooksPath scripts/hooks
 ```
 
-It prints and gets out of the way. It does not block the push, and that is deliberate: pushing source before publishing is a perfectly normal thing to do, and a hook that refused would be routed around with `--no-verify` the second time it got in the way, after which it may as well not exist.
+It prints and gets out of the way. It does not block the push, and that is deliberate: pushing source before publishing is a normal thing to do, and a hook that refused would be routed around with `--no-verify` the second time it got in the way.
 
 Which is where the dirty-tree rule in `publish.sh` comes back. Render with uncommitted changes and the stamp names a commit that does not contain what was rendered, so every check downstream is reasoning from a false statement — the sync check compares against source that was never published and reports agreement that is not there. `stamp-build.sh` does record `"dirty": true` when it happens, and the sync check treats that as stale outright rather than pretending, but refusing to publish from a dirty tree in the first place is cheaper than either.
 
-### No CI, still
+### Why there is no continuous integration
 
 There is no GitHub Action here, and the reason has not changed. This book is built with Quarto 1.10.18, on one laptop, against a package library pinned by `renv.lock`. Any route that renders on a server adds a second Quarto at a second version, and a newer Quarto does not fail loudly on an older book. It produces slightly different HTML from the version the book was checked against, which is a category of bug you find weeks later on one page. Publishing from here keeps the render on the machine the versions are pinned to, and only the output travels.
 
@@ -378,9 +376,9 @@ The published site has one. This repository does not, and there is nothing under
 
 Knitr writes a chapter's figures into `<chapter>_files/` next to the source, and Quarto moves them into the output directory at the end of the render. A render that dies partway through leaves them sitting at the project root, and those working directories are rubbish that should not be in git. The obvious rule is `*_files/`.
 
-The obvious rule is wrong. A pattern with no slash at the start matches at **any depth**, so `*_files/` also matches `_book/visualise_files/`, `_book/groups_files/`, and every other directory in the rendered site that holds the actual published images. Git would ignore all of them, and the output still goes through git on its way out — that is what publishing to a branch is. The failure this used to cause was memorable enough to be worth keeping the guard for: render, see a perfect book on `localhost`, publish, and get a live site where every plot is a broken-image icon, with nothing in the local build ever showing it.
+The obvious rule is wrong. A pattern with no slash at the start matches at **any depth**, so `*_files/` also matches `_book/visualise_files/`, `_book/groups_files/`, and every other directory in the rendered site that holds the actual published images. Git would ignore all of them, and the output still goes through git on its way out — that is what publishing to a branch is. The resulting failure is worth naming: the book renders correctly on `localhost`, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem.
 
-The leading slash anchors the pattern to the repository root, so it matches `./visualise_files/` and stops there. One character.
+The leading slash anchors the pattern to the repository root, so it matches `./visualise_files/` and stops there.
 
 `.gitattributes` finishes the job, marking the generated directory so it stays out of GitHub's language statistics and out of diffs:
 
@@ -406,7 +404,7 @@ Open `r-intro.Rproj` in RStudio. The `.Rproj` file keeps its old name after a cl
 renv::restore()
 ```
 
-Answer yes. Go and make coffee. When it finishes, from a terminal **in that directory**:
+Answer yes. The restore takes several minutes on a cold cache. When it finishes, from a terminal **in that directory**:
 
 ```bash
 quarto preview
@@ -422,6 +420,6 @@ The logos in `assets/logos/` have to go, or be replaced with your own. They are 
 
 `LICENSE` should keep the original copyright line if you keep any of the original text, and add yours.
 
-If you swap the dataset, `_common.R` is the only place that reads it, but `data.qmd` documents the columns of *this* file and will be wrong the moment you change it. Rewrite that appendix or delete it. An out-of-date data appendix is worse than none.
+If you swap the dataset, `_common.R` is the only place that reads it, but `data.qmd` documents the columns of *this* file and will be wrong the moment you change it. Rewrite that appendix or delete it, since a reader who trusts it will be reading a description of a file that is no longer there.
 
 Then commit your sources, push, and run `./scripts/publish.sh`. That creates the `gh-pages` branch the first time it runs, and once it has, go to the repository's Pages settings and set it to deploy from `gh-pages`. Until you do that last step the branch exists and nothing serves it.
