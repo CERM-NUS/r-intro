@@ -63,12 +63,44 @@ branch on every publish; nothing here is edited by hand."
   echo "    created and pushed."
 fi
 
+# freeze: auto decides whether to re-run a chapter's R by hashing that chapter's
+# .qmd. Nothing else. Change _common.R, the ggplot theme, or the dataset itself
+# and every chunk stays frozen: the render succeeds, reports nothing unusual,
+# and publishes the OLD numbers. Verified by changing the severity cutoff in
+# _common.R from 100 to 150 and re-rendering — the page still said 215/53/77
+# and not one chunk executed.
+#
+# So the freeze has to be invalidated on anything the analysis actually depends
+# on. renv.lock is in the list because a package upgrade can change output just
+# as surely as an edit can.
+FINGERPRINT_FILE="_freeze/.analysis-fingerprint"
+fingerprint=$(
+  {
+    find _common.R R data -type f 2>/dev/null | LC_ALL=C sort | while IFS= read -r f; do
+      printf '%s ' "$f"; shasum -a 256 "$f" | awk '{print $1}'
+    done
+    shasum -a 256 renv.lock 2>/dev/null | awk '{print "renv.lock " $1}'
+  } | shasum -a 256 | awk '{print $1}'
+)
+
+if [ -f "$FINGERPRINT_FILE" ] && [ "$(cat "$FINGERPRINT_FILE")" = "$fingerprint" ]; then
+  echo "==> analysis inputs unchanged; the chunk cache stands"
+else
+  if [ -d _freeze ]; then
+    echo "==> analysis inputs changed (_common.R, R/, data/ or renv.lock)"
+    echo "    clearing the chunk cache so every chapter re-runs against them"
+    rm -rf _freeze
+  fi
+fi
+
 # Render and publish are deliberately separate steps, with the checks between
 # them. `quarto publish` renders by default, which would put every check after
 # the deploy — a failing check would then be a report on a site that is already
 # live, which is not a gate.
 echo "==> rendering"
 quarto render || fail "quarto render exited non-zero. Read the output above."
+
+mkdir -p _freeze && printf '%s\n' "$fingerprint" > "$FINGERPRINT_FILE"
 
 echo "==> checking the render before anything is published"
 

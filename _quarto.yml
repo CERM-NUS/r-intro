@@ -1,4 +1,4 @@
-# Verified against Quarto 1.4.554. The project: and book: schemas are closed,
+# Verified against Quarto 1.10.18. The project: and book: schemas are closed,
 # so an unrecognised key there is a hard render failure — check
 # /Applications/quarto/share/schema/definitions.yml before adding one.
 

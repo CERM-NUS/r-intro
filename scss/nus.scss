@@ -192,7 +192,11 @@ a[href*="solutions.html#"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.75rem;
+  // Wide enough that CERM's four-line descriptor and the ML & GHN globe read as
+  // two marks rather than one crowded block. They sit closest because CERM's
+  // artwork runs right to the edge of its text and the globe starts at the very
+  // left of its own, so the visible gap is the whole of this value.
+  gap: 3rem;
   margin-bottom: 0.85rem;
 
   img {
@@ -206,7 +210,7 @@ a[href*="solutions.html#"] {
 
 @media (max-width: 575px) {
   .footer-logos {
-    gap: 1.1rem;
+    gap: 1.6rem;
     .logo-sshsph { height: 44px; }
     .logo-cerm   { height: 33px; }
     .logo-mlghn  { height: 36px; }

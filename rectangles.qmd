@@ -94,7 +94,7 @@ data.frame(day = 1:3, phase = c("pre", "circuit breaker"))
 
 `arguments imply differing number of rows: 3, 2` is a good error. It arrives at the moment the mistake is made, not three steps later.
 
-That constraint is the entire point. Every operation you will learn in the next few chapters, filtering rows, creating columns, grouping and summarising, is built on the guarantee that row *i* of every column refers to the same observation. `filter()` can drop 200 rows without you checking that anything stayed aligned, because misalignment is not representable.
+That constraint is the entire point. Every operation on a rectangle, filtering rows, creating columns, grouping and summarising, is built on the guarantee that row *i* of every column refers to the same observation. `filter()` can drop 200 rows without you checking that anything stayed aligned, because misalignment is not representable.
 
 ### Where `data.frame()` lets you down
 
@@ -116,7 +116,7 @@ A tibble is a data frame with the historical annoyances removed. `read_csv()` re
 class(covid)
 ```
 
-Read that from the right. It *is* a `data.frame`, so anything that accepts a data frame accepts it. `tbl` and `tbl_df` are the tibble classes, which change how it prints and how it is subsetted. `spec_tbl_df` is readr's marker, recording the column specification it worked out while reading the file, which @sec-import comes back to.
+Read that from the right. It *is* a `data.frame`, so anything that accepts a data frame accepts it. `tbl` and `tbl_df` are the tibble classes, which change how it prints and how it is subsetted. `spec_tbl_df` is readr's marker, carrying the column specification it worked out while reading the file: which column it took to be a date, which it took to be numbers, which it left as text.
 
 Three things changed, and each of them fixes something that used to cost people time.
 
@@ -150,7 +150,7 @@ phase$label
 
 `Levels: circuit breaker pre` is alphabetical, so "circuit breaker" now sorts before "pre" and any plot you make will show them in that order. R 4.0.0 changed the default to `FALSE`, which is one of the few backwards-incompatible changes the language has ever made, and it was made because this had wasted enough people's time. Tibbles never did the conversion in the first place.
 
-Factors are useful, and this book uses one deliberately when it builds a severity variable later. The difference is that it will be your decision.
+Factors are useful when you ask for one. A severity label that ought to read low, medium, high rather than alphabetically is exactly the case for `factor()`, because you name the levels in the order you want and everything downstream respects it. The difference is that it is your decision, written in code somebody can point at.
 
 ### Subsetting stays a data frame
 

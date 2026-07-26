@@ -296,72 +296,88 @@ walk(all_months, function(m) {
 
 Here is the case that justifies the whole chapter.
 
-A deterministic SIR model splits a closed population into susceptible, infectious and recovered, and steps forward in time. In each step, some susceptibles become infectious at a rate proportional to how many of each there are, and some infectious people recover:
+Contact tracing has a capacity. Whatever the team's size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today's new cases, minus what the team got through. And it stops at zero, because a team that clears its desk by lunchtime cannot bank the spare afternoon against next month.
 
 $$
-S_{t+1} = S_t - \beta \frac{S_t I_t}{N}, \qquad
-I_{t+1} = I_t + \beta \frac{S_t I_t}{N} - \gamma I_t, \qquad
-R_{t+1} = R_t + \gamma I_t
+Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 $$
 
-Every quantity on the right has a subscript $t$ and every quantity on the left has $t+1$. You cannot compute day 40 without day 39, which needs day 38, and so on back to the start. `lag()` cannot help, because `lag()` shifts a column that already exists and here the column is what you are creating. This is a loop, and it will always be a loop.
+$C_t$ is the cases reported on day $t$, $k$ is the number the team can process in a day, and $Q_t$ is what is still waiting when they go home. Every $Q$ on the right sits one day behind the $Q$ on the left. You cannot compute 14 June without 13 June, which needs 12 June, and so on back to January. `lag()` is no help, because `lag()` shifts a column that already exists and here the column is the one you are creating.
 
-The numbers below are made up. This is not a fit to Singapore and it is not meant to be; it is the smallest thing that shows the mechanism.
+Give the team 300 cases a day. Singapore averaged 170 a day across 2020, so on paper that is a team with room to spare.
 
 ```{r}
-#| label: sir-loop
-N     <- 100000    # a closed hypothetical population
-beta  <- 0.3       # transmission rate per day
-gamma <- 0.1       # recovery rate per day, so an average 10 infectious days
-days  <- 150
+#| label: queue-loop
+capacity <- 300
 
-# Pre-allocate, as above.
-S <- numeric(days)
-I <- numeric(days)
-R <- numeric(days)
+backlog <- numeric(nrow(covid))
+backlog[1] <- max(0, covid$daily_cases[1] - capacity)
 
-# Seed: ten infectious people on day one.
-S[1] <- N - 10
-I[1] <- 10
-R[1] <- 0
-
-for (t in 2:days) {
-  new_infections <- beta * S[t - 1] * I[t - 1] / N
-  new_removals   <- gamma * I[t - 1]
-
-  S[t] <- S[t - 1] - new_infections
-  I[t] <- I[t - 1] + new_infections - new_removals
-  R[t] <- R[t - 1] + new_removals
+for (t in 2:nrow(covid)) {
+  backlog[t] <- max(0, backlog[t - 1] + covid$daily_cases[t] - capacity)
 }
 
-epidemic <- tibble(day = 1:days, S = S, I = I, R = R)
+queue <- covid %>%
+  select(date, daily_cases) %>%
+  mutate(backlog = backlog)
 
-epidemic %>% slice(c(1, 55, 150))
+queue %>%
+  filter(date %in% as.Date(c("2020-04-12", "2020-04-13", "2020-05-01",
+                             "2020-06-14", "2020-08-01", "2020-10-14")))
 ```
 
-The loop starts at `t = 2`, not `t = 1`, because day one is the seed and has nothing before it to compute from. That is the same edge case as the `if (i == 1)` branch in the very first loop of this chapter, handled by starting the counter one step in.
+The loop starts at `t = 2` because day one has nothing before it. That is the same edge case as the `if (i == 1)` branch in the very first loop of this chapter, handled by starting the counter one step in instead of branching inside the body.
+
+Now the version everybody writes first. The queue looks like a running total of the daily excess, and R has a function for running totals:
 
 ```{r}
-#| label: sir-plot
-#| fig-cap: "A deterministic SIR model with $\\beta = 0.3$, $\\gamma = 0.1$ in a closed population of 100,000. Illustrative parameters, not fitted to any data."
-epidemic %>%
-  pivot_longer(c(S, I, R), names_to = "compartment", values_to = "people") %>%
-  mutate(compartment = factor(compartment, levels = c("S", "I", "R"))) %>%
-  ggplot(aes(day, people, colour = compartment)) +
+#| label: queue-cumsum
+naive <- pmax(0, cumsum(covid$daily_cases - capacity))
+
+max(naive)
+max(backlog)
+```
+
+Zero. The cumulative sum says the tracing team never fell behind on a single day of 2020, while the loop has them 19,172 cases deep in the middle of June.
+
+The damage is done in the first eighty-two days. Singapore did not record more than 300 cases in a day until 13 April, and every day before that hands `cumsum()` a negative number to bank. By 12 April the running total sits at -22,068, and the dormitory outbreak has to work all of that off before the sum turns positive. Across the whole year it never manages it: 58,599 cases against 345 days of 300 is 103,500. So `pmax()` on the outside flattens everything to zero.
+
+Wrapping the clamp around the outside is the mistake. `max(0, ...)` has to happen at every step, because $Q_t$ depends on the *clamped* $Q_{t-1}$, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; `cumsum()` by construction never forgets a term it has already added. Take the clamp out and `cumsum()` is exactly right, which is the thing to notice. One specific piece of the model forces the loop, and being able to point at which piece is how you tell a calculation that needs a loop from one you have not thought about hard enough.
+
+purrr does have a function that holds running state for you. `accumulate()` gives the identical vector:
+
+```{r}
+#| label: queue-accumulate
+acc <- accumulate(
+  covid$daily_cases[-1],
+  function(q, cases) max(0, q + cases - capacity),
+  .init = max(0, covid$daily_cases[1] - capacity)
+)
+
+identical(backlog, acc)
+```
+
+That is a real convenience, and you should be clear about what it buys. `accumulate()` moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.
+
+```{r}
+#| label: queue-plot
+#| fig-cap: "The tracing backlog implied by a team clearing 300 cases a day, applied to Singapore's 2020 reported cases. Illustrative capacity, not a figure published by anyone."
+queue %>%
+  ggplot(aes(date, backlog)) +
+  geom_area(fill = nus_colours[["blue"]], alpha = 0.15) +
   geom_line(linewidth = 0.8) +
+  scale_x_date(date_labels = "%b") +
   scale_y_continuous(labels = label_comma()) +
   labs(
-    x = "Day", y = "People", colour = NULL,
-    title = "One epidemic, computed one day at a time",
-    caption = "Illustrative parameters. Not a model of Singapore."
+    x = NULL, y = "Cases waiting",
+    title = "A team clearing 300 a day ends up two months behind",
+    caption = "Illustrative capacity. Not Singapore's actual tracing capacity."
   )
 ```
 
-Susceptibles fall, infections peak around day 55 and then collapse, and recoveries flatten out near the top. The peak is not caused by anything you told the model to do on day 55. It happens because susceptibles run low enough that each infectious person stops replacing themselves, and it falls out of the arithmetic.
+The queue builds through the dormitory outbreak, peaks at 19,172 on 14 June and does not empty until 14 October, having been non-zero on 184 of 345 days. The date of that peak is the interesting part. Cases peaked on 20 April, and the workload peaked 55 days later, because a queue keeps growing for as long as arrivals exceed capacity rather than for as long as arrivals are rising. You cannot read that off the case curve. It only appears once you carry the state forward day by day.
 
-Change `beta` to 0.2 and run it again. Then try 0.5. Then push `I[1]` to 1,000 and watch how little the final size moves. Three minutes of that teaches more about $R_0$ than three pages about it.
-
-What you have written is Euler's method with a step of one day, which is the crudest way to integrate a differential equation and is fine at this scale. Later in the course you will hand the same equations to `deSolve` or `odin`, which choose their own step sizes and take the error seriously. Underneath, both are running a loop very like this one.
+The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today's state to tomorrow's, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is the argument for spending an evening on `for` in a course that otherwise spends its time on `mutate()`.
 
 ## Exercises
 
@@ -381,18 +397,18 @@ The deaths column will not behave like the cases column, and finding out how is 
 
 [Worked solution](solutions.qmd#sec-sol-loop-vs-lag)
 
-::: {#exr-sir-step}
-## An SIR model with an intervention
+::: {#exr-tracing-backlog}
+## How big does the team need to be?
 
-Take the SIR loop and add a circuit breaker. From day 40 to day 95, transmission is reduced: use a lower value of `beta` inside that window and the original value outside it.
+Lift the backlog loop into a function of `capacity` that takes a vector of daily cases and returns the backlog vector, then run it for teams clearing 200, 300, 400, 600 and 800 cases a day. Build one table with the peak backlog, the date of that peak, the number of days the team spent behind, and whether the queue ever cleared again after peaking.
 
-Run it, plot the infectious compartment against the unmodified version on the same axes, and answer two questions from your own output. Does the peak get smaller, and does it get later? What happens after day 95, and would you have predicted it?
+Then answer from your own output. Doubling the team from 300 a day to 600 a day does not halve the peak backlog. What does it do instead, and what is it about Singapore's case series that makes it come out that way?
 :::
 
 ::: {.callout-note collapse="true"}
 ## Stuck? Open for a hint (not the answer)
 
-`beta` does not have to be a single number. Make it a vector of length `days`, set the intervention window with something like `beta[40:95] <- 0.15`, and use `beta[t - 1]` inside the loop. Keep the two runs in one tibble so you can plot them together.
+This is `month_summary()` and `map()` again: a function of one argument that returns a one-row tibble, then `map()` and `list_rbind()` to stack five of them. `which.max()` gives you the position of the peak, and for "did it clear" you want whether any value *after* that position is zero. Keep `max(0, ...)` inside the loop, which is the whole point of the section above. If the last question will not come, compare `sum(covid$daily_cases > 300)` against `sum(covid$daily_cases > 600)`.
 :::
 
-[Worked solution](solutions.qmd#sec-sol-sir-step)
+[Worked solution](solutions.qmd#sec-sol-tracing-backlog)

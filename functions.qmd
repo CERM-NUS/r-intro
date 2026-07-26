@@ -68,7 +68,7 @@ The **arguments** are `df` and `threshold`, in the parentheses after `function`.
 
 The **body** is everything between the braces. It is ordinary R code, and it can use the arguments freely.
 
-The **return value** is the value of the last expression evaluated. There is no `return` keyword here and it is not needed. R functions return their last expression automatically, so `pull(date)` is the answer. You will see `return()` in other people's code and it is not wrong, but the idiom in R is to reserve it for early exits, which we will use in a moment.
+The **return value** is the value of the last expression evaluated. There is no `return` keyword here and it is not needed. R functions return their last expression automatically, so `pull(date)` is the answer. You will see `return()` in other people's code and it is not wrong, but the idiom in R is to reserve it for an early exit: a check at the top of a function that refuses nonsense input before any of the real work happens.
 
 Now use it:
 
@@ -291,7 +291,7 @@ list_rbind(list(
 ))
 ```
 
-`list_rbind()` is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it. In @sec-iteration you will generate all twelve summaries in one line and stack them; writing `month_summary()` to return a tibble today is what makes that line short tomorrow.
+`list_rbind()` is fussy on purpose, and the fussiness is telling you something true. A list has no column types and no guarantee that two of them have the same names in the same order, so stacking them is ambiguous. A one-row tibble carries all of that with it, which is the whole argument for the shape: a function that returns one row composes with itself. Twelve calls and one `list_rbind()` give you the year as a table, and the cost of that at the point of writing the function is nothing.
 
 ## The guard clause
 

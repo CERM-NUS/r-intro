@@ -91,7 +91,7 @@ That column is the string `"Singapore"` in all 345 rows. It is there because the
 
 ### `rename()` changes column names
 
-`retail_and_recreation_percent_change_from_baseline` is fifty characters long and you will be typing it for the rest of the book. Google named it, not you, and the name is descriptive rather than convenient.
+`retail_and_recreation_percent_change_from_baseline` is fifty characters long, and you will type it more times in an afternoon's work than you would like. Google named it, not you, and the name is descriptive rather than convenient.
 
 ```{r}
 mob <- rename(
@@ -109,7 +109,7 @@ select(mob, date, retail, workplaces, residential)
 
 New name on the left, old name on the right, which is the opposite of the order most people guess. The way to remember it is that `rename()` behaves like `mutate()` and every other function that makes columns: the thing being created is always on the left of the `=`.
 
-The rest of this book keeps the long names, because that is what the file ships with and because a chapter that renames things in secret is a chapter you cannot copy code out of. In your own analysis, rename early and rename once.
+The code in this book keeps the long names, because that is what the file ships with and because a chapter that renames things in secret is a chapter you cannot copy code out of. In your own analysis, rename early and rename once.
 
 ### `mutate()` makes new columns
 
@@ -266,7 +266,7 @@ covid %>% select(date, confirmed, daily_cases) %>% head(3)
 
 The picture changes completely if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then `default = 0` would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the honest answer is `NA`, because you have no information about how many cases occurred on the first day of a window you did not observe the start of.
 
-Two conventions, two different datasets, and no default to memorise. Look at the first value. If it is zero, `default = 0` records a true zero. If it is not, plain `lag()` and an `NA` tells the truth about what you do not know. The book uses `default = 0` from here on because this file starts at zero, and that is the only reason.
+Two conventions, two different datasets, and no default to memorise. Look at the first value. If it is zero, `default = 0` records a true zero. If it is not, plain `lag()` and an `NA` tells the truth about what you do not know. This file starts at zero, which is the only reason `default = 0` belongs in the code above, and it is the sort of reason worth writing in a comment beside it.
 
 ## Two checks worth running every time
 
@@ -295,7 +295,7 @@ sum(scrambled$daily_cases) == max(scrambled$confirmed)
 
 A test that fails when the code is wrong and passes when it is right is worth the two lines it takes to write. Keep both of these near the top of any script that differences a cumulative series.
 
-One warning about applying the same recipe to `deaths`. It has 59 missing values at the start, the differencing will not reconcile, and you will recover 27 of the 29 deaths rather than all of them. That is not a mistake you made and it is the subject of @sec-missing.
+One warning about applying the same recipe to `deaths`. That column is missing for the first 59 days of 2020, and the second check will not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason is the `lag()` you have just met. Singapore's first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is `2 - NA`, which is `NA`, and a sum told to skip missing values skips those two deaths along with them. Differencing recovers changes; it cannot recover the level a series started at. That is a property of the file rather than a mistake you made, and what to do about it is a decision about what a blank in that column means rather than a change to the code.
 
 ## Exercises
 
@@ -322,7 +322,7 @@ Apply the same pattern you used for cases to the `deaths` column: sort by date, 
 
 Then run both of the checks from this chapter on it. Are there any negative values? Does the total of the daily numbers equal the final cumulative figure? Report exactly what you get from each check, including anything R does with missing values along the way.
 
-Finally, find the largest single-day increase in deaths and the date it happened. Do not repair the shortfall you find; the next chapter is about where it went.
+Finally, find the largest single-day increase in deaths and the date it happened. Leave the shortfall unrepaired. What the exercise wants is the row it went astray on, named exactly.
 :::
 
 ::: {.callout-note collapse="true"}

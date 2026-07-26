@@ -10,7 +10,7 @@ Type `2 + 2` at the console and R prints `4`. Type it again and R prints `4` aga
 
 That last part is where beginners lose whole evenings. R will happily let you put a word into a column of numbers, and it will not shout. It will convert the numbers into words instead, and then your average comes back as `NA` and you have no idea why. This chapter is mostly about giving you the vocabulary to diagnose that in ten seconds rather than an hour.
 
-The Singapore file is used throughout, so load it now. `read_covid()` is a small helper that ships with this book; @sec-import pulls it apart and shows you what it does. For the moment it hands you the data.
+The Singapore file is used throughout, so load it now. `read_covid()` is a small helper that ships with this book: it reads `data/sg_covid_data.csv` and hands back exactly what is in the file, with nothing cleaned and nothing repaired.
 
 ```{r}
 #| label: load
@@ -93,7 +93,7 @@ Because vectors are the atom, arithmetic works on whole vectors at once. R does 
 head(confirmed * 2, 10)
 ```
 
-This is called vectorisation, and it is the reason R code for data analysis is short. Later, when `mutate()` computes a new column for every row of a data frame in one line, it will feel unremarkable, because you already know that arithmetic on a vector means arithmetic on all of it.
+This is called vectorisation, and it is the reason R code for data analysis is short. A column of a table is a vector, so one line of arithmetic lands on all 345 days at once and the code never has to mention how many days there are. In a language without it you would be writing a loop, a counter, and eventually an off-by-one error.
 
 Here is the same idea doing something useful. The `confirmed` column is cumulative, a running total. The number of *new* cases on a given day is that day's total minus the previous day's. Shift the vector along by one, stick a zero on the front so the lengths still match, and subtract:
 
@@ -113,7 +113,7 @@ covid$date[which.max(new_cases)]
 sum(new_cases) == max(confirmed)
 ```
 
-The zero on the front is doing real work there, and it is not a fudge. The file starts on 22 January with `confirmed` equal to zero, so 22 January really did have zero new cases. Writing that day as missing instead would drop a genuine day from every count you make afterwards. `dplyr::lag()` does this shifting properly and you will meet it soon; the version above is the same idea with the machinery visible.
+The zero on the front is doing real work there, and it is not a fudge. The file starts on 22 January with `confirmed` equal to zero, so 22 January really did have zero new cases. Writing that day as missing instead would drop a genuine day from every count you make afterwards. `dplyr::lag()` does the same shift in one call, and `lag(confirmed, default = 0)` is where that zero goes; the version above is the same idea with the machinery visible.
 
 ### Subsetting
 
@@ -135,7 +135,7 @@ You can also subset with a logical vector, which is where this starts to pay off
 covid$date[new_cases > 1000]
 ```
 
-Four days in 2020 with more than a thousand new cases, and they run consecutively from 20 April. `filter()` will do this more readably later, but underneath it is this.
+Four days in 2020 with more than a thousand new cases, and they run consecutively from 20 April. `dplyr::filter()` says the same thing more readably, and underneath it is doing exactly this: building a logical vector, then keeping the elements it marked `TRUE`.
 
 ## Four types, and one absence {#sec-types}
 
@@ -214,7 +214,7 @@ mean(covid$deaths)
 mean(covid$deaths, na.rm = TRUE)
 ```
 
-Whether that is the right thing to do is a question about deaths, not about R. The chapter on missing data returns to it at length. What matters here is that R made you ask.
+Whether that is the right thing to do is a question about deaths, not about R. `na.rm = TRUE` drops the 59 unrecorded days and averages the 286 that remain, so the number you get is the mean of the days the source reported, which is not the mean of 2020. Only you can say which of those you wanted. What matters here is that R made you ask.
 
 Two more things about `NA`. Testing it with `==` does not work, because "an unknown value" is not equal to anything, including another unknown value:
 

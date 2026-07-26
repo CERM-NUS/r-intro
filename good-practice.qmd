@@ -170,7 +170,7 @@ ls(all.names = TRUE)
 
 Whatever arrives from the source goes in `data/` and is never edited again. Not to fix a date format, not to fill in a blank, not to delete the header row someone put in twice.
 
-The dataset in this book is a good argument for the rule. It has 59 missing values at the start of the deaths column, 24 missing days in every one of the six mobility columns, and case counts that are cumulative rather than daily. All three are repaired in this book, and all three are repaired in code, in front of you, in a way you can read and disagree with. If instead I had opened the CSV in Excel and typed zeros over the missing deaths, the file would look tidier and the analysis would be worse, because a zero and a not-yet-reported are different things and nobody downstream would ever know which they were holding.
+The dataset in this book is a good argument for the rule. It has 59 missing values at the start of the deaths column, 24 missing days in every one of the six mobility columns, and case counts that are cumulative rather than daily. All three need repairing, and every one of those repairs happens in code, in front of you, in a way you can read and disagree with. If instead I had opened the CSV in Excel and typed zeros over the missing deaths, the file would look tidier and the analysis would be worse, because a zero and a not-yet-reported are different things and nobody downstream would ever know which they were holding.
 
 Every repair belongs in the script. That way the repair has a reason next to it, it survives the arrival of an updated file, and a reviewer can see what you changed. A file edited by hand has none of those properties.
 

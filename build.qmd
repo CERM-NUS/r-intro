@@ -50,7 +50,7 @@ One file per chapter, and the chapter list in `_quarto.yml` is the only place th
 The whole build is one YAML file. It opens with a warning to future me:
 
 ```yaml
-# Verified against Quarto 1.4.554. The project: and book: schemas are closed,
+# Verified against Quarto 1.10.18. The project: and book: schemas are closed,
 # so an unrecognised key there is a hard render failure — check
 # /Applications/quarto/share/schema/definitions.yml before adding one.
 ```
@@ -359,7 +359,7 @@ Which is where the dirty-tree rule in `publish.sh` comes back. Render with uncom
 
 ### No CI, still
 
-There is no GitHub Action here, and the reason has not changed. This book is built with Quarto 1.4.554, on one laptop, against a package library pinned by `renv.lock`. Any route that renders on a server adds a second Quarto at a second version, and a newer Quarto does not fail loudly on an older book. It produces slightly different HTML from the version the book was checked against, which is a category of bug you find weeks later on one page. Publishing from here keeps the render on the machine the versions are pinned to, and only the output travels.
+There is no GitHub Action here, and the reason has not changed. This book is built with Quarto 1.10.18, on one laptop, against a package library pinned by `renv.lock`. Any route that renders on a server adds a second Quarto at a second version, and a newer Quarto does not fail loudly on an older book. It produces slightly different HTML from the version the book was checked against, which is a category of bug you find weeks later on one page. Publishing from here keeps the render on the machine the versions are pinned to, and only the output travels.
 
 ### `.nojekyll`, and why this repository does not have one
 

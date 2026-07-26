@@ -8,7 +8,7 @@ source("_common.R")
 
 Nobody reading a surveillance report sees "1,426" and thinks "1,426". They think "bad day". Most of what routine epidemiological reporting does is turn numbers into labels, and R hands you two entirely different tools for the job. One of them decides what your *script* does next. The other decides what goes in a *column*. Beginners reach for the first when they need the second roughly every time, and the result is either a red error or, worse, an answer that is correct for one row and quietly wrong for the other 344.
 
-This chapter sorts out which is which, and then builds the column the rest of the book leans on: a severity label for every day of 2020.
+This chapter sorts out which is which, and then builds the column that turns 345 numbers into something you can put in a report: a severity label for every day of 2020.
 
 ## Where we are
 
@@ -123,7 +123,7 @@ covid <- covid %>%
 covid %>% count(severity)
 ```
 
-The `~` separates the test from the result. You will meet that squiggle again in formulas and in ggplot facets; here it means "gives".
+The `~` separates the test from the result. R uses that squiggle wherever the two sides of a relationship have to sit in one expression, which is why it also turns up in modelling formulas and in ggplot facet specifications; inside `case_when()` it means "gives".
 
 `case_when()` works top to bottom and **first match wins**. Once a row matches a line, later lines never see it. That is what lets the second condition be `daily_cases <= 300` and not `daily_cases >= 100 & daily_cases <= 300`: any row still being tested on line two already failed line one, so it already has at least 100 cases.
 
@@ -280,9 +280,9 @@ table(factor(as.character(covid$severity), levels = c("low", "Medium", "High")),
 
 A lower-case `l` sent 215 days to `NA` without a word of complaint. After you create a factor, run `table(..., useNA = "ifany")` or `count()` once and check the total still matches your row count. Two seconds, and it catches this every time.
 
-## What the rest of the book starts from
+## The dataset, assembled
 
-Putting the pieces together, here is the dataset from this point on: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a `month` column produced by rounding each date down to the first of its month.
+Putting the pieces together, here is the whole thing in one block: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a `month` column produced by rounding each date down to the first of its month.
 
 ```{r}
 covid <- read_covid() %>%
@@ -304,7 +304,7 @@ covid %>%
   slice(85:88)
 ```
 
-That block is exactly what `covid_daily()` runs. Later chapters open with `covid <- covid_daily()` instead of retyping it, and `_common.R` in the project root holds the definition if you want to read it. Nothing is hidden in there that you have not now built by hand.
+That block is exactly what `covid_daily()` runs. The definition sits in `_common.R` in the project root, where you can open it and read it, so `covid <- covid_daily()` rebuilds this table in one line whenever you want it back in a fresh session. Nothing is hidden in there that you have not now built by hand.
 
 ## Exercises
 
@@ -323,7 +323,7 @@ Step 3 is the one worth thinking about. Write down what it tells you about how m
 ::: {.callout-note collapse="true"}
 ## Stuck? Open for a hint (not the answer)
 
-`group_by(severity)` followed by a `summarise()` containing `n()`, `min()` and `max()` answers steps 1 and 2 in one call, and grouping is the next chapter so treat this as a preview rather than something you should already know. For the `NA` check, `count()` shows a missing category if one exists.
+`group_by(severity)` followed by a `summarise()` containing `n()`, `min()` and `max()` answers steps 1 and 2 in one call: `group_by()` splits the rows into one pile per label, and `summarise()` computes one row of answers for each pile. If you would rather stay with verbs you have already used, a `filter()` per label and a `range()` on each gets you the same three pairs of numbers with more typing. For the `NA` check, `count()` shows a missing category if one exists.
 :::
 
 [Worked solution](solutions.qmd#sec-sol-severity)

@@ -70,7 +70,7 @@ Run `ggplot(covid, aes(x = date, y = daily_cases))` on its own, with no geom, an
 
 Out of the box, `geom_line()` draws in black. The line above is NUS blue because `_common.R`, the setup file every chapter sources, calls `update_geom_defaults()` to change the default and `theme_set(theme_nus())` to change the grid, the fonts and the legend position. That code lives in `R/nus_theme.R` if you want to read it.
 
-This matters for one practical reason. When you copy a chunk out of this book into your own script and it comes out looking different, the difference is the house theme, not a mistake on your part. The named colours used later, `nus_colours[["crimson"]]` and friends, come from the same file and will not exist in a fresh R session.
+This matters for one practical reason. When you copy a chunk out of this book into your own script and it comes out looking different, the difference is the house theme, not a mistake on your part. The named colours this chapter uses, `nus_colours[["crimson"]]` and friends, come from the same file and will not exist in a fresh R session.
 
 ### Setting a colour versus mapping one
 
@@ -130,7 +130,7 @@ That figure also shows why 5 August needs the caveat it always gets in this book
 
 ## A bad plot, on purpose
 
-The rest of this chapter is built around plots that come out wrong, because a plot handed over already working teaches you nothing about what to do at 11pm when yours does not.
+A plot handed over already working teaches you nothing about what to do at 11pm when yours does not. So this section is built around plots that come out wrong.
 
 Here is the standard first move for any numeric variable: look at its distribution.
 
@@ -200,7 +200,7 @@ ggplot(covid, aes(x = daily_cases)) +
   scale_x_log10()
 ```
 
-Cost: the 13 days with zero new cases are gone, and both warnings tell you so. There is more on this below, because the same problem turns up on the y axis and matters more there.
+Cost: the 13 days with zero new cases are gone, and both warnings tell you so. `log10(0)` is `-Inf`, and no axis has a position for negative infinity, so logging a count variable deletes every zero in it. Here that is 13 days out of 345, all of them in the first seven weeks of the record.
 
 ### The deeper problem
 

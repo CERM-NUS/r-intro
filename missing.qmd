@@ -30,7 +30,7 @@ covid %>%
   )
 ```
 
-Naming six columns by hand does not scale, and there is a version later in the book that runs the same count across every column at once. For now the answer is stark enough: the case counts and the policy indices are complete for all 345 days, `deaths` is missing on 59 of them, and every mobility column is missing on exactly 24.
+Naming six columns by hand does not scale to a file with two hundred of them, and there are ways to run one count over every column at once without typing any of their names. At six columns the typing is worth it, because the output says on its face what was counted and you do not have to trust anything to read it. The answer is stark enough: the case counts and the policy indices are complete for all 345 days, `deaths` is missing on 59 of them, and every mobility column is missing on exactly 24.
 
 Exactly 24, in all six. That is a strong hint that they went missing together, for one shared reason, and they did.
 
@@ -306,7 +306,7 @@ covid %>%
   summarise(total = sum(daily_deaths))
 ```
 
-The `covid_daily()` helper that later chapters open with does *not* do this. It differences `deaths` as it finds them, so its `daily_deaths` column carries `NA` for the first 60 days and sums to 27. That is a choice to stay close to what the file says rather than to what you believe about it, and it is defensible in the other direction. What is not defensible is summing that column with `na.rm = TRUE`, calling the result the 2020 death toll, and never noticing the two you dropped.
+The plain recipe, the one at the top of this section, does *not* do this. It differences `deaths` as the file supplies them, so its `daily_deaths` column carries `NA` for the first 60 days and sums to 27. That is a choice to stay close to what the file says rather than to what you believe about it, and it is defensible in the other direction. What is not defensible is summing that column with `na.rm = TRUE`, calling the result the 2020 death toll, and never noticing the two you dropped.
 
 ## Exercise
 

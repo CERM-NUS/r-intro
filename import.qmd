@@ -47,7 +47,7 @@ That block of text is a message rather than an error, and it repays reading line
 
 `chr (1)`, `dbl (11)`, `date (1)`. These are the guessed column types, and this is the part people skip. Three of them matter here.
 
-**`date` came in as a real `Date`, not as text.** readr recognises the ISO 8601 form `YYYY-MM-DD` and parses it. That single fact is why the rest of this book can subtract one date from another, sort chronologically, and hand dates straight to `ggplot()` without ceremony.
+**`date` came in as a real `Date`, not as text.** readr recognises the ISO 8601 form `YYYY-MM-DD` and parses it. That single fact is why you can subtract one date from another, sort chronologically, and hand dates straight to `ggplot()` without ceremony.
 
 **Every count is `dbl`, not integer.** readr's guesser does not distinguish whole numbers from decimals; anything numeric arrives as a double. Nothing goes wrong as a result, and it is worth knowing when you wonder why `confirmed` is `<dbl>` when it obviously counts people.
 
@@ -204,9 +204,9 @@ sum(is.na(covid$deaths))
 sum(is.na(covid$parks_percent_change_from_baseline))
 ```
 
-`deaths` is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020, and it goes straight to 2 without ever passing through 1. Everything before that is stored as missing rather than as zero. Those are different claims. Zero says nobody died; `NA` says the source is not telling you. The distinction will cost you two deaths later in the book, when you try to recover daily deaths by differencing the column.
+`deaths` is missing for the first 59 rows. The first value the file carries is 2, on 21 March 2020, and it goes straight to 2 without ever passing through 1. Everything before that is stored as missing rather than as zero. Those are different claims. Zero says nobody died; `NA` says the source is not telling you. The distinction costs you two deaths the moment you difference the column to recover daily deaths: the first recorded value is 2 with `NA` behind it, so the subtraction that would have caught those two has nothing to subtract from, and the daily figures add up to 27 against a recorded total of 29.
 
-The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. The chapter on missing data takes both of these apart properly; for now, the point is that `glimpse()` showed you within seconds of loading the file.
+The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file. Both are the source declining to state something it does not have, which is the honest thing for it to do and the awkward thing for you, and `glimpse()` put both of them in front of you within seconds of loading it.
 
 Three more worth having in your fingers. `head()` and `tail()` show the first and last rows, and `tail()` is the one that catches the summary row somebody left at the bottom of a spreadsheet. `summary()` gives a five-number summary of every numeric column plus a count of `NA`s. `View()` opens the spreadsheet viewer in RStudio, which is the fastest way to eyeball a small file and useless on a large one; keep it at the console and never in a script, because it does nothing in a rendered document.
 
@@ -230,7 +230,7 @@ read_covid <- function() {
 
 Nothing is cleaned, nothing is repaired. Counts are still cumulative, `NA`s are still `NA`s. Every chapter that fixes something fixes it where you can watch.
 
-## One plot, as a promise {#sec-first-plot}
+## One plot, out of order {#sec-first-plot}
 
 You have not been taught `ggplot()` yet. Run this anyway.
 
@@ -264,7 +264,7 @@ ggplot(covid, aes(x = date, y = confirmed)) +
 
 Fifty-eight thousand confirmed cases by the end of December, and a curve that turns sharply upward in April and flattens through the second half of the year. The shaded band is Singapore's circuit breaker, 7 April to 1 June 2020.
 
-The curve is honest and almost useless for reading an epidemic, because a cumulative total can only go up. You cannot see when transmission accelerated or when it stopped. To see that you need the daily difference, which means creating a column, which is the next chapter.
+The curve is honest and almost useless for reading an epidemic, because a cumulative total can only go up. You cannot see when transmission accelerated or when it stopped. What you want instead is the daily difference, each day's total minus the day before's, kept in a column of its own. On 20 April that column holds 1,426 new cases; the cumulative line for the same day holds 8,014, which is a fact about January to April rather than about 20 April.
 
 ## Exercise
 

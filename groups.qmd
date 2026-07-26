@@ -266,7 +266,7 @@ for (i in 1:3) {
 }
 ```
 
-Ignore the loop syntax for now; that is the iteration chapter's job. Look at what you are left with holding. Those three lines are text on a console. You cannot sort them, filter them, join them to a table of policy dates, count how many said "Alert", or paste them into a document without retyping. When the loop finishes, the answer is gone.
+The loop itself is doing something simple: `i` takes the values 1, 2 and 3 in turn, and `cat()` pastes its arguments together and prints them to the console. Look at what you are left with holding. Those three lines are text on a console. You cannot sort them, filter them, join them to a table of policy dates, count how many said "Alert", or paste them into a document without retyping. When the loop finishes, the answer is gone.
 
 The table is the report:
 

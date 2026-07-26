@@ -17,7 +17,7 @@ Every exercise in the book has an answer here, and every answer on this page was
 
 Read the exercise first and have a go. A solution you have already attempted teaches you something; a solution you read cold teaches you that R exists.
 
-Two objects are set up once at the top of this page and used throughout. `covid` is `covid_daily()`, the state the book reaches at the end of @sec-conditionals, with `daily_cases`, `daily_deaths`, `severity` and `month` already built. `covid_raw` is `read_covid()`, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. Chapters up to and including @sec-conditionals build those columns in front of you, so if you are working through the book in order and your object is called something else, that is fine.
+Two objects are set up once at the top of this page and used throughout. `covid` is `covid_daily()`, the file with `daily_cases`, `daily_deaths`, `severity` and `month` already built. `covid_raw` is `read_covid()`, the file exactly as it ships, which a few of the early solutions need because the exercises are about what the raw file looks like. The book builds those four columns in front of you, one at a time, so if you are working through it in order and your own object is called something else, or does not have a column a solution here uses, that is fine rather than a sign you have gone wrong.
 
 ## Build a week by hand {#sec-sol-vectors}
 
@@ -42,7 +42,7 @@ Part two. Two vectors of the same length subtract element by element, so you nee
 week_one[2:7] - week_one[1:6]
 ```
 
-One, two, zero, one, one, two. Day four had no new cases at all. This is the same arithmetic that `lag()` does across all 345 rows in @sec-transform, written out small enough to see.
+One, two, zero, one, one, two. Day four had no new cases at all. This is the same arithmetic that `lag()` performs across all 345 rows of the real file, written out small enough to see.
 
 What this does *not* give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with `lag(confirmed, default = 0)`, which is defensible here because `confirmed[1]` really is 0.
 
@@ -81,7 +81,7 @@ mean(week_na, na.rm = TRUE)
 
 `NA` in, `NA` out. R will not guess what the missing value was, so any arithmetic that touches it is undefined and R says so. `na.rm = TRUE` drops it and averages the remaining six, giving 3.33.
 
-**What people get wrong.** They reach for `na.rm = TRUE` as a reflex, because it makes the `NA` go away and the code stops complaining. It also silently changes the denominator: the second mean is over six days, not seven, and nothing in the output says so. @sec-missing is about the cases where that matters, and Singapore's mobility columns are one of them.
+**What people get wrong.** They reach for `na.rm = TRUE` as a reflex, because it makes the `NA` go away and the code stops complaining. It also silently changes the denominator: the second mean is over six days, not seven, and nothing in the output says so. On seven values you can see the switch happen. Singapore's mobility columns are missing on 24 of 345 days, and `na.rm = TRUE` on one of those hands you an average over 321 days with the word "year" attached to it.
 
 ## Take a tibble apart {#sec-sol-tibble-anatomy}
 
@@ -204,7 +204,7 @@ raw %>%
   filter(n_missing > 0)
 ```
 
-They do not all have the same number. The six mobility columns have 24 apiece and `deaths` has 59, and the two gaps have nothing to do with each other. The mobility gap runs from 22 January to 14 February because Google's baseline period, the median by weekday over 3 January to 6 February 2020, had not finished. The `deaths` gap runs to 20 March because Singapore had not recorded a COVID-19 death yet, and the source file encodes "none yet" as missing rather than as zero. Two different reasons, two different repairs, and @sec-missing takes them apart.
+They do not all have the same number. The six mobility columns have 24 apiece and `deaths` has 59, and the two gaps have nothing to do with each other. The mobility gap runs from 22 January to 14 February because Google's baseline period, the median by weekday over 3 January to 6 February 2020, had not finished. The `deaths` gap runs to 20 March because Singapore had not recorded a COVID-19 death yet, and the source file encodes "none yet" as missing rather than as zero. Two different reasons, and so two different repairs. Nothing can fill in a percentage change against a baseline that had not been computed yet, so the mobility gap stays missing and the columns get reported over 321 days. A death count of "none yet" is a real zero written badly, and you can argue it back to zero as long as you say you did.
 
 If `across()` and `pivot_longer()` are new, `colSums(is.na(raw))` gets you the same numbers in one line of base R.
 
@@ -276,7 +276,7 @@ Fifty-six both ways. Twenty-four days of April, thirty-one of May, and the first
 
 The top three rows are 10 April, 1 May and 7 May, all at 83% below baseline. They are Good Friday, Labour Day and Vesak Day. The three deepest workplace-mobility days inside Singapore's strictest eight weeks of 2020 are public holidays, and the same holds across the whole year: the eight deepest workplace days in 2020 are all public holidays.
 
-**What people get wrong.** Reading a mobility trough as a policy effect. Before you write a sentence about any dip in these series, check the date against a calendar. @sec-functions comes back to this with the full list of eight.
+**What people get wrong.** Reading a mobility trough as a policy effect. Before you write a sentence about any dip in these series, check the date against a calendar.
 
 ## Difference the deaths series {#sec-sol-daily-cases}
 
@@ -336,7 +336,7 @@ deaths_daily %>%
   select(date, deaths, daily_deaths)
 ```
 
-Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of `na.rm = TRUE` puts it back. @sec-missing shows the repair, which is a decision about what the leading `NA`s mean rather than a piece of code.
+Differencing recovers changes. It cannot recover a level. A series that starts part-way up loses everything below the step, and no amount of `na.rm = TRUE` puts it back. The repair is a decision about what those leading `NA`s mean rather than a piece of code. Read them as "no deaths had occurred yet" and 21 March's increment is 2, the daily figures add to 29, and the check passes. Read them as "not reported" and the honest total is 27 with a footnote. Both are defensible; only one of them can be in your report.
 
 The largest single-day rise:
 
@@ -433,7 +433,7 @@ Twenty-four rows in that result have no date and no case count. `filter()` drops
 
 [Back to the exercise](conditionals.qmd#exr-severity)
 
-Steps one and two in one call. `group_by()` and `summarise()` are the subject of @sec-groups, so treat this as a preview:
+Steps one and two in one call. `group_by()` splits the rows by the value of a column, and `summarise()` then collapses each group to a single row, so one pipeline gives you the count and the range for all three labels at once:
 
 ```{r}
 #| label: sol-severity-1
@@ -484,7 +484,7 @@ sapply(90:105, function(t) identical(relabel(t), as_written))
 
 `TRUE` from 95 through 100 and `FALSE` either side. The upper cutoff behaves the same way: the largest Medium day is 295 and the smallest High day is 301, so 295 through 300 are interchangeable.
 
-What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they *can* argue is what happens at 50, or at 500, and that is the next exercise.
+What that tells you is that the exact number 100 is not carrying the classification. Any cutoff from 95 to 100 produces the identical table, and the same is true of 295 to 300 at the top, so nobody can argue that your headline depends on a round number picked by a worksheet author. What they *can* argue is what happens at 50, or at 500, where the gap is wide enough to carry real days across a boundary.
 
 ## Move the cutoffs and watch the headline move {#sec-sol-move-cutoffs}
 
@@ -1084,97 +1084,110 @@ The first recorded value is 2, not 1. Two deaths had already occurred by the tim
 
 None of that is an error in your code. It is what the file says, and the useful response is to write it down rather than to patch it. @sec-missing shows the patch, which is a decision about whether the leading `NA`s mean "zero deaths so far" or "not reported", and those two readings give different answers.
 
-## An SIR model with an intervention {#sec-sol-sir-step}
+## How big does the team need to be? {#sec-sol-tracing-backlog}
 
-> Also from the chapter on loops: add a circuit breaker to the SIR model between days 40 and 95, plot the infectious compartment against the unmodified run, and say what happens when the intervention lifts.
+> Also from the chapter on loops: turn the tracing backlog into a function of capacity, sweep it across five team sizes, and explain why doubling the team more than halves the peak queue.
 
-[Back to the exercise](iteration.qmd#exr-sir-step)
+[Back to the exercise](iteration.qmd#exr-tracing-backlog)
 
-The trick is that `beta` does not have to be one number. Make it a vector of length `days` and index it inside the loop:
+The loop is the chapter's, with the two things that vary lifted into arguments:
 
 ```{r}
-#| label: sol-sir-1
-sir_run <- function(beta, gamma = 0.1, N = 100000, days = 150, I0 = 10) {
-  if (length(beta) == 1) beta <- rep(beta, days)
+#| label: sol-backlog-1
+backlog_run <- function(cases, capacity) {
+  q <- numeric(length(cases))
+  q[1] <- max(0, cases[1] - capacity)
 
-  S <- numeric(days)
-  I <- numeric(days)
-  R <- numeric(days)
-
-  S[1] <- N - I0
-  I[1] <- I0
-  R[1] <- 0
-
-  for (t in 2:days) {
-    new_infections <- beta[t - 1] * S[t - 1] * I[t - 1] / N
-    new_removals   <- gamma * I[t - 1]
-
-    S[t] <- S[t - 1] - new_infections
-    I[t] <- I[t - 1] + new_infections - new_removals
-    R[t] <- R[t - 1] + new_removals
+  for (t in 2:length(cases)) {
+    q[t] <- max(0, q[t - 1] + cases[t] - capacity)
   }
 
-  tibble(day = 1:days, S = S, I = I, R = R)
+  q
 }
-
-beta_cb <- rep(0.3, 150)
-beta_cb[40:95] <- 0.15
-
-baseline     <- sir_run(0.3)
-intervention <- sir_run(beta_cb)
 ```
 
-Wrapping the loop in a function is the change that makes this exercise tractable. Two runs means two of everything, and copying the loop and editing one line in the copy is precisely the failure mode @sec-functions is about. `beta[t - 1]` rather than `beta[t]` because the transmission that produces day `t`'s infections happened on day `t - 1`, which matches the rest of the loop's indexing.
+Nothing clever, and that is the point. Five team sizes means five runs, and copying the loop four times with one number changed is the failure mode @sec-functions is about. `max(0, ...)` stays inside the loop, because moving it outside is what gives you the flat zero line the chapter showed.
 
-Both runs in one tibble, so they can be plotted together:
+Then the summary function returns one row, so five of them stack:
 
 ```{r}
-#| label: sol-sir-2
-#| fig-cap: "A 56-day reduction in transmission from day 40, against the unmodified run. Illustrative parameters, not fitted to any data."
-runs <- bind_rows(
-  baseline     %>% mutate(run = "No intervention"),
-  intervention %>% mutate(run = "Beta halved, days 40-95")
-)
+#| label: sol-backlog-2
+team_summary <- function(capacity) {
+  q     <- backlog_run(covid$daily_cases, capacity)
+  peak  <- which.max(q)
+  after <- q[seq_along(q) > peak]
 
-ggplot(runs, aes(x = day, y = I, colour = run)) +
-  annotate("rect", xmin = 40, xmax = 95, ymin = -Inf, ymax = Inf,
-           fill = nus_colours[["muted"]], alpha = 0.2) +
+  tibble(
+    capacity     = capacity,
+    peak_backlog = max(q),
+    peak_date    = covid$date[peak],
+    days_behind  = sum(q > 0),
+    cleared      = any(after == 0)
+  )
+}
+
+teams <- c(200, 300, 400, 600, 800) %>%
+  map(team_summary) %>%
+  list_rbind()
+
+teams
+```
+
+`cleared` has to look only at the days after the peak. Every one of these runs starts at zero and stays there through the quiet first months, so asking "was the queue ever empty" would answer `TRUE` for all five and tell you nothing.
+
+The 200-a-day row is the one to read first. Singapore averaged 169.9 cases a day across 2020, so a team sized at 200 is comfortably above the year's mean, and it never recovers: 267 days behind, and still 3,576 cases in the queue on 31 December. Sizing capacity against an average is how you end up permanently underwater, because the average is a summary of a series whose median is 40 and whose maximum is 1,426.
+
+The two runs the question asks about, drawn together:
+
+```{r}
+#| label: sol-backlog-3
+#| fig-cap: "Tracing backlog under two team sizes, applied to Singapore's 2020 reported cases. Illustrative capacities, not figures published by anyone."
+runs <- c(300, 600) %>%
+  map(function(k) {
+    tibble(date = covid$date, backlog = backlog_run(covid$daily_cases, k),
+           team = paste(k, "a day"))
+  }) %>%
+  list_rbind()
+
+ggplot(runs, aes(date, backlog, colour = team)) +
   geom_line(linewidth = 0.8) +
+  scale_x_date(date_labels = "%b") +
   scale_y_continuous(labels = label_comma()) +
   labs(
-    x = "Day", y = "Infectious", colour = NULL,
-    title = "The intervention flattens the peak and leaves a second one behind",
-    caption = "Illustrative parameters. Not a model of Singapore."
+    x = NULL, y = "Cases waiting", colour = NULL,
+    title = "Twice the team, less than a third of the queue",
+    caption = "Illustrative capacities. Not Singapore's actual tracing capacity."
   )
 ```
 
-The two questions, answered from the output rather than from what a model is supposed to do:
+```{r}
+#| label: sol-backlog-4
+teams %>%
+  filter(capacity %in% c(300, 600)) %>%
+  select(capacity, peak_backlog, days_behind) %>%
+  mutate(
+    backlog_ratio = round(peak_backlog / peak_backlog[1], 2),
+    days_ratio    = round(days_behind / days_behind[1], 2)
+  )
+```
+
+Doubling the team cuts the peak backlog to 27% of what it was, from 19,172 to 5,192, and the days spent behind to 35%, from 184 to 64. Both are much better than halving.
+
+The reason is that the backlog is built only out of the days when arrivals exceed capacity, and raising capacity attacks those days twice over. It shrinks what each overflow day contributes: 1 May had 932 cases, which is 632 over a team of 300 and 332 over a team of 600. And it removes days from the overflow entirely, because 77 days of 2020 had more than 300 cases and only 29 had more than 600.
 
 ```{r}
-#| label: sol-sir-3
+#| label: sol-backlog-5
 tibble(
-  run       = c("No intervention", "Beta halved, days 40-95"),
-  peak_day  = c(baseline$day[which.max(baseline$I)],
-                intervention$day[which.max(intervention$I)]),
-  peak_I    = round(c(max(baseline$I), max(intervention$I))),
-  final_R   = round(c(tail(baseline$R, 1), tail(intervention$R, 1)))
+  capacity   = c(300, 600),
+  days_over  = c(sum(covid$daily_cases > 300), sum(covid$daily_cases > 600)),
+  total_over = c(sum(pmax(0, covid$daily_cases - 300)),
+                 sum(pmax(0, covid$daily_cases - 600)))
 )
 ```
 
-The peak gets much smaller, from about 31,200 infectious to about 12,100, and with these parameters it does not get later at all. Both peak on day 55. That surprised me the first time and it has a clean explanation: the peak occurs when susceptibles fall to $\gamma N / \beta$, and halving $\beta$ doubles that threshold, so the intervention run reaches its (higher) threshold at roughly the same time the baseline reaches its (lower) one. Change the dates or the depth of the intervention and the peaks separate. The generalisation "interventions delay the peak" is not something the arithmetic guarantees.
+Total overflow across the year falls from 20,933 to 6,091, a factor of 3.4, and the peak follows it down by a factor of 3.7.
 
-After day 95 the intervention lifts and there is a second rise:
-
-```{r}
-#| label: sol-sir-4
-intervention %>%
-  filter(day %in% c(95, 100, 108, 120, 150)) %>%
-  mutate(across(c(S, I, R), round))
-```
-
-Infections bottom out around day 95 and climb again to a local peak near day 108. The reason is in the `S` column. At day 95 the intervention run still has 38,867 susceptibles against the baseline's 5,713. With $\beta$ back at 0.3 and $\gamma$ at 0.1, each infectious person infects more than one other while $S/N$ stays above one third, so the epidemic restarts.
-
-Would I have predicted it? The direction, yes, once you look at where the susceptibles are. The size, no. The final attack rate falls from 95% to 76%, so the intervention prevented about 18,000 infections in a population of 100,000 despite the rebound, which is more than the shape of the curve suggests at a glance. Suppression without immunity postpones; it does not cancel. Whether the postponement is worth it depends on what you do with the time, and that is not a question this model contains.
+What makes this happen is the shape of the case series rather than anything about queues in the abstract. Singapore's 2020 daily counts are heavily skewed, with a median of 40 against a maximum of 1,426, so most days are nowhere near capacity at either team size and the whole queue is decided by about two months in the middle of the year. Capacity added above the bulk of a distribution buys more than capacity added inside it. The practical version of that: if you are asked how many contact tracers to hire, the answer depends on the shape of the peak you expect and not on the total you expect, and those two numbers can move in opposite directions.
 
 ## Write the August 2020 situation report {#sec-sol-sitrep}
 

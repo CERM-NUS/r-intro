@@ -136,7 +136,7 @@ sph5421/
 └── analysis.R
 ```
 
-Two warnings about that download. Some browsers append `.txt` to files they think are plain text, so check that what landed on disk is called `sg_covid_data.csv` and not `sg_covid_data.csv.txt`. And do not open it in Excel to have a look. Excel will offer to save it back, and when it does it will silently rewrite the date column into whatever your regional settings prefer. If you want to see inside the file, the next chapters show you how to look at it in R, which is non-destructive.
+Two warnings about that download. Some browsers append `.txt` to files they think are plain text, so check that what landed on disk is called `sg_covid_data.csv` and not `sg_covid_data.csv.txt`. And do not open it in Excel to have a look. Excel will offer to save it back, and when it does it will silently rewrite the date column into whatever your regional settings prefer. If you want to see inside the file, look at it from R instead, which reads it and never writes back to it. That is what the check below does.
 
 ## Does it work?
 
@@ -151,15 +151,15 @@ covid <- read_csv("data/sg_covid_data.csv")
 nrow(covid)
 ```
 
-You should get 345, and above it a column specification listing 13 columns: one character, eleven numbers and one date. Read that block rather than scrolling past it. It is readr telling you what it decided each column was, and the import chapter comes back to what happens when it guesses wrong.
+You should get 345, and above it a column specification listing 13 columns: one character, eleven numbers and one date. Read that block rather than scrolling past it. It is readr telling you what it decided each column was. Those decisions are guesses made from the first thousand rows, and the block is where you catch a bad one, which is a great deal cheaper than catching it four steps into an analysis when a date turns out to have been text all along.
 
-You will also see the tidyverse startup message from the previous section. It does not appear on this page because the machine that built the book had already loaded the tidyverse before this chapter started, which is a small preview of why sessions matter.
+You will also see the tidyverse startup message from the previous section. It does not appear on this page because the machine that built the book had already loaded the tidyverse before this chapter started, and a package announces itself only the first time a session attaches it.
 
 Now check that graphics work:
 
 ```{r}
 #| label: does-it-work-plot
-#| fig-cap: "Cumulative confirmed cases, straight from the raw column. It only ever goes up, which is exactly the problem the next few chapters solve."
+#| fig-cap: "Cumulative confirmed cases, straight from the raw column. A running total can only go up, so the epidemic is in the slope rather than the height."
 ggplot(covid, aes(x = date, y = confirmed)) +
   geom_line()
 ```
@@ -191,7 +191,7 @@ R is looking in the wrong place. The message tells you exactly where it looked, 
 getwd()
 ```
 
-Yours will print something else. The whole of the next chapter is about making this stop being a problem, so if you hit this one, keep reading rather than fixing it by hand.
+Yours will print something else. Do not repair it by typing `setwd()` and a path. Take the folder you made for this course and give it a project file: File, New Project, Existing Directory, point RStudio at the folder. From then on you open your work by double-clicking the `.Rproj` file that appears, R starts in that folder every time, and `data/sg_covid_data.csv` resolves without you typing a path at all.
 
 ```
 Error: unexpected input in "covid <- read_csv(“"
