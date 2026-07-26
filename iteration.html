@@ -485,9 +485,9 @@ window.Quarto = {
 <span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
 <span><span class="co">#&gt;       n grow_secs prealloc_secs grow_vs_previous_row</span></span>
 <span><span class="co">#&gt;   &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 10000    0.0790       0.00200                 NA  </span></span>
-<span><span class="co">#&gt; 2 20000    0.272        0.00100                  3.4</span></span>
-<span><span class="co">#&gt; 3 40000    1.06         0.00100                  3.9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co">#&gt; 1 10000    0.0760      0.00200                  NA  </span></span>
+<span><span class="co">#&gt; 2 20000    0.266       0.001000                  3.5</span></span>
+<span><span class="co">#&gt; 3 40000    1.05        0.00100                   3.9</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The last column uses <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> again, this time outside a <code>mutate()</code> on the COVID data. Each doubling of <code>n</code> multiplies the growing version’s time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: <code>x &lt;- c(x, i)</code> does not append. R has no append. It allocates a brand new vector one element longer, copies the whole of <code>x</code> into it, adds the new value, and throws the old one away. Do that <code>n</code> times and you have copied roughly <code>n²/2</code> values.</p>
 <p><code>prealloc_secs</code> barely moves, because <code>x[i] &lt;- value</code> writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.</p>
@@ -658,12 +658,11 @@ window.Quarto = {
 <p><code>walk()</code> returns its input invisibly, so nothing clutters the console except what you asked to print. Using <code>map()</code> here would work and would also dump twelve tibbles underneath your report.</p>
 </section><section id="the-loop-you-cannot-vectorise" class="level2" data-number="12.8"><h2 data-number="12.8" class="anchored" data-anchor-id="the-loop-you-cannot-vectorise">
 <span class="header-section-number">12.8</span> The loop you cannot vectorise</h2>
-<p>Contact tracing has a capacity. Whatever the team’s size, it can work through so many cases a day, and on a day when more arrive than that, the surplus waits until tomorrow. So the queue at the end of today is the queue at the end of yesterday, plus today’s new cases, minus what the team got through. The queue also stops at zero: unused capacity on a quiet day is not carried forward to the next one.</p>
+<p>A tracing team can work through so many cases a day. On a day when more arrive, the surplus waits until tomorrow, and unused capacity on a quiet day is not carried forward:</p>
 <p><span class="math display">\[
 Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 \]</span></p>
-<p><span class="math inline">\(C_t\)</span> is the cases reported on day <span class="math inline">\(t\)</span>, <span class="math inline">\(k\)</span> is the number the team can process in a day, and <span class="math inline">\(Q_t\)</span> is what is still waiting when they go home. Every <span class="math inline">\(Q\)</span> on the right sits one day behind the <span class="math inline">\(Q\)</span> on the left. You cannot compute 14 June without 13 June, which needs 12 June, and so on back to January. <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> is no help, because <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> shifts a column that already exists and here the column is the one you are creating.</p>
-<p>Give the team 300 cases a day. Singapore averaged 170 a day across 2020, so on paper that is a team with room to spare.</p>
+<p><span class="math inline">\(C_t\)</span> is the cases reported on day <span class="math inline">\(t\)</span>, <span class="math inline">\(k\)</span> is the daily capacity, and <span class="math inline">\(Q_t\)</span> is what is still waiting. <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> does not help here, because <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> shifts a column that already exists and this is the column being created.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">capacity</span> <span class="op">&lt;-</span> <span class="fl">300</span></span>
 <span></span>
@@ -676,58 +675,25 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 <span></span>
 <span><span class="va">queue</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_cases</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>backlog <span class="op">=</span> <span class="va">backlog</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">queue</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2020-04-12"</span>, <span class="st">"2020-04-13"</span>, <span class="st">"2020-05-01"</span>,</span>
-<span>                             <span class="st">"2020-06-14"</span>, <span class="st">"2020-08-01"</span>, <span class="st">"2020-10-14"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span><span class="co">#&gt;   date       daily_cases backlog</span></span>
-<span><span class="co">#&gt;   &lt;date&gt;           &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 2020-04-12         233       0</span></span>
-<span><span class="co">#&gt; 2 2020-04-13         386      86</span></span>
-<span><span class="co">#&gt; 3 2020-05-01         932    8869</span></span>
-<span><span class="co">#&gt; 4 2020-06-14         407   19172</span></span>
-<span><span class="co">#&gt; 5 2020-08-01         307   16680</span></span>
-<span><span class="co">#&gt; 6 2020-10-14           5       0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span>  <span class="fu">mutate</span><span class="op">(</span>backlog <span class="op">=</span> <span class="va">backlog</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The loop starts at <code>t = 2</code> because day one has nothing before it. That is the same edge case as the <code>if (i == 1)</code> branch in the very first loop of this chapter, handled by starting the counter one step in instead of branching inside the body.</p>
-<p>Now the version everybody writes first. The queue looks like a running total of the daily excess, and R has a function for running totals:</p>
+<p>The queue looks like a running total of the daily excess, and R has a function for running totals:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">naive</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">naive</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">backlog</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 19172</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>The cumulative version peaks at zero: it has the tracing team never falling behind on any day of 2020, while the loop has them 19,172 cases behind in the middle of June.</p>
-<p>The damage is done in the first eighty-two days. Singapore did not record more than 300 cases in a day until 13 April, and every day before that hands <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> a negative number to bank. By 12 April the running total sits at -22,068, and the dormitory outbreak has to work all of that off before the sum turns positive. Across the whole year it never manages it: 58,599 cases against 345 days of 300 is 103,500. So <code><a href="https://rdrr.io/r/base/Extremes.html">pmax()</a></code> on the outside flattens everything to zero.</p>
-<p>Wrapping the clamp around the outside is the mistake. <code>max(0, ...)</code> has to happen at every step, because <span class="math inline">\(Q_t\)</span> depends on the <em>clamped</em> <span class="math inline">\(Q_{t-1}\)</span>, and once the queue has hit zero it has forgotten everything before it. No cumulative function carries a value that gets reset partway along; <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> by construction retains every term it has already added. Without the clamp, <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> gives the right answer. The clamp is the one feature of the model that forces the loop, and identifying which part of a calculation does that is how you tell a genuinely sequential problem from one that only looks sequential.</p>
-<p>purrr does have a function that holds running state for you. <code>accumulate()</code> gives the identical vector:</p>
+<p>Zero against 19,172. <code>max(0, ...)</code> has to be applied at every step, because <span class="math inline">\(Q_t\)</span> depends on the <em>clamped</em> <span class="math inline">\(Q_{t-1}\)</span>: once the queue empties it has forgotten everything before it. <code><a href="https://rdrr.io/r/base/cumsum.html">cumsum()</a></code> retains every term it has added, so the 82 days before Singapore first exceeded 300 cases bank a credit the later outbreak never works off, and <code><a href="https://rdrr.io/r/base/Extremes.html">pmax()</a></code> on the outside flattens the result to zero.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu">accumulate</span><span class="op">(</span></span>
-<span>  <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>,</span>
-<span>  <span class="kw">function</span><span class="op">(</span><span class="va">q</span>, <span class="va">cases</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">q</span> <span class="op">+</span> <span class="va">cases</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span>,</span>
-<span>  .init <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="va">capacity</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">backlog</span>, <span class="va">acc</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><code>accumulate()</code> is a convenience, and it is worth being clear about what it changes. It moves the bookkeeping into a function argument; the iteration underneath is unchanged. It still visits 13 June before 14 June, because it has to. Writing a recurrence more compactly does not make the sequential dependency go away.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">queue</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">queue</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">backlog</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_area</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">nus_colours</span><span class="op">[[</span><span class="st">"blue"</span><span class="op">]</span><span class="op">]</span>, alpha <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_x_date</span><span class="op">(</span>date_labels <span class="op">=</span> <span class="st">"%b"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">label_comma</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Cases waiting"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"A team clearing 300 a day ends up two months behind"</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Illustrative capacity. Not Singapore's actual tracing capacity."</span></span>
-<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Cases waiting"</span>,</span>
+<span>       caption <span class="op">=</span> <span class="st">"Illustrative capacity. Not Singapore's actual tracing capacity."</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><img src="iteration_files/figure-html/queue-plot-1.svg" class="img-fluid figure-img"></p>
@@ -735,8 +701,7 @@ Q_t = \max\left(0,\ Q_{t-1} + C_t - k\right)
 </div>
 </div>
 </div>
-<p>The queue builds through the dormitory outbreak, peaks at 19,172 on 14 June and does not empty until 14 October, having been non-zero on 184 of 345 days. The date of that peak is the interesting part. Cases peaked on 20 April, and the workload peaked 55 days later, because a queue keeps growing for as long as arrivals exceed capacity rather than for as long as arrivals are rising. You cannot read that off the case curve. It only appears once you carry the state forward day by day.</p>
-<p>The shape of this is the shape of every compartmental model you will write later in the course: a state, a rule for getting from today’s state to tomorrow’s, and a loop to run the rule. Swap the queue for susceptible, infectious and recovered and the code around it barely changes. That is why a course otherwise built on <code>mutate()</code> spends an evening on <code>for</code>.</p>
+<p>Cases peaked on 20 April; the backlog peaks 55 days later on 14 June, because a queue grows for as long as arrivals exceed capacity rather than for as long as arrivals are rising. The same structure appears in the compartmental models later in the course: a state, a rule for getting from today’s state to tomorrow’s, and a loop to run it.</p>
 </section><section id="exercises" class="level2" data-number="12.9"><h2 data-number="12.9" class="anchored" data-anchor-id="exercises">
 <span class="header-section-number">12.9</span> Exercises</h2>
 <div id="exr-loop-vs-lag" class="theorem exercise">
