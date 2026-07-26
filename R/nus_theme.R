@@ -1,7 +1,8 @@
 # Visual identity for the figures in this book.
 # NUS Saw Swee Hock School of Public Health / CERM.
 #
-# The palette is checked, not asserted. Three tests, all in scripts/check_palette.py:
+# The palette is checked, not asserted. Three tests, all in scripts/check_palette.R
+# (base R, no packages — run it with Rscript scripts/check_palette.R):
 #
 #   1. Colourblindness. Simulated for protanopia, deuteranopia and tritanopia
 #      (Machado et al. 2009, severity 1.0) and scored by pairwise CIEDE2000.
