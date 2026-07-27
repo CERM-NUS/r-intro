@@ -104,11 +104,16 @@ mkdir -p _freeze && printf '%s\n' "$fingerprint" > "$FINGERPRINT_FILE"
 
 echo "==> checking the render before anything is published"
 
-pages=$(find "$ROOT/$OUT" -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')
+# Pages now render into _book/chapters/ and _book/appendices/ as well as the
+# top level, so count recursively.
+pages=$(find "$ROOT/$OUT" -name '*.html' | wc -l | tr -d ' ')
 [ "$pages" = "$EXPECTED_PAGES" ] || fail "$OUT/ has $pages pages, expected $EXPECTED_PAGES. Update EXPECTED_PAGES if you added a chapter."
 
-stray=$(find "$ROOT" -maxdepth 1 -name '*.html' | wc -l | tr -d ' ')
-[ "$stray" = "0" ] || fail "$stray rendered page(s) stranded at the project root."
+# A failed render can strand a page next to its source, which is now anywhere
+# in the tree — search everywhere except the output directory and the trees
+# that legitimately contain HTML (the renv library ships package docs).
+stray=$(find "$ROOT" -path "$ROOT/$OUT" -prune -o -path "$ROOT/renv" -prune -o -path "$ROOT/.git" -prune -o -path "$ROOT/.quarto" -prune -o -name '*.html' -print | wc -l | tr -d ' ')
+[ "$stray" = "0" ] || fail "$stray rendered page(s) stranded outside $OUT/."
 
 [ -f "$ROOT/$OUT/search.json" ] || fail "$OUT/search.json is missing. Search will silently return nothing."
 [ -f "$ROOT/$OUT/build-info.json" ] || fail "$OUT/build-info.json is missing. The post-render stamp did not run."
@@ -118,18 +123,22 @@ echo "==> checking every solution link resolves"
 # mentions the link pattern — build.qmd discusses "solutions.html#sec-sol-…"
 # in a <code> span, which looks like a link with an empty slug and fails a
 # naive check for reasons that have nothing to do with the book.
-grep -hoE 'href="[^"]*solutions\.html#sec-sol-[a-z0-9-]+"' "$ROOT/$OUT"/*.html \
+find "$ROOT/$OUT" -name '*.html' -print0 | xargs -0 grep -hoE 'href="[^"]*solutions\.html#sec-sol-[a-z0-9-]+"' \
   | sed 's/.*#//; s/"$//' | sort -u > /tmp/rintro-links.$$
 while IFS= read -r slug; do
-  grep -q "id=\"$slug\"" "$ROOT/$OUT/solutions.html" || fail "dead solution link: $slug has no anchor in solutions.html"
+  grep -q "id=\"$slug\"" "$ROOT/$OUT/appendices/solutions.html" || fail "dead solution link: $slug has no anchor in appendices/solutions.html"
 done < /tmp/rintro-links.$$
 links=$(wc -l < /tmp/rintro-links.$$ | tr -d ' '); rm -f /tmp/rintro-links.$$
 
 echo "==> checking every back-link resolves"
-grep -hoE 'href="[^"]*[a-z-]+\.html#exr-[a-z0-9-]+"' "$ROOT/$OUT/solutions.html" \
+grep -hoE 'href="[^"]*[a-z-]+\.html#exr-[a-z0-9-]+"' "$ROOT/$OUT/appendices/solutions.html" \
   | sed 's/href="//; s/"$//' | sort -u > /tmp/rintro-back.$$
 while IFS= read -r target; do
-  page="${target%%#*}"; page="${page##*/}"; anchor="${target##*#}"
+  page="${target%%#*}"; anchor="${target##*#}"
+  # hrefs are relative to the appendix page, e.g. ../chapters/transform.html.
+  # Resolve against appendices/ and normalise the .. away instead of
+  # stripping directories — chapters/transform.html, not transform.html.
+  page=$(printf 'appendices/%s\n' "$page" | sed 's#[^/]*/\.\./##')
   [ -f "$ROOT/$OUT/$page" ] || fail "back-link points at $page, which was not rendered"
   grep -q "id=\"$anchor\"" "$ROOT/$OUT/$page" || fail "dead back-link: $anchor is not in $page"
 done < /tmp/rintro-back.$$

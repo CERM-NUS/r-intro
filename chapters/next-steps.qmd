@@ -1,0 +1,342 @@
+# Where to go next {#sec-next-steps}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+```{r}
+#| label: data
+#| include: false
+covid <- covid_daily()
+```
+
+A week of R gets you a working vocabulary. You can read a file, check it, reshape it, summarise
+it by group, plot it, and write a function when the same six lines show up for the third time.
+What you do not yet have is the accumulated set of small recoveries that make an error message an
+inconvenience rather than a stopping point. Those come from hours at the keyboard, and no chapter
+can supply them. This last chapter describes where those hours are best spent: how the modelling
+weeks build on what you have learned, what to read next, what to do when code fails, and how to
+ask a question that gets answered.
+
+## What the rest of the course does with all this
+
+The modelling weeks turn the direction of travel around. Everything so far started with data and
+went looking for a description. A compartmental model starts with a description, some
+assumptions about how people move between states, and produces data you can compare with the
+real thing.
+
+The mechanics are less exotic than they sound. You divide a population into compartments,
+susceptible, infectious, recovered in the simplest case. You write down the rate at which people
+leave each compartment and enter the next. Then you hand those rates to a solver, which steps
+them forward in small increments and hands back a trajectory.
+
+In R the solver is usually [deSolve](https://cran.r-project.org/package=deSolve), and its main
+function is `ode()`. The shape of the code is this.
+
+```{r}
+#| label: sir-sketch
+#| eval: false
+sir <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)), {
+    dS <- -beta * S * I / N
+    dI <-  beta * S * I / N - gamma * I
+    dR <-  gamma * I
+    list(c(dS, dI, dR))
+  })
+}
+
+state      <- c(S = 99999, I = 1, R = 0)
+parameters <- c(beta = 0.4, gamma = 0.2, N = 1e5)
+times      <- seq(0, 180, by = 1)
+
+out <- ode(y = state, times = times, func = sir, parms = parameters)
+```
+
+Read that against what you already know and almost all of it is familiar. `sir` is a function
+with three arguments whose value is whatever the last expression evaluates to, which is the
+functions chapter. `state` and `parameters` are named numeric vectors, and `as.list()` and
+`with()` are there so you can write `beta` instead of `parameters[["beta"]]`, which is the
+foundations chapter. The return value is a list containing one vector, because `ode()` insists
+on a list, and knowing the difference between `c(dS, dI, dR)` and `list(c(dS, dI, dR))` is why
+that chapter spent time on lists.
+
+What `ode()` gives back is a matrix, not a tibble. Your first move will be `as_tibble()`, then
+`pivot_longer()` so you can draw three lines on one plot, then the ggplot2 grammar from the
+visualising chapter. Two evenings of this course will be spent on models and about ten minutes
+of each of them on plotting, because you already did the plotting.
+
+Two things will catch you, so they are worth naming now.
+
+The `time` column that comes out of `ode()` counts steps from zero. It is not a date. If you
+want to line a trajectory up against the `daily_cases` column you built, you have to decide what
+day zero means and add it: `start_date + out$time`. Model time and calendar time are different
+quantities, and mixing them silently is a common way to produce a plot that looks fine and is
+wrong by a fortnight.
+
+The second is that you will want to run the model more than once. Sweeping over ten values of
+beta, or a hundred, is the iteration chapter's problem exactly: write the model run as a function
+of the parameter you are varying, then map over the values and bind the results, rather than
+copying the call ten times with a number changed.
+
+Once your models get big enough that speed matters, or you are running thousands of stochastic
+replicates, R's own loop overhead starts to hurt. [odin](https://cran.r-project.org/package=odin)
+is the usual answer: you write the equations in a small R-like language and it generates and
+compiles C for you. The equations look much like the ones above. The habits of writing them
+carefully, naming parameters properly and checking a trajectory before believing it are the same
+habits.
+
+Fitting a model to Singapore's 2020 curve is where the two halves of the course meet, and it is
+also where the caveats from the capstone come back. You would be fitting to reported cases, which
+are a function of testing as well as transmission, over a period when the national count was
+dominated by the dormitory outbreak. A model fitted to that series without a term for either will
+absorb both into its transmission parameters.
+
+## Five things worth reading
+
+The list is deliberately short, and each entry states what the book covers and when it is worth
+reading.
+
+[**R for Data Science**, 2nd edition](https://r4ds.hadley.nz/), by Wickham, Çetinkaya-Rundel and
+Grolemund. Free online. This is the book this course is a one-week introduction to. The chapters on
+data transformation and visualisation cover the same ground with more room, and the chapters on
+joins, factors, strings and dates cover the topics this book leaves out. If you read one item from
+this list, make it this one, and work through it at the keyboard.
+
+[**The Epidemiologist R Handbook**](https://epirhandbook.com/en/), by Neale Batra and a large
+group of contributors. Free online. This is a recipe book rather than a textbook, written by
+field epidemiologists for field epidemiologists, and it is the fastest route from "I need an epi
+curve with a moving average and a case fatality ratio by age group" to working code. Its examples
+use outbreak data. Use it when you know what you want but not which function produces it.
+
+[**Happy Git and GitHub for the useR**](https://happygitwithr.com/), by Jenny Bryan. Free online.
+Version control repays the effort of learning it quickly, and this is the book that gets R users
+past the initial difficulty of git. Read the first eight or so chapters and get one project under
+version control; that is enough for now. You do not need to understand rebasing. The everyday Git
+cycle is set out in @sec-good-practice.
+
+[**The tidyverse style guide**](https://style.tidyverse.org/), by Hadley Wickham. It takes an
+afternoon to read and much of it can be skimmed. It is where the conventions this book uses come
+from: spaces around `<-`, lowercase names with underscores, one dplyr verb per line. Consistency
+earns its keep because it lets you read your own code from three months ago without decoding it
+first.
+
+[**Advanced R**, 2nd edition](https://adv-r.hadley.nz/), by Hadley Wickham. Free online. This one
+is not for now; bookmark it and return to it when you find yourself asking why something behaves
+as it does rather than how to make it work. The chapters on environments and on functionals are
+the ones that explain the odd corners of R that this book has been telling you to accept.
+
+Two kinds of book are deliberately absent from this list: there is no reference manual, because
+R's own help pages are the reference manual and `?filter` is faster than any book; and there is
+no book on statistics in R, because the statistics course covers the statistics and the R
+involved in it is the straightforward part.
+
+## When something breaks
+
+When something breaks, work through the steps in this section in the order given.
+
+### Read the whole error message
+
+R's error messages have improved a great deal, and the tidyverse ones in particular are built to
+be read from top to bottom rather than skimmed for the first line. The code below produces one
+deliberately.
+
+```{r}
+#| label: broken
+#| error: true
+month_summary <- function(data, month_start) {
+  data %>%
+    filter(month == month_start) %>%
+    summarise(cases = sum(daily_cases), peak = max(daily_cases))
+}
+
+month_summary(covid, "2020-08")
+```
+
+The message has four lines, each carrying a separate piece of information. The first says which
+verb failed: `filter()`,
+not `summarise()`, so the pipeline died before it got to the summary. The reference to
+`dplyr/R/summarise.R` is dplyr telling you where in its own source the call was recorded, and it
+is not about your file. The second line names the argument that failed, `month == month_start`.
+The third says the actual failure happened inside `charToDate()`, which is a base R function for
+turning text into dates and not a function you called. The fourth is the complaint itself.
+
+Put those together and the account is complete. Comparing a `Date` column with a character string
+makes R try to convert the string to a date, and `"2020-08"` is not a date because R has no way
+of telling whether you meant the first of the month or the whole of it, and it refuses to guess.
+
+```{r}
+#| label: fixed
+month_summary(covid, as.Date("2020-08-01"))
+```
+
+When you read an error, work out which line names *your* code and which lines name the machinery
+underneath it. The fix is almost always at the boundary between them.
+
+If you are working in RStudio you will also see `Run rlang::last_trace() to see where the error
+occurred.`, and it is worth running. It prints the full chain of calls with your own function at
+the top and the failing one at the bottom, and for a pipeline buried inside a function it is
+often the quickest way to find which of your six lines broke.
+
+### `traceback()`, for errors that do not say where they occurred
+
+Base R errors are terser, as in this example from a function calling another function.
+
+``` r
+> daily_mean <- function(x, i, k) mean(x[(i - k):(i + k)])
+> smooth_at <- function(data, i) daily_mean(data$daily_cases, i, 3)
+> smooth_at(covid, "100")
+Error in i - k : non-numeric argument to binary operator
+```
+
+That message says what went wrong but not where; `traceback()`, run immediately
+afterwards, identifies where.
+
+``` r
+> traceback()
+3: mean(x[(i - k):(i + k)]) at #1
+2: daily_mean(data$daily_cases, i, 3) at #1
+1: smooth_at(covid, "100")
+```
+
+Read it from the bottom. Line 1 is the call you typed. Line 2 is what it called. Line 3 is where
+it died. So `smooth_at()` passed the string `"100"` straight through to `daily_mean()`, which
+tried to subtract 3 from it. The `at #1` is the line number in the source; when your functions
+live in a file rather than being typed at the console, you get something like `at report.R#12`,
+which is the number you want.
+
+RStudio puts a "Show Traceback" button next to errors in the console, which does the same thing
+in one click.
+
+### `browser()`, for inspecting a function as it runs
+
+When the traceback tells you which function died but not why, put `browser()` on the line before
+the trouble and run the call again. R stops there and hands you a prompt with the function's own
+variables in scope.
+
+```{r}
+#| label: browser-demo
+#| eval: false
+month_summary <- function(data, month_start) {
+  browser()
+  data %>%
+    filter(month == month_start) %>%
+    summarise(cases = sum(daily_cases))
+}
+
+month_summary(covid, "2020-08")
+```
+
+``` r
+Called from: month_summary(covid, "2020-08")
+Browse[1]> month_start
+[1] "2020-08"
+Browse[1]> class(month_start)
+[1] "character"
+Browse[1]> class(data$month)
+[1] "Date"
+Browse[1]> Q
+```
+
+Three questions identify the bug: you are comparing a character against a Date. Type `Q` to
+quit the browser, `n` to run the next line, `c` to let it finish. Then remove the `browser()`
+call. Left in place, it produces a script that keeps stopping at the same line for no visible
+reason.
+
+`debugonce(month_summary)` does the same thing without editing the function, which is preferable
+when the function belongs to a package.
+
+### Failures that produce no error
+
+An error is the easier case, because R stops and reports what went wrong. The failures that
+cause more trouble are the ones that return a number, because nothing marks them as wrong.
+
+```{r}
+#| label: silent
+covid$date[which.max(covid$daily_case)]
+```
+
+The cause is one missing letter in the column name. R gives you a warning and a zero-length date rather than
+an error, because `$` on a tibble returns `NULL` for a column that is not there and
+`which.max()` of a zero-length input returns a zero-length result. Inside a longer pipeline that
+warning scrolls past and you publish a report with a blank where the peak date should be.
+
+The same problem arises in this dataset, where two reasonable-looking calls give different
+answers.
+
+```{r}
+#| label: deaths-gap
+max(covid$deaths, na.rm = TRUE)
+sum(covid$daily_deaths, na.rm = TRUE)
+```
+
+Singapore recorded 29 COVID-19 deaths in 2020. Differencing the cumulative column recovers 27 of
+them, because `deaths` has 59 leading missing values and the first number that appears is already
+2, on 21 March. The two missing deaths are hidden inside that first observation. Neither line
+above produces an error or a warning. One of them is the wrong answer to the question "how many
+people died", and which one depends on how that question is meant.
+
+What catches these is arithmetic against something you already know. Check the total against a
+number you have from another source. Check that the number of rows matches the number of days.
+Check that the maximum lands on the date you expected. Each of those is a line of code, and each
+catches mistakes that reading the code will not.
+
+## How to ask a question that gets answered
+
+You will get stuck in a way that fifteen minutes of your own effort will not fix. When that
+happens, how the question is put makes a large difference to how quickly it gets answered.
+
+A question that gets answered has four parts: what you were trying to do, stated in terms of the
+result you wanted; the code you ran, as text; what happened, with the error message copied
+exactly; and what you have already tried, so the answers you get start from where you stopped.
+
+The exact error text matters more than anything else in that list. Post the code and the error
+text rather than describing them. "It says something about a non-numeric argument" cannot be
+searched for. `non-numeric argument to binary operator` can, and the search will usually find
+other people who have had the same problem. Before you ask anyone, put the message in a search
+engine with the word `r` and the name of the package. That resolves a large share of problems on
+its own.
+
+Reduce the example to the smallest code that still fails. If your pipeline is forty lines, cut it
+in half and see whether the error survives, then repeat. Most bugs reduce to three or four lines,
+and the process of cutting often finds the answer, so it is worth doing even when you intend to
+ask anyway. If the problem needs data, do not attach a 30 MB CSV: `dput(head(covid, 5))` prints a
+few rows as code that anyone can paste into their own session.
+
+The [reprex](https://cran.r-project.org/package=reprex) package automates the tidy version of
+this. You copy your minimal example to the clipboard, run `reprex::reprex()`, and it runs the
+code in a clean session and puts a formatted block on your clipboard with the code and its real
+output interleaved, ready to paste.
+
+```{r}
+#| label: reprex-demo
+#| eval: false
+reprex::reprex({
+  library(dplyr)
+  x <- c(1, 2, NA)
+  mean(x)
+})
+```
+
+The clean session is what makes this worth doing. It catches the case where your code only works
+because of something you loaded an hour ago and forgot about, which accounts for a large share of
+problems that look like package bugs.
+
+Include your R version and package versions when the problem may be a version difference.
+`sessionInfo()` prints them.
+
+Classmates are the first place to ask. They are working on the same data, the same package
+versions and the same week, so someone is likely to have met the same problem already. After
+that, the [Posit Community](https://forum.posit.co/) forum is patient with beginners, and Stack
+Overflow is faster but less forgiving, so read a few answered R questions there before posting
+your first one. Report an issue on a package's GitHub only once you can show the maintainer a
+reproducible example and you are reasonably confident the package is at fault rather than your
+own code.
+
+Post code as text rather than as a photograph of the screen. Code cannot be copied out of a
+photograph, so answering your question would mean retyping it first.
+
+When you work something out that took two hours, record the fix in a comment in the script, in
+the words you would have needed at the start. You will meet the same problem again, and the
+comment is what makes the second encounter a short one.

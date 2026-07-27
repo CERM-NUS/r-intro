@@ -192,12 +192,18 @@ a[href*="solutions.html#"] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  // Wide enough that CERM's four-line descriptor and the ML & GHN globe read as
-  // two marks rather than one crowded block. They sit closest because CERM's
-  // artwork runs right to the edge of its text and the globe starts at the very
-  // left of its own, so the visible gap is the whole of this value.
-  gap: 3rem;
+  // The base gap sets the separation between adjacent marks. Between CERM and
+  // MLGHN that nominal gap is all the visible space there is, because CERM's
+  // artwork runs right to the edge of its text and the globe starts at the
+  // very left of its own canvas. Add an extra margin on the CERM mark so that
+  // boundary gets roughly double the space and the three logos sit with even,
+  // generous breathing room.
+  gap: 2rem;
   margin-bottom: 0.85rem;
+
+  .logo-cerm {
+    margin-right: 4rem;
+  }
 
   img {
     width: auto;
@@ -210,9 +216,9 @@ a[href*="solutions.html#"] {
 
 @media (max-width: 575px) {
   .footer-logos {
-    gap: 1.6rem;
+    gap: 1.1rem;
     .logo-sshsph { height: 44px; }
-    .logo-cerm   { height: 33px; }
+    .logo-cerm   { height: 33px; margin-right: 2.1rem; }
     .logo-mlghn  { height: 36px; }
   }
 }

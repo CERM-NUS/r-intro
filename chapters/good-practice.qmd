@@ -1,0 +1,91 @@
+# Good practice {#sec-good-practice}
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+```
+
+The working habits this book recommends were introduced where they were first needed, each next to the code that depends on it. This page gathers them in one place, so that they can be reviewed as a set once the chapters behind them have been read. The first six sections restate habits already met and point to the chapters that treat them in full. The two sections after that, on package versions and on version control, are treated fully here because nothing else in the book covers them. The page ends with a checklist.
+
+## Projects and paths
+
+The habit from @sec-import: one folder per piece of work, with an `.Rproj` file in it, and work opened by double-clicking that file. Inside the project, paths are built with `here()` and never with `setwd()` or an absolute path. The `.Rproj` file marks the project root, and `here()` builds paths down from that root, so the same script runs on a colleague's machine and on a teaching-lab computer without a path being edited.
+
+## A clean session
+
+The functions chapter showed the failure this habit prevents: an object left in the global environment from an earlier run supplies a value the script never computes, and the result is a number that is wrong without looking wrong (@sec-functions). The defence is two settings and one keyboard shortcut. In RStudio's Global Options, set "Save workspace to .RData on exit" to Never and untick "Restore .RData into workspace at startup", so that each session starts empty. Then restart R several times an hour with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> on a Mac, and run the script from the top. A script that runs in a fresh session depends only on what it contains; one that does not has a dependency on something outside the file, and the restart has found it.
+
+`rm(list = ls())` is not a substitute for restarting. It removes the objects in the global environment and changes nothing else: attached packages stay attached, session-wide options keep their values, and objects whose names begin with a dot are not listed by `ls()` and so are never removed. Restarting R clears all of these and takes about as long as typing the `rm()` call.
+
+## Data you do not edit
+
+Whatever arrives from the source is stored and not edited afterwards: not to fix a date format, not to fill in a blank, not to delete a duplicated row. This book has followed that rule throughout. The Singapore file needed real repairs, including cumulative columns differenced into daily ones and two blocks of missing values handled, and every repair was made in code, in @sec-transform and @sec-missing, where it can be read, checked and disagreed with. A repair written in a script carries its justification with it and survives the arrival of an updated source file; an edit typed into a spreadsheet does neither.
+
+## Names and comments
+
+The naming rules from @sec-foundations: `snake_case`, with nouns for data and verbs for functions. `daily_cases` is data and `classify_severity()` is a function, and in `monthly_report <- summarise_by_month(covid)` the distinction is visible without consulting anything. Names that carry no information about their contents, such as `df2` or `temp`, force the code to be re-run to find out what is in them, and names already taken by base R, such as `data`, `c` and `T`, mask the originals when they are reused.
+
+A comment earns its place when it records what the code cannot say. The code already shows what it does, so a comment that restates the line above it adds nothing; a comment that explains why this threshold was chosen, or where this constant comes from, is the one worth writing.
+
+## Reports that rerun
+
+The capstone asked for a report that reads from the top with no hidden state: the raw file in, the finished page out, in one render (@sec-capstone). That property is worth keeping in every report, not only in assessed ones. With prose and code in one `.qmd` file, re-rendering recomputes every number in the text, so a figure or a value written into a sentence cannot drift away from the code that produced it. A document assembled by pasting numbers into a separate file agrees with the analysis only until the analysis changes.
+
+## Asking for help
+
+The question that gets answered is the one a reader can run: the smallest piece of code that still shows the problem, the exact error text, what you expected instead, and your R and package versions. @sec-next-steps covers this in full, including the `reprex` package, which runs an example in a clean R session and formats the code and its real output together, ready to paste into a question.
+
+## Packages and versions: renv
+
+A script can fail a year after it was written without anything in it changing, because the packages it calls do change. `renv` gives a project its own package library and a lockfile, `renv.lock`, which records the exact version of every package in it. Three commands cover ordinary use:
+
+```{r}
+#| label: renv-commands
+#| eval: false
+renv::init()      # once, when you start the project
+renv::snapshot()  # after you add or update a package
+renv::restore()   # on a new machine, or when you come back to it
+```
+
+`renv::init()` is run once, when the project starts. After a package is added or updated, `renv::snapshot()` writes the new state of the library into the lockfile. On a new machine, or after a fresh clone, `renv::restore()` installs the recorded versions. Commit `renv.lock` alongside the code: the repository together with the lockfile records which package versions produced the results. Without a lockfile, "install the tidyverse and run my script" means whatever the tidyverse happens to be on the day someone tries, and package behaviour does change between versions. This book uses `renv`, and its `renv.lock` is committed, so cloning the repository and running `renv::restore()` builds the library the book was written against.
+
+The limits of pinning are worth stating. `renv` pins R packages; it does not pin R itself, the operating system, or the system libraries a package compiles against. Reproducing those requires containers, which are outside the scope of this book. Pinning packages addresses the largest and most frequent source of version drift. @sec-build describes how this book's own library, lockfile and build fit together.
+
+## Version control: Git
+
+Version control records the state of a project over time. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a machine that is not your laptop. History can be rewritten deliberately, but it cannot be altered by accident, and rewriting a commit that someone else has already pulled is visible to them. Saving successive copies of a script under new filenames records none of that: no timestamped author, no message, and no way to tell which copy produced which result.
+
+The everyday benefit is more immediate. With commits behind you, code can be deleted rather than kept: the half-finished approach and the two hundred lines you replaced can both go, the file stays readable, and any of it can be recovered with one command. Without version control the safer option is to keep everything, and scripts grow accordingly.
+
+Three commands cover the everyday cycle:
+
+```bash
+git add -A
+git commit -m "Compute daily cases from the cumulative column"
+git push
+```
+
+`add` chooses what goes into the next snapshot, `commit` takes the snapshot with a message attached, and `push` sends it to a machine that is not your laptop. The rest of Git can wait until a situation calls for it.
+
+Commit code, the lockfile, and small data files. Keep outputs out: rendered HTML, large intermediate files, and anything else that can be regenerated from what is already committed. The `.gitignore` file lists the patterns Git should not track, and this book's repository ignores its rendered site for exactly that reason. Because a project carries its `.Rproj` file and builds its paths with `here()`, a fresh clone on a new machine runs without any path being edited; the habits from @sec-import are what make the clone runnable.
+
+## The checklist
+
+The habits on this page, in one screen.
+
+| | |
+|---|---|
+| **Project** | One folder per piece of work, with a `.Rproj` in it. Open by double-clicking that file. |
+| **Paths** | No `setwd()`. No absolute paths. `here::here("data", "file.csv")`. |
+| **Session** | Save workspace: **Never**. Restore `.RData`: **never**. Restart R (<kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>) several times an hour. |
+| **Test** | Before you send it: restart R, run the whole script from the top. If it does not run cleanly, something it needs is missing from the file. |
+| **Packages** | All `library()` calls in one block at the top. `rm(list = ls())` is not a restart. |
+| **Data** | `data/` is read-only. Every repair happens in code. |
+| **Names** | `snake_case`. Nouns for data, verbs for functions. Avoid `df`, `df2`, `temp`. |
+| **Versions** | `renv::init()` at the start, `renv::snapshot()` when you add a package, commit `renv.lock`. |
+| **History** | `git add -A`, `git commit -m "..."`, `git push`. Commit early, delete freely. |
+| **Help** | `reprex::reprex()`. Runnable code, the exact error, your expectation, `sessionInfo()`. |
+| **Output** | Report and analysis in one `.qmd`. No numbers pasted into a separate document. |
+
+: The working habits gathered on this page. {tbl-colwidths="[18,82]"}

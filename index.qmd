@@ -8,11 +8,11 @@ source("_common.R")
 
 This book covers getting an answer out of a dataset, and it is written for people who have never programmed. It began as the week-one worksheet for SPH5421 at the NUS Saw Swee Hock School of Public Health: a few pages of base R with gaps to fill in, no answer key, and code that had never been run from top to bottom. Students would hit an error on question four with no way of knowing whether the error was theirs or mine.
 
-Everything here has been run. The outputs on these pages, including the plots, the warnings and the place where R prints `NaN` instead of a number, were produced by the code shown directly above them. If a number in the prose disagrees with the number in the output block, the prose is wrong and I would like to know about it.
+The outputs on these pages, including the plots, the warnings and the place where R prints `NaN` instead of a number, were produced by running the code shown directly above them. If a number in the prose disagrees with the number in the output block, the prose is wrong; please report it.
 
 ## Who this is for
 
-Public health masters students, mostly. The intended reader has used Stata or SPSS through a menu, or has done their analysis in a spreadsheet and found it difficult to keep track of at a few thousand rows. No programming background is assumed. I do assume you have seen a mean and a median before, and that you know roughly what an epidemic curve is.
+The intended reader is a public health masters student who has used Stata or SPSS through a menu, or who has done their analysis in a spreadsheet and found it difficult to keep track of at a few thousand rows. No programming background is assumed; familiarity with a mean and a median, and a rough idea of what an epidemic curve is, are enough.
 
 By the time you reach the end you should be able to read a CSV into R and form a view about whether to trust it; turn cumulative counts into daily ones without silently losing the first day; find missing values, work out why they are missing, and decide what to do rather than letting R decide for you; group a dataset by month and summarise it; build a figure suitable for a report; and write a small function so that the same calculation done six times is written once. The last chapter asks you to produce a monthly situation report from the raw file, with no scaffolding.
 
@@ -20,13 +20,13 @@ The book also spends time on reading error messages, which is a skill separate f
 
 ## The data
 
-One dataset, all the way through. It is Singapore's 2020 COVID-19 record: 345 daily rows running from 22 January to 31 December 2020, with 13 columns. Cumulative confirmed cases and deaths, the three Oxford government-response indices, and the six Google Community Mobility series. It ends with 58,599 confirmed cases and 29 recorded deaths.
+A single dataset runs through the whole book: Singapore's 2020 COVID-19 record, 345 daily rows from 22 January to 31 December 2020, with 13 columns. These cover cumulative confirmed cases and deaths, the three Oxford government-response indices, and the six Google Community Mobility series. The record ends with 58,599 confirmed cases and 29 recorded deaths.
 
-The file was assembled from the [COVID-19 Data Hub](https://covid19datahub.io) (Guidotti & Ardia, 2020), which in turn draws on Singapore's Ministry of Health, the Oxford COVID-19 Government Response Tracker, and Google's Community Mobility Reports. Appendix B documents every column, including where it is missing and why.
+It combines three sources: the [COVID-19 Data Hub](https://covid19datahub.io) R package (Guidotti & Ardia, 2020), the Oxford COVID-19 Government Response Tracker (Hale et al., 2021) and Google's COVID-19 Community Mobility Reports; @sec-data gives the full citations. For Singapore, the Hub's figures draw in turn on the Ministry of Health's daily reporting. Appendix B documents every column, including where it is missing and why. The CSV file itself can be downloaded directly at <https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv>.
 
-I chose it because it is small enough to inspect in full and because it has the ordinary defects. The death column has 59 leading missing values, and when it does start it starts at 2 rather than at 1, so the obvious way of turning it into daily deaths recovers 27 of the 29. Every mobility column is missing its first 24 days, because Google's baseline period had not finished when the series begins. The case counts are cumulative, so a plot of the raw column rises monotonically and shows little about when incidence was high. And there is a day in August with 908 cases in a month whose median is 91, which is a reporting artefact rather than a wave. Each of these appears later as a worked example.
+It was chosen because it is small enough to inspect in full and because it has the ordinary defects. The death column has 59 leading missing values, and when it does start it starts at 2 rather than at 1, so the obvious way of turning it into daily deaths recovers 27 of the 29. Every mobility column is missing its first 24 days, because Google's baseline period had not finished when the series begins. The case counts are cumulative, so a plot of the raw column rises monotonically and shows little about when incidence was high. And there is a day in August with 908 cases in a month whose median is 91, which is a reporting artefact rather than a wave. Each of these appears later as a worked example.
 
-The code below is the sort of thing you will be writing by the end of Part IV. None of it needs to make sense yet.
+The code below is the sort of thing you will be writing by the end of Part IV; none of it needs to make sense yet.
 
 ```{r}
 #| label: welcome-curve
@@ -68,9 +68,9 @@ Type the code rather than pasting it. Typing makes the structure visible: that `
 
 Read error messages to the end. R's errors usually run to two or three lines and the useful line is rarely the first. The tidyverse ones put the diagnosis under a bullet several lines down, along with a suggestion for what to do about it. When you search for a message, paste it in exactly as R printed it, but delete your own object and file names first, since those appear nowhere outside your own session.
 
-Run everything as you read. When a chunk produces something, look at it before scrolling on, then change one thing and run it again. Change the `100` to `50`, swap `mean` for `median`, remove the `na.rm = TRUE` and see what changes. Every chunk can be re-run from the top of its chapter, so an experiment that fails costs nothing.
+Run everything as you read. When a chunk produces something, look at it before scrolling on, then change one thing and run it again: change the `100` to `50`, swap `mean` for `median`, or remove the `na.rm = TRUE` and see what changes. Every chunk can be re-run from the top of its chapter, so an experiment that fails costs nothing.
 
-Chapters render in separate R sessions and each one is self-contained, so you can restart R at any point and pick up at the top of a chapter. The good-practice chapter sets out why restarting frequently is worth doing.
+Chapters render in separate R sessions and each one is self-contained, so you can restart R at any point and pick up at the top of a chapter. @sec-functions sets out why restarting frequently is worth doing.
 
 ## Corrections
 
@@ -78,4 +78,4 @@ Every page has an "Edit this page" link that goes to its source on GitHub, and t
 
 ## Acknowledgement
 
-Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the result is entirely human.
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data; responsibility for the final text rests with the author.

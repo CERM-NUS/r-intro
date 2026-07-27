@@ -19,10 +19,11 @@
 # it and pushes it to the gh-pages branch, which is the branch GitHub serves.
 /_book/
 
-# Chapters render to the project root before Quarto moves them into _book, so
-# a failed render can leave them behind. The leading slash matters: unanchored,
-# `*_files/` would also match the figure directories inside the output.
-/*_files/
+# Chapters render to their source directory before Quarto moves them into
+# _book, so a failed render can leave them behind. No leading slash: chapters
+# and appendices now live in subdirectories, and _book/ is ignored separately,
+# so unanchored is what catches the strays without touching the output.
+*_files/
 
 # _freeze/ IS committed, on purpose: it lets a clean checkout rebuild the book
 # without re-running every R chunk.

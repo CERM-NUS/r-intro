@@ -53,36 +53,36 @@ book:
     - index.qmd
     - part: "Before you write any code"
       chapters:
-        - setup.qmd
-        - good-practice.qmd
+        - chapters/setup.qmd
     - part: "The R you cannot avoid"
       chapters:
-        - foundations.qmd
-        - rectangles.qmd
-        - import.qmd
+        - chapters/foundations.qmd
+        - chapters/rectangles.qmd
+        - chapters/import.qmd
     - part: "Working with the data"
       chapters:
-        - transform.qmd
-        - missing.qmd
-        - conditionals.qmd
-        - groups.qmd
+        - chapters/transform.qmd
+        - chapters/missing.qmd
+        - chapters/conditionals.qmd
+        - chapters/groups.qmd
     - part: "Showing it to someone"
       chapters:
-        - visualise.qmd
+        - chapters/visualise.qmd
     - part: "Writing your own code"
       chapters:
-        - functions.qmd
-        - iteration.qmd
+        - chapters/functions.qmd
+        - chapters/iteration.qmd
     - part: "Putting it together"
       chapters:
-        - capstone.qmd
-        - next-steps.qmd
+        - chapters/capstone.qmd
+        - chapters/good-practice.qmd
+        - chapters/next-steps.qmd
 
   appendices:
-    - solutions.qmd
-    - data.qmd
-    - build.qmd
-    - colophon.qmd
+    - appendices/solutions.qmd
+    - appendices/data.qmd
+    - appendices/build.qmd
+    - appendices/colophon.qmd
 
   page-footer:
     border: true

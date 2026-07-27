@@ -34,7 +34,6 @@ The front page, `index.qmd`, sets out the dataset and how to use the book.
 | File | What it does |
 |:--|:--|
 | `setup.qmd` | Install R, then RStudio, in that order, and check they are talking to each other |
-| `good-practice.qmd` | Ten habits (projects, relative paths, restarting R, pinned packages), each one there because its absence has cost me an evening |
 
 **Part II — The R you cannot avoid**
 
@@ -71,6 +70,7 @@ The front page, `index.qmd`, sets out the dataset and how to use the book.
 | File | What it does |
 |:--|:--|
 | `capstone.qmd` | Produce a monthly situation report from the raw file, with no scaffolding |
+| `good-practice.qmd` | The working habits gathered in one place, plus the two no chapter covers: Git and renv |
 | `next-steps.qmd` | What the rest of the module does with all this, what to read, and how to ask a question that gets answered |
 
 **Appendices**
@@ -222,11 +222,8 @@ r-intro/
 ├── renv.lock                 the exact version of every package, ~250 kB of JSON
 ├── renv/                     activate.R, settings.json, and the (untracked) library itself
 ├── index.qmd                 the front page
-├── setup.qmd … next-steps.qmd    the chapters, one file each, ordered by _quarto.yml
-├── solutions.qmd             Appendix A
-├── data.qmd                  Appendix B
-├── build.qmd                 Appendix C
-├── colophon.qmd              Appendix D
+├── chapters/                 the chapters, one .qmd each, ordered by _quarto.yml
+├── appendices/               Appendices A to D: solutions, the data, the build, the colophon
 ├── R/nus_theme.R             the ggplot2 theme, the five-colour palette, and the scale_*_nus_* helpers
 ├── scss/nus.scss             site styling, layered on bootswatch litera
 ├── scripts/                  publish, sync check, build stamp, palette tests, git hook
