@@ -16,6 +16,9 @@ project:
     # Records which commit produced the site, so scripts/check-pages-sync.sh
     # can tell whether what is published still matches main.
     - scripts/stamp-build.sh
+    # Writes redirect stubs at the old flat page URLs (pre-subdirectory), so
+    # links in slides and bookmarks keep working after the move.
+    - scripts/make-redirects.sh
 
 book:
   title: "An Introduction to R"

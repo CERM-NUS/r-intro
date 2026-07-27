@@ -6,7 +6,7 @@
 source("_common.R")
 ```
 
-This book covers getting an answer out of a dataset, and it is written for people who have never programmed. It began as the week-one worksheet for SPH5421 at the NUS Saw Swee Hock School of Public Health: a few pages of base R with gaps to fill in, no answer key, and code that had never been run from top to bottom. Students would hit an error on question four with no way of knowing whether the error was theirs or mine.
+This book covers getting an answer out of a dataset, and it is written for people who have never programmed. It is the week-one material for SPH5421, Fundamentals of Infectious Disease Modelling, at the NUS Saw Swee Hock School of Public Health.
 
 The outputs on these pages, including the plots, the warnings and the place where R prints `NaN` instead of a number, were produced by running the code shown directly above them. If a number in the prose disagrees with the number in the output block, the prose is wrong; please report it.
 

@@ -36,6 +36,7 @@ r-intro/
 ├── scripts/check_palette.R      the palette's accessibility tests
 ├── scripts/publish.sh           render, then push the site to gh-pages
 ├── scripts/stamp-build.sh       records which commit produced the site
+├── scripts/make-redirects.sh    redirect stubs at the old flat page URLs
 ├── scripts/check-pages-sync.sh  reports whether the live site matches main
 ├── scripts/hooks/pre-push       reminds you that pushing is not publishing
 ├── assets/                favicon, and the three footer logos
@@ -347,6 +348,8 @@ The cost is real and worth naming, because the previous arrangement was better a
 Split source from output and that goes away. `main` is clean whether or not you have ever published. You can edit a chapter, commit, push, watch GitHub show your change, and have the live site still serving last month's text with nothing anywhere indicating it. The three small scripts below exist to replace the visibility the split removed.
 
 `scripts/stamp-build.sh` runs as the `post-render` step and writes `build-info.json` into the output: the commit HEAD was at, whether the tree was dirty at the time, the build timestamp, and the Quarto version. Rendered HTML has no record of which revision of the source produced it, and this file supplies it.
+
+A second `post-render` step, `scripts/make-redirects.sh`, writes a small stub page at each of the book's old flat URLs, forwarding to the page's current address under `chapters/` or `appendices/`. Moving the sources into subdirectories changed every page's URL, and the old addresses persist in slides and bookmarks. GitHub Pages has no server-side redirect mechanism, so a static stub at each old path is the only form the fix can take. The stubs are regenerated on every render, and the page-count check in `publish.sh` counts only the real pages.
 
 `scripts/check-pages-sync.sh` reads that file off `gh-pages` and compares the commit in it against the tip of `main`. It exits 0 in sync, 1 when the site is stale, and 2 when it cannot tell — no `gh-pages` branch yet, no `build-info.json` in it, no network. `--local` skips the fetch and works with the refs you already have. `publish.sh` runs it at the end as its own last check.
 

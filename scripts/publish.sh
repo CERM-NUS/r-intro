@@ -104,9 +104,11 @@ mkdir -p _freeze && printf '%s\n' "$fingerprint" > "$FINGERPRINT_FILE"
 
 echo "==> checking the render before anything is published"
 
-# Pages now render into _book/chapters/ and _book/appendices/ as well as the
-# top level, so count recursively.
-pages=$(find "$ROOT/$OUT" -name '*.html' | wc -l | tr -d ' ')
+# Pages render into _book/chapters/ and _book/appendices/, with index.html at
+# the top level. The redirect stubs that scripts/make-redirects.sh writes at
+# the old flat URLs are also .html files inside _book, so count only the real
+# pages: the index plus whatever is in the two directories.
+pages=$(( 1 + $(find "$ROOT/$OUT/chapters" "$ROOT/$OUT/appendices" -name '*.html' | wc -l | tr -d ' ') ))
 [ "$pages" = "$EXPECTED_PAGES" ] || fail "$OUT/ has $pages pages, expected $EXPECTED_PAGES. Update EXPECTED_PAGES if you added a chapter."
 
 # A failed render can strand a page next to its source, which is now anywhere
