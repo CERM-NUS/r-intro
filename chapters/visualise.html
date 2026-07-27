@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
+
+<title>9&nbsp; Plots – An Introduction to R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/functions.html" rel="next">
+<link href="../chapters/groups.html" rel="prev">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf46b01eabe5934f78e5ab797c839044.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/visualise.html">Showing it to someone</a></li><li class="breadcrumb-item"><a href="../chapters/visualise.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">An Introduction to R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source on GitHub" class="quarto-navigation-tool px-1" aria-label="Source on GitHub"><i class="bi bi-github"></i></a>
+    <a href="https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv" title="Download the data" class="quarto-navigation-tool px-1" aria-label="Download the data"><i class="bi bi-file-earmark-spreadsheet"></i></a>
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Before you write any code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting set up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">The R you cannot avoid</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Objects, vectors and functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/rectangles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rectangles: data frames and tibbles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/import.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reading the epidemic in</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with the data</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/transform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/missing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/conditionals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Showing it to someone</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/visualise.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Writing your own code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Writing functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/iteration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loops, and when you need them</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Putting it together</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/capstone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">The data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/build.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/colophon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Colophon</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-three-things-you-have-to-supply" id="toc-the-three-things-you-have-to-supply" class="nav-link active" data-scroll-target="#the-three-things-you-have-to-supply"><span class="header-section-number">9.1</span> The three things you have to supply</a>
+  <ul class="collapse">
+  <li><a href="#why-the-line-is-blue" id="toc-why-the-line-is-blue" class="nav-link" data-scroll-target="#why-the-line-is-blue"><span class="header-section-number">9.1.1</span> Why the line is blue</a></li>
+  <li><a href="#setting-a-colour-versus-mapping-one" id="toc-setting-a-colour-versus-mapping-one" class="nav-link" data-scroll-target="#setting-a-colour-versus-mapping-one"><span class="header-section-number">9.1.2</span> Setting a colour versus mapping one</a></li>
+  </ul></li>
+  <li><a href="#plus-not-pipe" id="toc-plus-not-pipe" class="nav-link" data-scroll-target="#plus-not-pipe"><span class="header-section-number">9.2</span> Plus, not pipe</a></li>
+  <li><a href="#a-histogram-of-daily_cases" id="toc-a-histogram-of-daily_cases" class="nav-link" data-scroll-target="#a-histogram-of-daily_cases"><span class="header-section-number">9.3</span> A histogram of <code>daily_cases</code></a>
+  <ul class="collapse">
+  <li><a href="#fix-one-more-bins" id="toc-fix-one-more-bins" class="nav-link" data-scroll-target="#fix-one-more-bins"><span class="header-section-number">9.3.1</span> Fix one: more bins</a></li>
+  <li><a href="#fix-two-cut-the-tail-two-different-ways" id="toc-fix-two-cut-the-tail-two-different-ways" class="nav-link" data-scroll-target="#fix-two-cut-the-tail-two-different-ways"><span class="header-section-number">9.3.2</span> Fix two: cut the tail, two different ways</a></li>
+  <li><a href="#fix-three-log-the-x-axis" id="toc-fix-three-log-the-x-axis" class="nav-link" data-scroll-target="#fix-three-log-the-x-axis"><span class="header-section-number">9.3.3</span> Fix three: log the x axis</a></li>
+  <li><a href="#what-the-histogram-discards" id="toc-what-the-histogram-discards" class="nav-link" data-scroll-target="#what-the-histogram-discards"><span class="header-section-number">9.3.4</span> What the histogram discards</a></li>
+  <li><a href="#hist-and-its-breaks-argument" id="toc-hist-and-its-breaks-argument" class="nav-link" data-scroll-target="#hist-and-its-breaks-argument"><span class="header-section-number">9.3.5</span> <code>hist()</code> and its <code>breaks</code> argument</a></li>
+  </ul></li>
+  <li><a href="#building-up-the-epidemic-curve" id="toc-building-up-the-epidemic-curve" class="nav-link" data-scroll-target="#building-up-the-epidemic-curve"><span class="header-section-number">9.4</span> Building up the epidemic curve</a>
+  <ul class="collapse">
+  <li><a href="#dates-on-the-x-axis" id="toc-dates-on-the-x-axis" class="nav-link" data-scroll-target="#dates-on-the-x-axis"><span class="header-section-number">9.4.1</span> Dates on the x axis</a></li>
+  <li><a href="#a-reference-line" id="toc-a-reference-line" class="nav-link" data-scroll-target="#a-reference-line"><span class="header-section-number">9.4.2</span> A reference line</a></li>
+  </ul></li>
+  <li><a href="#bars-or-lines" id="toc-bars-or-lines" class="nav-link" data-scroll-target="#bars-or-lines"><span class="header-section-number">9.5</span> Bars or lines</a></li>
+  <li><a href="#log-scales-and-zeros" id="toc-log-scales-and-zeros" class="nav-link" data-scroll-target="#log-scales-and-zeros"><span class="header-section-number">9.6</span> Log scales and zeros</a></li>
+  <li><a href="#facets" id="toc-facets" class="nav-link" data-scroll-target="#facets"><span class="header-section-number">9.7</span> Facets</a></li>
+  <li><a href="#labels" id="toc-labels" class="nav-link" data-scroll-target="#labels"><span class="header-section-number">9.8</span> Labels</a></li>
+  <li><a href="#two-plots-in-one-figure-patchwork" id="toc-two-plots-in-one-figure-patchwork" class="nav-link" data-scroll-target="#two-plots-in-one-figure-patchwork"><span class="header-section-number">9.9</span> Two plots in one figure: patchwork</a></li>
+  <li><a href="#saving-a-plot" id="toc-saving-a-plot" class="nav-link" data-scroll-target="#saving-a-plot"><span class="header-section-number">9.10</span> Saving a plot</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">9.11</span> Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/visualise.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/visualise.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/visualise.html">Showing it to someone</a></li><li class="breadcrumb-item"><a href="../chapters/visualise.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-visualise" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A plot is the quickest visible result a beginner gets from R, which is why plotting is often taught first. This chapter comes later, after you have learned to reshape a data frame, for a reason specific to the file on your disk: none of its thirteen columns holds the daily case counts you would put on the y axis of an epidemic curve. <code>confirmed</code> is a running total, and a running total of an epidemic looks like this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> confirmed)) <span class="sc">+</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-cumulative" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cumulative-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-cumulative-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cumulative-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: The column that ships in the file. It only goes up.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>That curve is accurate, and there is very little to read off it. Cumulative curves have much the same shape in every epidemic: flat, then steep, then flat again at a higher level. The circuit breaker is not visible in it, nor is the August reporting artifact, and telling a month with 200 cases apart from a month with 20,000 means reading two values off the axis and subtracting them.</p>
+<p>The variable worth plotting, <code>daily_cases</code>, exists because you built it in an earlier chapter with <code>mutate()</code> and <code>lag()</code>. Teaching ggplot2 before that would have meant demonstrating it on the cumulative column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-daily" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-daily-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-daily-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-daily-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: The column you built. Same data, different question.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows the dormitory outbreak, the effect of the circuit breaker from late April, the long decline through the second half of the year, and the single vertical spike on 5 August. The two figures are drawn from the same file and differ only by the <code>mutate()</code> from the earlier chapter.</p>
+<section id="the-three-things-you-have-to-supply" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="the-three-things-you-have-to-supply"><span class="header-section-number">9.1</span> The three things you have to supply</h2>
+<p>Every ggplot2 plot needs three answers before it can draw anything, and the two-line call above supplied all three.</p>
+<p>The first is which data frame, and that is the first argument to <code>ggplot()</code>. Every column you name later has to live in it.</p>
+<p>The second is which columns go on which visual channel. A channel here means a property the reader can perceive: horizontal position, vertical position, colour, size, shape, transparency. ggplot2 calls these <em>aesthetics</em>, a term that covers position as well as appearance, and you declare the mapping inside <code>aes()</code>.</p>
+<p>The third is what marks to actually draw: lines, points, bars, or boxes. ggplot2 calls these <em>geoms</em>, and each one is a function whose name starts <code>geom_</code>.</p>
+<p>The same call, with each of the three parts labelled:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="annotated-cell-3"><pre class="sourceCode r code-annotation-code code-with-copy code-annotated"><code class="sourceCode r"><span id="annotated-cell-3-1"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="1">1</button><span id="annotated-cell-3-2" class="code-annotation-target"><a href="#annotated-cell-3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> covid,</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="2">2</button><span id="annotated-cell-3-3" class="code-annotation-target"><a href="#annotated-cell-3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)</span>
+<span id="annotated-cell-3-4"><a href="#annotated-cell-3-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="3">3</button><span id="annotated-cell-3-5" class="code-annotation-target"><a href="#annotated-cell-3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-3" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="2" data-code-annotation="1">The data frame. Every column named later has to live in here.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="3" data-code-annotation="2">The mapping. <code>date</code> drives horizontal position, <code>daily_cases</code> drives vertical position.</span>
+</dd>
+<dt data-target-cell="annotated-cell-3" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-cell="annotated-cell-3" data-code-lines="5" data-code-annotation="3">The geom. Draw a line through the points, in date order.</span>
+</dd>
+</dl>
+</div>
+<div class="cell-output-display">
+<div id="fig-anatomy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-anatomy-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.3: Data, aesthetics, geom. Nothing else is compulsory.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The names <code>data =</code> and <code>mapping =</code> are conventionally omitted, because they are the first two arguments and <code>aes()</code> is unmistakable. <code>ggplot(covid, aes(date, daily_cases))</code> is the same call. Write the names out while you are learning and drop them when they stop helping you.</p>
+<p>Run <code>ggplot(covid, aes(x = date, y = daily_cases))</code> on its own, with no geom, and you get an empty grey panel with correctly labelled axes. The axes show that the data and the mapping were understood; the empty panel shows that no layer was supplied. Running the call without its geoms is a useful step when a plot comes out wrong, because it separates a broken mapping from a broken geom.</p>
+<section id="why-the-line-is-blue" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="why-the-line-is-blue"><span class="header-section-number">9.1.1</span> Why the line is blue</h3>
+<p>Out of the box, <code>geom_line()</code> draws in black. The line above is NUS blue because <code>_common.R</code>, the setup file every chapter sources, calls <code>update_geom_defaults()</code> to change the default and <code>theme_set(theme_nus())</code> to change the grid, the fonts and the legend position. That code lives in <code>R/nus_theme.R</code> if you want to read it.</p>
+<p>This matters for one practical reason. When you copy a chunk out of this book into your own script and it comes out looking different, the difference is the house theme, not a mistake on your part. The named colours this chapter uses, <code>nus_colours[["crimson"]]</code> and friends, come from the same file and will not exist in a fresh R session.</p>
+</section>
+<section id="setting-a-colour-versus-mapping-one" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="setting-a-colour-versus-mapping-one"><span class="header-section-number">9.1.2</span> Setting a colour versus mapping one</h3>
+<p>Inside <code>aes()</code>, you name a column and ggplot2 works out the colours. Outside <code>aes()</code>, you name a colour and ggplot2 uses it. Putting a colour name inside <code>aes()</code> draws without complaint and produces no error message:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">colour =</span> <span class="st">"red"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-aes-trap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aes-trap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-aes-trap-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aes-trap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.4: The line is not red and the legend says it is.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>aes(colour = "red")</code> maps the colour channel to a variable whose value is the string <code>red</code> on every row, and ggplot2 treats it as such. It finds one distinct value, assigns it the first colour in the palette, and builds a legend to explain the assignment. The legend title is <code>colour</code> because the mapped expression has no other name.</p>
+<p>The version that does what you meant puts the colour outside <code>aes()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">colour =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-aes-fixed" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-aes-fixed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-aes-fixed-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aes-fixed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.5: Colour set as a constant. No legend, because nothing was mapped.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The rule: if the value should change from row to row, it goes inside <code>aes()</code>. If it is one fixed value, it goes outside. An unexpected legend is usually this mistake.</p>
+</section>
+</section>
+<section id="plus-not-pipe" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="plus-not-pipe"><span class="header-section-number">9.2</span> Plus, not pipe</h2>
+<p><code>+</code> adds a layer to a plot. <code>%&gt;%</code> passes an object to a function as its first argument. They are not interchangeable, and swapping one for the other stops the plot from being drawn at all.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `geom_line()` at magrittr/R/pipe.R:136:3:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! `mapping` must be created by `aes()`.</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ You've supplied a &lt;ggplot2::ggplot&gt; object.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Did you use `%&gt;%` or `|&gt;` instead of `+`?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The error is worth reading to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.</p>
+<p>Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific about the fix. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.</p>
+<p>The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr’s <code>%&gt;%</code> arrived in 2014. By then there were seven years of published code written against <code>+</code>. Changing the operator would have broken all of it at once, so ggplot2 kept <code>+</code>, and the two operators have coexisted since.</p>
+<p>The two do combine, and combining them is how you plot a subset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>covid <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(month <span class="sc">==</span> <span class="fu">as.Date</span>(<span class="st">"2020-08-01"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-pipe-into-ggplot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipe-into-ggplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-pipe-into-ggplot-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipe-into-ggplot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.6: August 2020 on its own. The pipe does the filtering, the plus does the drawing.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Note where the operators change. Every step up to <code>ggplot()</code> uses <code>%&gt;%</code>, because each one takes a data frame and returns a data frame. Everything after uses <code>+</code>, because <code>ggplot()</code> returns a plot object and plot objects are built by addition. The change of operator marks the point where the data frame becomes a plot.</p>
+<p>That figure also shows why 5 August carries a caveat throughout this book. The 908 cases that day were a reporting artifact from dormitory clearance testing rather than a day of unusually high transmission: 903 of the 908 were dormitory residents and 581 were linked to a single cluster at Acacia Lodge, and MOH attributed the batch to testing that picked up past infections. August’s median is 91 and the next highest August day is 313. None of that is visible in the bar chart; it has to come from the reporting around the data.</p>
+</section>
+<section id="a-histogram-of-daily_cases" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="a-histogram-of-daily_cases"><span class="header-section-number">9.3</span> A histogram of <code>daily_cases</code></h2>
+<p>Worked examples that already look right give little guidance on what to do when a plot comes out wrong, so this section starts from one that does and works through the available fixes.</p>
+<p>The first thing to look at for any numeric variable is its distribution.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Predict first
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>geom_histogram()</code> will cut the range of <code>daily_cases</code> into 30 bins. Before you run the next chunk, commit to a number: how many of those 30 bars do you expect to be tall enough to see on the page? Write it down.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `stat_bin()` using `bins = 30`. Pick better value `binwidth`.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-bad-hist" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bad-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-bad-hist-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bad-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.7: One tall bar, and a long empty tail.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Only two bars have any visible height, and the rest are too short to read at a scale set by the tallest one. The message above the figure, <code>`stat_bin()` using `bins = 30`. Pick better value `binwidth`.</code>, reports a decision ggplot2 made on your behalf. It uses 30 bins because a histogram needs some bin count, and it prints the message on every call so that the value it chose stays visible in your output.</p>
+<p>Nothing went wrong in the code. The plot is an accurate picture of a variable that runs from 0 to 1,426 with a median of exactly 40. Bin one, covering roughly 0 to 25 cases, holds 160 of the 345 days. The top third of the range, everything above about 950, holds four days in total. Once one bar is 160 units tall, a bar of height 3 is two pixels.</p>
+<section id="fix-one-more-bins" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="fix-one-more-bins"><span class="header-section-number">9.3.1</span> Fix one: more bins</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">60</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hist-60" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-60-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-hist-60-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-60-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.8: Twice the resolution, same problem.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Doubling the bin count changes nothing that matters here, because resolution was not the problem. The shape is set by the <em>range</em> of the variable relative to where most of the mass sits, and the bin count changes neither.</p>
+</section>
+<section id="fix-two-cut-the-tail-two-different-ways" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="fix-two-cut-the-tail-two-different-ways"><span class="header-section-number">9.3.2</span> Fix two: cut the tail, two different ways</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">400</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 55 rows containing non-finite outside the scale range</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (`stat_bin()`).</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (`geom_bar()`).</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hist-xlim" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-xlim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-hist-xlim-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-xlim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.9: xlim() throws data away before binning, and says so.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Now you can see the distribution, and R has warned you twice about what it cost. Fifty-five days, every day above 400 cases, were dropped before the bins were counted. The second warning is about the bar that straddled the 400 boundary and could not be drawn.</p>
+<p><code>coord_cartesian()</code> produces a similar-looking result by a different mechanism:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">400</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hist-coord" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-coord-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-hist-coord-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-coord-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.10: coord_cartesian() zooms the finished plot. No data was removed.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This time there are no warnings, because nothing was discarded. <code>xlim()</code> filters the data and then bins what survives; <code>coord_cartesian()</code> bins everything and then zooms the drawing. For a histogram the difference is real: with <code>xlim()</code> a bin near the boundary is computed from a truncated dataset, with <code>coord_cartesian()</code> it is computed from all 345 days and merely runs off the edge of the panel.</p>
+<p>For both, the cost is that a reader of the finished figure does not see the warnings. A figure whose x axis stops at 400 implies that no day exceeded 400 cases. Fifty-five days did, one of them 1,426. A zoomed or truncated axis needs to be stated in the caption.</p>
+</section>
+<section id="fix-three-log-the-x-axis" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="fix-three-log-the-x-axis"><span class="header-section-number">9.3.3</span> Fix three: log the x axis</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">25</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in scale_x_log10(): log-10 transformation introduced infinite values.</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 13 rows containing non-finite outside the scale range</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (`stat_bin()`).</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hist-log" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hist-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-hist-log-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hist-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.11: A log axis spreads the tail out and loses the zeros.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The cost is the 13 days with zero new cases, which are dropped, and both warnings tell you so. <code>log10(0)</code> is <code>-Inf</code>, and no axis has a position for negative infinity, so logging a count variable deletes every zero in it. Here that is 13 days out of 345, all of them in the first seven weeks of the record.</p>
+</section>
+<section id="what-the-histogram-discards" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="what-the-histogram-discards"><span class="header-section-number">9.3.4</span> What the histogram discards</h3>
+<p>None of these fixes addresses the larger problem, which is that a histogram of <code>daily_cases</code> discards the date. The 345 values were not drawn from a single distribution: they come from a January with single-digit days, an April in which the dormitory outbreak took hold, and a November averaging under seven cases a day. Pooling them into one distribution describes a mixture of periods that differ from each other more than the values within any one of them differ.</p>
+<p>Use a histogram for variables where the shape of the distribution is the question; the stringency index is one. For case counts, plot the time series.</p>
+</section>
+<section id="hist-and-its-breaks-argument" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="hist-and-its-breaks-argument"><span class="header-section-number">9.3.5</span> <code>hist()</code> and its <code>breaks</code> argument</h3>
+<p>If you have seen base R, you have seen <code>hist()</code>, and it takes an argument called <code>breaks</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">hist</span>(covid<span class="sc">$</span>daily_cases, <span class="at">breaks =</span> <span class="dv">30</span>, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(h<span class="sc">$</span>counts)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 29</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The result is 29, not the requested 30. <code>breaks</code> is documented as a <em>suggestion</em>: base R passes your number to an algorithm that finds round-numbered cut points near it, and here that gives intervals of 50 from 0 to 1450. Ask for 30 and you get 29 whenever the rounded cut points imply a different count.</p>
+<p>ggplot2’s <code>bins</code> argument is taken literally. Ask for 30 and you get 30, with bin edges at whatever values that implies: 49.17 wide, in this case, starting below zero. Neither behaviour is wrong. They optimise for different things, and confusing the two produces figures whose bins do not match the description in the text.</p>
+</section>
+</section>
+<section id="building-up-the-epidemic-curve" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="building-up-the-epidemic-curve"><span class="header-section-number">9.4</span> Building up the epidemic curve</h2>
+<p>Start from the working plot and add the things a reader needs.</p>
+<section id="dates-on-the-x-axis" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="dates-on-the-x-axis"><span class="header-section-number">9.4.1</span> Dates on the x axis</h3>
+<p><code>scale_x_date()</code> controls where the tick marks go and how they are labelled. <code>date_breaks</code> takes a plain-English interval, and <code>date_labels</code> takes a <code>strftime</code> format string, the same one <code>format()</code> uses.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"1 month"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-date-scale" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-date-scale-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-date-scale-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-date-scale-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.12: Monthly ticks. <code>%b</code> is the abbreviated month name.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Twelve labels is about the limit before they start colliding at this figure width. <code>"2 months"</code> with <code>"%b %Y"</code> is the version that survives being shrunk into a two-column manuscript. The interval string accepts <code>"1 week"</code>, <code>"3 months"</code>, <code>"1 year"</code> and so on, in the obvious way.</p>
+<p>The format codes worth remembering are <code>%b</code> for Jan, <code>%B</code> for January, <code>%d</code> for the day number, <code>%Y</code> for a four-digit year and <code>%y</code> for two. <code>?strptime</code> lists the rest.</p>
+</section>
+<section id="a-reference-line" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="a-reference-line"><span class="header-section-number">9.4.2</span> A reference line</h3>
+<p><code>geom_hline()</code> draws a horizontal line at a value you choose. It is most useful for marking a threshold that already exists in the analysis, rather than one chosen to suit the figure.</p>
+<p>The <code>severity</code> column built in the conditionals chapter calls a day High above 300 cases. Drawing that boundary makes the classification visible:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yintercept =</span> <span class="dv">300</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> nus_colours[[<span class="st">"crimson"</span>]]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b %Y"</span>) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"New cases per day"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-hline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-hline-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.13: The dashed line is the High-severity cutoff. Seventy-seven days sit above it.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The <code>geom_hline()</code> comes <em>before</em> <code>geom_line()</code> in that call, and the order is deliberate. Layers are drawn in the order you add them, so a layer added later sits on top. Put the reference line last and it will cross over your data. There is no z-order setting; the order in the code is the order on the page.</p>
+<p><code>geom_vline()</code> is the vertical equivalent and takes <code>xintercept</code>. On a date axis it needs a real date object rather than a string that looks like one, and the failure is delayed until the plot is drawn:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="st">"2020-04-07"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `transformation$transform()` at ggplot2/R/scale-.R:1005:3:</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! `transform_date()` works with objects of class &lt;Date&gt; only</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>as.Date("2020-04-07")</code> works. The underlying axis is a number of days since 1970-01-01, and a character string has no position on that line. The error surfaces at print time rather than when you write the layer, which is why a ggplot mistake sometimes appears several lines after you made it.</p>
+<p>For a period rather than a moment, shade a rectangle:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"rect"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">xmin =</span> <span class="fu">as.Date</span>(<span class="st">"2020-04-07"</span>), <span class="at">xmax =</span> <span class="fu">as.Date</span>(<span class="st">"2020-06-01"</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ymin =</span> <span class="sc">-</span><span class="cn">Inf</span>, <span class="at">ymax =</span> <span class="cn">Inf</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> nus_colours[[<span class="st">"grey"</span>]], <span class="at">alpha =</span> <span class="fl">0.4</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"New cases per day"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-annotate-rect" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-annotate-rect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-annotate-rect-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-annotate-rect-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.14: The circuit breaker, 7 April to 1 June 2020, shaded behind the curve.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>annotate()</code> is for marks that are not in your data. It takes the geom name as a string and then fixed values rather than an <code>aes()</code> mapping, which is what you want for a one-off box. <code>-Inf</code> and <code>Inf</code> mean “the bottom and top of the panel, whatever they turn out to be”, so the shading keeps its full height if you later change the y limits.</p>
+</section>
+</section>
+<section id="bars-or-lines" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="bars-or-lines"><span class="header-section-number">9.5</span> Bars or lines</h2>
+<p><code>geom_col()</code> draws a bar whose height is the value in the data. <code>geom_line()</code> connects consecutive points. Choosing between them is a claim about what happens between your observations.</p>
+<p>Over 345 days, <code>geom_col()</code> gives you this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-col-year" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-col-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-col-year-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-col-year-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.15: 345 bars in 7 inches. Each one is about half a millimetre wide.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The result is defensible but hard to read: the bars are narrower than the gaps between them at this width, so the picket-fence effect carries visual weight that has nothing to do with the data. Bars are arguably the better match to what was measured, because each day’s count is a separate number and nothing was observed between Tuesday and Wednesday, whereas a line implies a continuous quantity sampled daily, which a notification count is not.</p>
+<p>Lines carry a long daily series better; bars carry a short one, where each day is wide enough to be read on its own. Twenty-nine bars for August works. Three hundred and forty-five does not.</p>
+<p>Aggregate first and bars come back into their own:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>monthly <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month) <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">cases =</span> <span class="fu">sum</span>(daily_cases))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>monthly</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 12 × 2</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    month      cases</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;date&gt;     &lt;dbl&gt;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 2020-01-01    13</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 2020-02-01    89</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 2020-03-01   824</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 2020-04-01 15243</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 2020-05-01 18715</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 2020-06-01  9023</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 2020-07-01  8298</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 2020-08-01  4607</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 2020-09-01   953</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 2020-10-01   250</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 2020-11-01   203</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12 2020-12-01   381</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(monthly, <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> cases)) <span class="sc">+</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>()) <span class="sc">+</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Cases reported that month"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-col-monthly" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-col-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-col-monthly-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-col-monthly-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.16: Monthly totals. Each bar is a sum, and area is proportional to it.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>label_comma()</code> comes from the scales package, loaded by <code>_common.R</code>. Without it that axis reads 0, 5000, 10000, 15000 and your reader has to count digits. Five-figure numbers on an axis should have separators.</p>
+<p>Drawing those twelve monthly totals as a <em>line</em> would be a mistake. A line between May and June invites the eye to read a value for the middle of the month, and no such value exists: May’s number is a total for the whole month. Use bars for totals over a period and lines for quantities measured through time.</p>
+<p>Bar charts need a y axis that starts at zero. What the reader compares is the length of the bar, so truncating the axis changes the ratios the figure appears to show in a way that truncating a line chart does not. <code>coord_cartesian(ylim = c(4000, 20000))</code> on that plot would draw May at three times April’s height instead of 1.2 times.</p>
+</section>
+<section id="log-scales-and-zeros" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="log-scales-and-zeros"><span class="header-section-number">9.6</span> Log scales and zeros</h2>
+<p>Case counts spanning three orders of magnitude are what a log y axis is for. Try it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>()</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in scale_y_log10(): log-10 transformation introduced infinite values.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-log-broken" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-log-broken-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-log-broken-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-log-broken-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.17: The line stops and restarts. Thirteen days are missing from it.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>Warning in scale_y_log10(): log-10 transformation introduced infinite values.</code> states the problem exactly. <code>log10(0)</code> is <code>-Inf</code>. Thirteen days in 2020 had zero new cases, all of them between 22 January and 12 March, and a log axis has no position for them, including at the bottom of the panel: a log axis has no lower end, because it extends towards negative infinity. The property that compresses large values is the same one that stretches small ones without limit.</p>
+<p>No argument to <code>scale_y_log10()</code> fixes this, because the problem is arithmetic rather than a plotting decision. That leaves two options, and both are decisions about the analysis that belong in your methods section.</p>
+<p><strong>Plot cases plus one.</strong> Add 1 to every count so the zeros land at <code>log10(1) = 0</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases <span class="sc">+</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"New cases per day, plus one"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-log-plus-one" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-log-plus-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-log-plus-one-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-log-plus-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.18: Cases plus one on a log scale. Unbroken, and the axis label admits what was done.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The distortion is largest where the data is smallest: a day with 1 case and a day with 2 cases are now 2 and 3, a ratio of 1.5 rather than 2. At 500 cases the shift is invisible. Whether that is acceptable depends on whether the low-count period matters to your argument; if the analysis concerns January, the adjustment is not neutral there. Either way the axis label and the caption have to state it, which is why the label above reads “New cases per day, plus one”.</p>
+<p><strong>Smooth first.</strong> A seven-day mean of this series never hits zero, because no run of seven consecutive days in 2020 was all zeros:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>smoothed <span class="ot">&lt;-</span> covid <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cases_7day =</span> <span class="fu">as.numeric</span>(stats<span class="sc">::</span><span class="fu">filter</span>(daily_cases, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">7</span>, <span class="dv">7</span>), <span class="at">sides =</span> <span class="dv">1</span>))</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>smoothed <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(date, daily_cases, cases_7day) <span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">5</span><span class="sc">:</span><span class="dv">9</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   date       daily_cases cases_7day</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;date&gt;           &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 2020-01-26           1      NA   </span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2020-01-27           1      NA   </span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2020-01-28           2       1   </span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2020-01-29           0       1   </span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2020-01-30           3       1.29</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(smoothed, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> cases_7day)) <span class="sc">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"New cases, seven-day mean"</span>)</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 6 rows containing missing values or values outside the scale range</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (`geom_line()`).</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-log-smoothed" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-log-smoothed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-log-smoothed-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-log-smoothed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.19: Seven-day trailing mean on a log axis. The first six days have no window.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The warning about six removed rows is the first six days, which have fewer than seven days behind them. <code>sides = 1</code> makes the window trailing, so each value averages that day and the six before it, which is what public health reporting means by a seven-day average. The default, <code>sides = 2</code>, centres the window and uses days that had not happened yet.</p>
+<p><code>stats::filter()</code> needs the <code>stats::</code> prefix because dplyr’s <code>filter()</code> masks it. Drop the prefix and you get this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">filter</span>(covid<span class="sc">$</span>daily_cases, <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">7</span>, <span class="dv">7</span>), <span class="at">sides =</span> <span class="dv">1</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `UseMethod()`:</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! no applicable method for 'filter' applied to an object of class "c('double', 'numeric')"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That is dplyr’s <code>filter()</code> reporting that it was given a numeric vector when it expected a data frame, in wording that gives no indication that a different <code>filter()</code> exists. The clash arises because both packages use the same name for different functions. The startup message printed when the tidyverse loads records which functions are masked.</p>
+<p>Smoothing removes the spikes. The 5 August artifact, 908 cases in a month with a median of 91, becomes a modest bump once it is averaged with six ordinary days. If the spike is the subject of the analysis, smoothing hides it.</p>
+<p>Both options change the quantity being plotted rather than only its appearance. Choose one, apply it before drawing, and describe it alongside the rest of your methods.</p>
+</section>
+<section id="facets" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="facets"><span class="header-section-number">9.7</span> Facets</h2>
+<p><code>facet_wrap()</code> splits one plot into small panels by the values of a variable. Every panel gets the same geom, the same mapping and, by default, the same axes, which is what makes the panels comparable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>covid <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month_name =</span> <span class="fu">format</span>(date, <span class="st">"%B"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> month_name, <span class="at">scales =</span> <span class="st">"free_x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-facet-alpha" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-facet-alpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-facet-alpha-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-facet-alpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.20: Twelve months of 2020, in the wrong order.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The panels come out in alphabetical order rather than calendar order: April, August, December, February, then January, July, June, March, then May, November, October, September.</p>
+<p><code>format(date, "%B")</code> returns a character vector, and R sorts character vectors alphabetically. ggplot2 has no way to know that these strings are months, so it does what it does with any character variable: converts to a factor, and <code>factor()</code> on a character vector orders the levels by <code>sort()</code>.</p>
+<p>No argument to <code>facet_wrap()</code> sets the panel order. The fix belongs in the data: a factor whose levels are in the order you want, built before the data reaches <code>ggplot()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>covid <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">month_name =</span> <span class="fu">factor</span>(<span class="fu">format</span>(date, <span class="st">"%B"</span>), <span class="at">levels =</span> month.name)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> month_name, <span class="at">scales =</span> <span class="st">"free_x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-facet-fixed" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-facet-fixed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-facet-fixed-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-facet-fixed-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.21: Same plot, with month_name as a factor whose levels are in calendar order.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>month.name</code> is a built-in constant: a character vector of the twelve month names in calendar order, available in any R session without a package. Typing <code>month.name</code> at the console prints it.</p>
+<p>Order-of-levels problems are worth recognising as a category, because they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The <code>severity</code> column avoids it because <code>covid_daily()</code> builds it with <code>factor(severity, levels = c("Low", "Medium", "High"))</code> rather than letting R sort High, Low, Medium.</p>
+<p>Two <code>facet_wrap()</code> arguments do most of the work. <code>ncol</code> (or <code>nrow</code>) sets the layout. <code>scales</code> decides whether panels share axes: <code>"fixed"</code> is the default and is what you want when the point is comparison; <code>"free_x"</code>, used above, gives each month its own date range so the twelve panels do not each show ten days of line and eleven months of blank; <code>"free_y"</code> lets each panel find its own vertical scale, which makes small panels legible at the cost of comparability between panels. Free scales change what the figure can be used for, so choose them deliberately.</p>
+</section>
+<section id="labels" class="level2" data-number="9.8">
+<h2 data-number="9.8" class="anchored" data-anchor-id="labels"><span class="header-section-number">9.8</span> Labels</h2>
+<p><code>labs()</code> sets every piece of text around the plot: the axis titles, the plot title and subtitle, the caption and the legend titles.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Reported COVID-19 cases in Singapore, 2020"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Daily counts, differenced from the cumulative confirmed series"</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"New cases per day"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Source: COVID-19 Data Hub."</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-labs" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-labs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-labs-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-labs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.22: The same curve, with the text a reader needs.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>x = NULL</code> removes the axis title rather than blanking it, which reclaims the space. Do that when the axis is self-evident, as a row of month names is. <code>x = ""</code> leaves an empty label and its margin behind, which is why plots sometimes have a mysterious gap at the bottom.</p>
+<p>Default axis titles are the column names, so an unlabelled plot shows <code>daily_cases</code> on the y axis. <code>labs()</code> replaces it with wording a reader can interpret without access to the code.</p>
+<p>The subtitle is the place for information the reader would otherwise have to ask for. This series is differenced from a cumulative column, and a reader needs to know that before interpreting the spikes.</p>
+</section>
+<section id="two-plots-in-one-figure-patchwork" class="level2" data-number="9.9">
+<h2 data-number="9.9" class="anchored" data-anchor-id="two-plots-in-one-figure-patchwork"><span class="header-section-number">9.9</span> Two plots in one figure: patchwork</h2>
+<p><code>facet_wrap()</code> splits <em>one</em> plot by a variable. Every panel is the same plot with different rows.</p>
+<p>Putting two <em>different</em> plots side by side is a different job, and <code>facet_wrap()</code> cannot do it. The base R answer was <code>par(mfrow = c(2, 1))</code>, which sets a global graphics parameter and stays set until you change it back, so an unrelated plot three commands later is still drawn into a two-panel layout. The tidyverse answer is patchwork, loaded by <code>_common.R</code>.</p>
+<p>Build the plots as ordinary objects, then combine them with operators. <code>/</code> stacks, <code>|</code> puts side by side.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>p_cases <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"New cases"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>p_stringency <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> stringency_index)) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">colour =</span> nus_colours[[<span class="st">"crimson"</span>]]) <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"2 months"</span>, <span class="at">date_labels =</span> <span class="st">"%b"</span>) <span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Stringency index"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>p_cases <span class="sc">/</span> p_stringency</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-patchwork" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-patchwork-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-patchwork-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-patchwork-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.23: Cases above, policy stringency below, sharing a time axis.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>stringency_index</code> is the Oxford Government Response Tracker’s summary of how restrictive a country’s policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41.</p>
+<p>Stacked against the case curve, it shows something a single panel cannot. Stringency is a staircase, because policy changes on announced dates and holds until the next announcement, while the case series varies from day to day. The step on 7 April is the circuit breaker, and it is large: stringency goes from 45.37 to 62.04 in one day, retail mobility from -15 to -51, workplaces from -24 to -52. The index reaches its maximum of 82.41 for the first time on 10 April, three days later, and cases keep climbing for another ten days after that.</p>
+<p>The small movements after July do not support interpretation. There are 23 changes in the index after 1 July, several of them one-day blips that cannot be distinguished from encoding artifacts. A single-day rise in a composite index is not evidence of a policy announcement.</p>
+<p>Patchwork’s other operators are worth knowing. <code>+</code> packs plots into a grid and lets patchwork choose the shape, <code>|</code> forces a row, <code>/</code> forces a column, and they nest with brackets: <code>(a | b) / c</code>. <code>plot_layout()</code> controls proportions, and <code>plot_annotation()</code> adds text to the assembly rather than to any one panel:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(p_cases <span class="sc">/</span> p_stringency) <span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_annotation</span>(</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Cases and policy stringency, Singapore 2020"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Sources: COVID-19 Data Hub; Oxford COVID-19 Government Response Tracker."</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">tag_levels =</span> <span class="st">"A"</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-patchwork-annotated" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-patchwork-annotated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="visualise_files/figure-html/fig-patchwork-annotated-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-patchwork-annotated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.24: plot_layout() gives the case curve twice the height; plot_annotation() titles the pair.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>tag_levels = "A"</code> labels the panels A and B, the labelling convention for multi-panel figures in published work.</p>
+<p>Use <code>facet_wrap()</code> when it is one plot cut into pieces by a variable, and patchwork when it is several plots that belong on the same page. The usual symptom of choosing the wrong one is data reshaped into a long format so that two variables measured on different scales can be faceted against each other. If the panels need different y axes because they show different quantities, patchwork is the tool.</p>
+</section>
+<section id="saving-a-plot" class="level2" data-number="9.10">
+<h2 data-number="9.10" class="anchored" data-anchor-id="saving-a-plot"><span class="header-section-number">9.10</span> Saving a plot</h2>
+<p><code>ggsave()</code> writes the last plot, or a plot you name, to a file. Called with no dimensions it uses whatever your current graphics device happens to be:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".png"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(out, <span class="at">plot =</span> p_cases)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Saving 7 x 4.19 in image</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>Saving 7 x 4.2 in image</code> reports the size R chose. It comes from the device open at the time, so the same script produces different files depending on how wide the RStudio plot pane happens to be. A figure whose size depends on the shape of a window is not reproducible, and the symptom is usually inconsistent font sizes between figures in the same document.</p>
+<p>Give it dimensions:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"figures/epi-curve.png"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">plot =</span> p_cases,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">7</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">height =</span> <span class="fl">4.2</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">dpi =</span> <span class="dv">300</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>width</code> and <code>height</code> are in inches by default, and <code>units = "cm"</code> or <code>units = "mm"</code> changes that. Set them to the size at which the figure will be printed. A figure drawn at 12 inches and then shrunk into a single manuscript column has 6-point axis labels; the same figure drawn at 3.5 inches has readable text, because ggplot2 sizes the text relative to the canvas it is given. <strong>Size the figure for its final home rather than resizing it afterwards.</strong></p>
+<p><code>dpi</code> sets the resolution of raster formats. 300 is the usual journal minimum for <code>.png</code>, 600 for figures with fine detail, and 96 is what you get by default, which is a screen resolution and will look soft in print.</p>
+<p>The file extension chooses the format. Use <code>.png</code> for anything with many plotted elements and for slides. Use <code>.pdf</code> for line art going into a LaTeX manuscript, where it stays sharp at any zoom and <code>dpi</code> becomes irrelevant.</p>
+<p><code>.svg</code> needs the svglite package, which is not installed in this project:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".svg"</span>), <span class="at">plot =</span> p_cases)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Saving 7 x 4.19 in image</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error in `dev()` at ggplot2/R/save.R:107:3:</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ! The package "svglite" is required to save as SVG.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The error names the missing package, which is the pattern to expect from ggplot2 when a format needs a helper. <code>install.packages("svglite")</code> fixes it if you want SVG. When you install a package for a real project, record it afterwards with <code>renv::snapshot()</code>; package pinning is covered in <a href="good-practice.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
+<p>Saving a figure by right-clicking the plot pane and choosing Export produces a file at whatever size the pane happened to be, records nothing about how the figure was made, and has to be repeated by hand whenever the data changes. A call to <code>ggsave()</code> in the script regenerates the figure at a stated size every time the script runs. That is the property the report-rerun habit depends on: when the data changes and the script runs again, every figure saved by code is rewritten at its stated size by the same run that updates the tables and the numbers in the text, whereas a figure exported by hand has to be re-exported by hand and is easily forgotten.</p>
+</section>
+<section id="exercises" class="level2" data-number="9.11">
+<h2 data-number="9.11" class="anchored" data-anchor-id="exercises"><span class="header-section-number">9.11</span> Exercises</h2>
+<div id="exr-epi-curve" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 9.1 (Draw a publication-ready epidemic curve)</strong></span> Produce a single figure of daily reported cases across 2020 that a reader can interpret without additional explanation. It needs axis labels that are English rather than column names, month ticks that do not collide, a title, and a caption that says the counts were differenced from a cumulative series. Mark the circuit breaker period, 7 April to 1 June 2020, so the reader can see where it falls relative to the peak. Save it as a 300 dpi PNG at a size that would fit in a single column of a journal page, roughly 3.5 inches wide.</p>
+<p>Then look at what your text does at that width and fix it.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Build the plot as an object first and print it, then pass that object to <code>ggsave()</code> with explicit <code>width</code>, <code>height</code> and <code>dpi</code>. Shading a date range is <code>annotate("rect", ...)</code> with <code>ymin = -Inf</code> and <code>ymax = Inf</code>.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-epi-curve">Worked solution</a></p>
+<div id="exr-histogram" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 9.2 (Make the distribution legible, and say what it cost)</strong></span> The raw histogram of <code>daily_cases</code> is dominated by one bar. Produce a version a reader can actually learn something from, and write two or three sentences underneath it stating exactly which days are not represented and why.</p>
+<p>Then produce a second version that splits the year into panels by month, using a factor so the panels come out in calendar order, and say which of the two you would put in a report and why.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>There is no single correct fix here. <code>binwidth</code>, <code>coord_cartesian()</code>, <code>xlim()</code> and <code>scale_x_log10()</code> all change the picture and each one gives something up. Pick one, and let the warnings R prints tell you what to write in your two sentences.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-histogram">Worked solution</a></p>
+<div id="exr-stringency" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 9.3 (Put policy next to cases)</strong></span> Build a two-panel figure with daily cases on top and <code>stringency_index</code> below, sharing a common date axis, labelled A and B, under one overall title.</p>
+<p>Then answer in prose, from the figure: on what date does the stringency index first reach its 2020 maximum, and had daily cases peaked by then? Use the figure to form the answer and the data to check it.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Make two ordinary ggplot objects, then combine them with <code>/</code>. For the check, <code>slice_max()</code> on <code>stringency_index</code> will give you more than one row, so think about what <code>arrange(date)</code> does to that result.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-stringency">Worked solution</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/cerm-nus\.github\.io\/r-intro\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+      for (let i=0; i<annoteTargets.length; i++) {
+        const annoteTarget = annoteTargets[i];
+        const targetCell = annoteTarget.getAttribute("data-target-cell");
+        const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+        const contentFn = () => {
+          const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          if (content) {
+            const tipContent = content.cloneNode(true);
+            tipContent.classList.add("code-annotation-tip-content");
+            return tipContent.outerHTML;
+          }
+        }
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          onShow: (instance) => {
+            selectCodeLines(instance.reference);
+            instance.reference.classList.add('code-annotation-active');
+            window.tippy.hideAll();
+          },
+          onHide: (instance) => {
+            unselectCodeLines();
+            instance.reference.classList.remove('code-annotation-active');
+          },
+          maxWidth: 300,
+          delay: [50, 0],
+          duration: [200, 0],
+          offset: [5, 10],
+          arrow: true,
+          appendTo: function(el) {
+            return el.parentElement.parentElement.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto',
+          placement: 'right',
+          popperOptions: {
+            modifiers: [
+            {
+              name: 'flip',
+              options: {
+                flipVariations: false, // true by default
+                allowedAutoPlacements: ['right'],
+                fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                mainAxis: false,
+                altAxis: false
+              }
+            }
+            ]        
+          }      
+        };
+        window.tippy(annoteTarget, config); 
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/groups.html" class="pagination-link" aria-label="Grouping and summarising">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/functions.html" class="pagination-link" aria-label="Writing functions">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Writing functions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<div class="footer-logos">
+<p><img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"> <img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"> <img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
+</div>
+<p>Released under the <a href="https://github.com/CERM-NUS/r-intro/blob/main/LICENSE">MIT Licence</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/visualise.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/visualise.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a>. <a href="https://github.com/CERM-NUS/r-intro/issues">Report a problem</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

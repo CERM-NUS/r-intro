@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
+<title>7&nbsp; Making decisions – An Introduction to R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/groups.html" rel="next">
+<link href="../chapters/missing.html" rel="prev">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf46b01eabe5934f78e5ab797c839044.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/transform.html">Working with the data</a></li><li class="breadcrumb-item"><a href="../chapters/conditionals.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">An Introduction to R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source on GitHub" class="quarto-navigation-tool px-1" aria-label="Source on GitHub"><i class="bi bi-github"></i></a>
+    <a href="https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv" title="Download the data" class="quarto-navigation-tool px-1" aria-label="Download the data"><i class="bi bi-file-earmark-spreadsheet"></i></a>
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Before you write any code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting set up</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">The R you cannot avoid</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Objects, vectors and functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/rectangles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rectangles: data frames and tibbles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/import.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reading the epidemic in</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with the data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/transform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/missing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/conditionals.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Showing it to someone</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/visualise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Writing your own code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Writing functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/iteration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loops, and when you need them</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Putting it together</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/capstone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">The data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/build.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/colophon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Colophon</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#where-we-are" id="toc-where-we-are" class="nav-link active" data-scroll-target="#where-we-are"><span class="header-section-number">7.1</span> Where we are</a></li>
+  <li><a href="#if-tests-a-single-value" id="toc-if-tests-a-single-value" class="nav-link" data-scroll-target="#if-tests-a-single-value"><span class="header-section-number">7.2</span> <code>if</code> tests a single value</a></li>
+  <li><a href="#if_else-builds-a-column" id="toc-if_else-builds-a-column" class="nav-link" data-scroll-target="#if_else-builds-a-column"><span class="header-section-number">7.3</span> <code>if_else()</code> builds a column</a></li>
+  <li><a href="#case_when-when-there-are-more-than-two-answers" id="toc-case_when-when-there-are-more-than-two-answers" class="nav-link" data-scroll-target="#case_when-when-there-are-more-than-two-answers"><span class="header-section-number">7.4</span> <code>case_when()</code> when there are more than two answers</a></li>
+  <li><a href="#boundary-values" id="toc-boundary-values" class="nav-link" data-scroll-target="#boundary-values"><span class="header-section-number">7.5</span> Boundary values</a></li>
+  <li><a href="#missing-values-fall-straight-through" id="toc-missing-values-fall-straight-through" class="nav-link" data-scroll-target="#missing-values-fall-straight-through"><span class="header-section-number">7.6</span> Missing values fall straight through</a></li>
+  <li><a href="#ordering-categories-with-factor" id="toc-ordering-categories-with-factor" class="nav-link" data-scroll-target="#ordering-categories-with-factor"><span class="header-section-number">7.7</span> Ordering categories with <code>factor()</code></a></li>
+  <li><a href="#the-dataset-assembled" id="toc-the-dataset-assembled" class="nav-link" data-scroll-target="#the-dataset-assembled"><span class="header-section-number">7.8</span> The dataset, assembled</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">7.9</span> Exercises</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/conditionals.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/conditionals.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/transform.html">Working with the data</a></li><li class="breadcrumb-item"><a href="../chapters/conditionals.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-conditionals" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>Much of routine epidemiological reporting turns numbers into labels: a count of 1,426 becomes a high day before it reaches a bulletin. R provides two different tools for this. One decides what the <em>script</em> does next; the other decides what goes in a <em>column</em>. Using the first where the second is needed produces either an error or, less visibly, a result that is correct for one row and wrong for the other 344.</p>
+<p>This chapter distinguishes the two, then uses the second to build a severity label for every day of 2020.</p>
+<section id="where-we-are" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="where-we-are">
+<span class="header-section-number">7.1</span> Where we are</h2>
+<p>Everything here starts from the daily counts you built in the previous chapter. The file ships cumulative totals, so a day’s new cases is today’s total minus yesterday’s, and <code>lag(confirmed, default = 0)</code> supplies the “yesterday” for the very first row. That default matters: <code>confirmed</code> is 0 on 22 January, so day one had a real zero of new cases, not a missing one.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>daily_cases <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">daily_cases</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">slice</span><span class="op">(</span><span class="fl">85</span><span class="op">:</span><span class="fl">90</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span><span class="co">#&gt;   date       confirmed daily_cases</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 2020-04-15      3699         447</span></span>
+<span><span class="co">#&gt; 2 2020-04-16      4427         728</span></span>
+<span><span class="co">#&gt; 3 2020-04-17      5050         623</span></span>
+<span><span class="co">#&gt; 4 2020-04-18      5992         942</span></span>
+<span><span class="co">#&gt; 5 2020-04-19      6588         596</span></span>
+<span><span class="co">#&gt; 6 2020-04-20      8014        1426</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="if-tests-a-single-value" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="if-tests-a-single-value">
+<span class="header-section-number">7.2</span> <code>if</code> tests a single value</h2>
+<p>R’s <code>if</code> is a control-flow statement. It looks at a single TRUE or FALSE and picks which block of code to run. It is the appropriate tool when the decision is about the analysis as a whole.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">worst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
+<span><span class="va">worst</span></span>
+<span><span class="co">#&gt; [1] 1426</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="va">worst</span> <span class="op">&gt;</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="st">"Singapore recorded a four-figure day."</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="st">"No day reached a thousand."</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; [1] "Singapore recorded a four-figure day."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>worst</code> is one number, so <code>worst &gt; 1000</code> is a single TRUE and <code>if</code> can act on it.</p>
+<p>Suppose instead you want a label on every row, and write the version that reads like English:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span><span class="op">)</span> <span class="st">"High"</span> <span class="kw">else</span> <span class="st">"Not high"</span></span>
+<span><span class="co">#&gt; Error in `if (covid$daily_cases &gt; 300) ...`:</span></span>
+<span><span class="co">#&gt; ! the condition has length &gt; 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>covid$daily_cases &gt; 300</code> is not a single TRUE or FALSE but a vector of 345 of them.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 345</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>if</code> has no way to act on 345 answers at once, so it refuses. The message to search for is <strong>the condition has length &gt; 1</strong>.</p>
+<p>Up to R 4.1 the same code ran: R issued a warning, took the first element and carried on. A script could label an entire dataset “Not high” because 22 January happened to have zero cases, with only a warning to indicate it. R 4.2 made this an error, so a script written against the earlier behaviour stops here on any current version of R.</p>
+<p>When you do want a whole-dataset question, collapse the vector to one value first. <code><a href="https://rdrr.io/r/base/any.html">any()</a></code> and <code><a href="https://rdrr.io/r/base/all.html">all()</a></code> are built for this.</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="st">"At least one day topped a thousand."</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; [1] "At least one day topped a thousand."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="if_else-builds-a-column" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="if_else-builds-a-column">
+<span class="header-section-number">7.3</span> <code>if_else()</code> builds a column</h2>
+<p>For a label on every row you want a <em>vectorised</em> choice: one input vector in, one output vector out, same length. dplyr’s <code>if_else()</code> does that.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>big_day <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="st">"High"</span>, <span class="st">"Not high"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">big_day</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span><span class="co">#&gt;   big_day      n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 High        77</span></span>
+<span><span class="co">#&gt; 2 Not high   268</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Read the arguments as a sentence: for each row, test <code>daily_cases &gt; 300</code>; where it is TRUE use <code>"High"</code>, where it is FALSE use <code>"Not high"</code>.</p>
+<p><code>if_else()</code> requires both branches to be of the same type, and the requirement is deliberate:</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>big_day <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="st">"High"</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `mutate()` at magrittr/R/pipe.R:136:3:</span></span>
+<span><span class="co">#&gt; ℹ In argument: `big_day = if_else(daily_cases &gt; 300, "High", 0)`.</span></span>
+<span><span class="co">#&gt; Caused by error in `if_else()`:</span></span>
+<span><span class="co">#&gt; ! Can't combine `true` &lt;character&gt; and `false` &lt;double&gt;.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Can’t combine <code>true</code> <character> and <code>false</code> <double></double></character></strong> means the column would be text on some rows and a number on others. <code>if_else()</code> does not choose between them. Base R’s <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> does choose, by coercing both branches to a common type, and the coercion drops attributes. The effect on a date column:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">big</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">slice</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">big</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="va">big</span><span class="op">$</span><span class="va">date</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 18365 18366 18367</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Those five-digit numbers are days since 1 January 1970, which is how R stores a <code>Date</code> underneath. <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> stripped the class attribute and handed back the raw numbers, so a date column comes out as a numeric one.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">if_else</span><span class="op">(</span><span class="va">big</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&gt;</span> <span class="fl">300</span>, <span class="va">big</span><span class="op">$</span><span class="va">date</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "2020-04-13" "2020-04-14" "2020-04-15"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>if_else()</code> keeps the class of the branches it returns, so the same comparison comes back with the dates intact.</p>
+</section><section id="case_when-when-there-are-more-than-two-answers" class="level2" data-number="7.4"><h2 data-number="7.4" class="anchored" data-anchor-id="case_when-when-there-are-more-than-two-answers">
+<span class="header-section-number">7.4</span> <code>case_when()</code> when there are more than two answers</h2>
+<p>Each label beyond the second adds another test, and nesting <code>if_else()</code> inside <code>if_else()</code> produces code that is hard to read and harder to check. <code>case_when()</code> replaces the nesting with a list of conditions, each paired with the value to use when it matches.</p>
+<p>The course uses three cutoffs: under 100 new cases is Low, 100 up to and including 300 is Medium, and over 300 is High.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    <span class="co"># Course convention: fewer than 100 cases is Low, 100 up to and</span></span>
+<span>    <span class="co"># including 300 is Medium, over 300 is High.</span></span>
+<span>    severity <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;</span>  <span class="fl">100</span> <span class="op">~</span> <span class="st">"Low"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&gt;</span>  <span class="fl">300</span> <span class="op">~</span> <span class="st">"High"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">count</span><span class="op">(</span><span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   severity     n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 High        77</span></span>
+<span><span class="co">#&gt; 2 Low        215</span></span>
+<span><span class="co">#&gt; 3 Medium      53</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>~</code> separates the test from the result. R uses the tilde wherever the two sides of a relationship have to sit in one expression, which is why it also appears in modelling formulas and in ggplot facet specifications; inside <code>case_when()</code> it means “gives”.</p>
+<p><code>case_when()</code> works top to bottom and <strong>first match wins</strong>. Once a row matches a line, later lines never see it. That is what lets the second condition be <code>daily_cases &lt;= 300</code> and not <code>daily_cases &gt;= 100 &amp; daily_cases &lt;= 300</code>: any row still being tested on line two already failed line one, so it already has at least 100 cases.</p>
+<p>The order of the lines therefore matters. Swapping the first two leaves the arithmetic identical and the answer different:</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    wrong <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;</span>  <span class="fl">100</span> <span class="op">~</span> <span class="st">"Low"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&gt;</span>  <span class="fl">300</span> <span class="op">~</span> <span class="st">"High"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">wrong</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span><span class="co">#&gt;   wrong      n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 High      77</span></span>
+<span><span class="co">#&gt; 2 Medium   268</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Because the Medium line is evaluated first, it matches every Low day as well, and 215 days are mislabelled with no error and no warning. When a <code>case_when()</code> returns a category with a count of zero, or one much larger than expected, the order of the conditions is the first thing to check.</p>
+<p>The other failure mode is a row that matches nothing at all. Drop the last line and the 77 High days match no condition:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    incomplete <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;</span>  <span class="fl">100</span> <span class="op">~</span> <span class="st">"Low"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="st">"Medium"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">incomplete</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   incomplete     n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;      &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 Low          215</span></span>
+<span><span class="co">#&gt; 2 Medium        53</span></span>
+<span><span class="co">#&gt; 3 &lt;NA&gt;          77</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>case_when()</code> returns <code>NA</code> for unmatched rows rather than complaining, so this only shows up if you look. <code>.default</code> catches everything that falls through and is worth using whenever your conditions are meant to be exhaustive:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    severity_alt <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;</span>  <span class="fl">100</span> <span class="op">~</span> <span class="st">"Low"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      .default <span class="op">=</span> <span class="st">"High"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">severity_alt</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   severity_alt     n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;        &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 High            77</span></span>
+<span><span class="co">#&gt; 2 Low            215</span></span>
+<span><span class="co">#&gt; 3 Medium          53</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Two details of that block are worth adopting. The recoded column gets a new name, <code>severity_alt</code>, rather than overwriting <code>severity</code>, so both versions remain available to count side by side while you check the change. The category labels are also spelled exactly as the existing column has them, because later steps match text literally: a lower-case <code>"high"</code> would start a fourth category rather than match <code>"High"</code>.</p>
+</section><section id="boundary-values" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="boundary-values">
+<span class="header-section-number">7.5</span> Boundary values</h2>
+<p>“100 to 300” is ambiguous in English and unambiguous in code, so writing the code forces a decision that the specification may have left open: a day with exactly 100 cases could be Low or Medium, and 300 could be Medium or High. The <code>case_when()</code> settles both questions one way or the other, so the convention is worth choosing deliberately.</p>
+<p>This dataset contains days sitting on both ends of the rule.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Predict before you run
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. The boundary cases are the ones worth checking, because they are where an off-by-one in the cutoffs shows up.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"2020-08-06"</span>, <span class="st">"2020-08-18"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">daily_cases</span>, <span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 4</span></span>
+<span><span class="co">#&gt;   date       confirmed daily_cases severity</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;   </span></span>
+<span><span class="co">#&gt; 1 2020-08-06     54555         301 High    </span></span>
+<span><span class="co">#&gt; 2 2020-08-18     55938         100 Medium</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>18 August is Medium because <code>daily_cases &lt; 100</code> is FALSE at exactly 100, so the day falls through to the <code>&lt;= 300</code> line; 6 August is High because 301 is one case past <code>&lt;= 300</code>. Changing <code>&lt;</code> to <code>&lt;=</code> on the first line moves 18 August to Low, so a single character changes the label on a day that occurs in the data.</p>
+<p>Write the thresholds down in prose next to the code, with the inequalities spelled out, as the comment in the <code>case_when()</code> block above does. “Fewer than 100” and “up to 100” are different rules, and they disagree on days that occur in this dataset.</p>
+</section><section id="missing-values-fall-straight-through" class="level2" data-number="7.6"><h2 data-number="7.6" class="anchored" data-anchor-id="missing-values-fall-straight-through">
+<span class="header-section-number">7.6</span> Missing values fall straight through</h2>
+<p>Neither <code>if_else()</code> nor <code>case_when()</code> treats <code>NA</code> as FALSE. <code>NA &gt; 0</code> is <code>NA</code>, which is neither branch, so the result is <code>NA</code>. Deaths in this file are missing for the first 59 days, so they show it plainly:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    daily_deaths <span class="op">=</span> <span class="va">deaths</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">deaths</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    death_day <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">daily_deaths</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="st">"yes"</span>, <span class="st">"no"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">death_day</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   death_day     n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 no          260</span></span>
+<span><span class="co">#&gt; 2 yes          25</span></span>
+<span><span class="co">#&gt; 3 &lt;NA&gt;         60</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Sixty rows came back <code>NA</code>: the 59 days before any death total was published, plus the first day that had one, which has no valid predecessor to difference against. <code>if_else()</code> gives you a <code>missing =</code> argument to label them explicitly:</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    daily_deaths <span class="op">=</span> <span class="va">deaths</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">deaths</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    death_day <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">daily_deaths</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="st">"yes"</span>, <span class="st">"no"</span>, missing <span class="op">=</span> <span class="st">"not reported yet"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">count</span><span class="op">(</span><span class="va">death_day</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span><span class="co">#&gt;   death_day            n</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;            &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 no                 260</span></span>
+<span><span class="co">#&gt; 2 not reported yet    60</span></span>
+<span><span class="co">#&gt; 3 yes                 25</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In <code>case_when()</code> you do the same thing with an <code><a href="https://rdrr.io/r/base/NA.html">is.na()</a></code> line placed first, so that missing rows are matched before any comparison has a chance to return <code>NA</code>. This keeps “no deaths reported” distinct from “deaths not yet reported”; the two are different findings, and a table that merges them into one category misleads.</p>
+</section><section id="ordering-categories-with-factor" class="level2" data-number="7.7"><h2 data-number="7.7" class="anchored" data-anchor-id="ordering-categories-with-factor">
+<span class="header-section-number">7.7</span> Ordering categories with <code>factor()</code>
+</h2>
+<p><code>count()</code> is the dplyr way of tabulating a column. Base R’s <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> does the same job in less typing, and it returns a named vector of counts instead of a data frame. Look at the order it puts the labels in:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;   High    Low Medium </span></span>
+<span><span class="co">#&gt;     77    215     53</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The counts come back in alphabetical order — High, Low, Medium — which for an ordered variable carries no meaning. Alphabetical order puts the most severe category first and the middle category last, and any bar chart, legend or summary table built from that column inherits the same ordering.</p>
+<p>R sorts alphabetically because <code>severity</code> is currently plain text:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "character"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A character vector has no order other than the alphabetical one. <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> records that these three strings are the levels of a categorical variable and fixes the order they are held in.</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>severity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">severity</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;    Low Medium   High </span></span>
+<span><span class="co">#&gt;    215     53     77</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The counts are 215 Low, 53 Medium and 77 High, and they sum to 345, which is every day of the dataset, so nothing fell through the conditions.</p>
+<p>A factor stores small integers plus a lookup table of labels, which is why the ordering sticks:</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/levels.html">levels</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Low"    "Medium" "High"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 1 1 1 1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] Low Low Low Low Low</span></span>
+<span><span class="co">#&gt; Levels: Low Medium High</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Rows 1 to 5 are stored as <code>1</code>, displayed as <code>Low</code>, and sorted first because <code>Low</code> is level one. ggplot reads exactly the same information, so the same fix that repairs <code><a href="https://rdrr.io/r/base/table.html">table()</a></code> repairs your axes:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p_chr</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">severity</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_bar</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Stored as text"</span>, x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Days"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_fct</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">severity</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_bar</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Stored as a factor"</span>, x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Days"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_chr</span> <span class="op">+</span> <span class="va">p_fct</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-severity-order" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-severity-order-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="conditionals_files/figure-html/fig-severity-order-1.svg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-severity-order-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7.1: The same 345 days, counted twice. Only the ordering differs.
+</figcaption></figure>
+</div>
+</div>
+</div>
+<p>The same problem arises for age bands, Likert scales, disease stages, income quintiles, and WHO regions ordered by anything other than the alphabet. Each of them arrives as text, and each needs <code>factor(levels = ...)</code> before it tabulates or plots in the intended order.</p>
+<p>There is one caution: <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> converts any value not listed in <code>levels</code> to <code>NA</code>, without a warning, including a value that differs only in case:</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; Levels: low Medium High</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">severity</span><span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span><span class="op">)</span>, useNA <span class="op">=</span> <span class="st">"ifany"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;    low Medium   High   &lt;NA&gt; </span></span>
+<span><span class="co">#&gt;      0     53     77    215</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Because the levels say <code>"low"</code> where the data has <code>"Low"</code>, all 215 Low days become <code>NA</code>, without a warning. After creating a factor, run <code>table(..., useNA = "ifany")</code> or <code>count()</code> once and check that the total still matches the number of rows.</p>
+</section><section id="the-dataset-assembled" class="level2" data-number="7.8"><h2 data-number="7.8" class="anchored" data-anchor-id="the-dataset-assembled">
+<span class="header-section-number">7.8</span> The dataset, assembled</h2>
+<p>Putting the pieces together, here is the whole thing in one block: the file as it ships, sorted by date, with daily counts differenced out of the cumulative columns, a severity factor in sensible order, and a <code>month</code> column produced by rounding each date down to the first of its month.</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    daily_cases  <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    daily_deaths <span class="op">=</span> <span class="va">deaths</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">deaths</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    severity <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;</span>  <span class="fl">100</span> <span class="op">~</span> <span class="st">"Low"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="st">"Medium"</span>,</span>
+<span>      <span class="va">daily_cases</span> <span class="op">&gt;</span>  <span class="fl">300</span> <span class="op">~</span> <span class="st">"High"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    severity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">severity</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Low"</span>, <span class="st">"Medium"</span>, <span class="st">"High"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    month <span class="op">=</span> <span class="fu">floor_date</span><span class="op">(</span><span class="va">date</span>, <span class="st">"month"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_cases</span>, <span class="va">daily_deaths</span>, <span class="va">severity</span>, <span class="va">month</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">slice</span><span class="op">(</span><span class="fl">85</span><span class="op">:</span><span class="fl">88</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 5</span></span>
+<span><span class="co">#&gt;   date       daily_cases daily_deaths severity month     </span></span>
+<span><span class="co">#&gt;   &lt;date&gt;           &lt;dbl&gt;        &lt;dbl&gt; &lt;fct&gt;    &lt;date&gt;    </span></span>
+<span><span class="co">#&gt; 1 2020-04-15         447            0 High     2020-04-01</span></span>
+<span><span class="co">#&gt; 2 2020-04-16         728            0 High     2020-04-01</span></span>
+<span><span class="co">#&gt; 3 2020-04-17         623            1 High     2020-04-01</span></span>
+<span><span class="co">#&gt; 4 2020-04-18         942            0 High     2020-04-01</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That block is what <code>covid_daily()</code> runs. Its definition sits in <code>_common.R</code> in the project root, where you can open and read it, so <code>covid &lt;- covid_daily()</code> rebuilds this table in one line in a fresh session. It contains nothing beyond what you have now built by hand.</p>
+</section><section id="exercises" class="level2" data-number="7.9"><h2 data-number="7.9" class="anchored" data-anchor-id="exercises">
+<span class="header-section-number">7.9</span> Exercises</h2>
+<div id="exr-severity" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 7.1 (Audit your severity column)</strong></span> Check the <code>severity</code> column before relying on it.</p>
+<ol type="1">
+<li>Confirm the three counts add up to 345 and that no day came back <code>NA</code>.</li>
+<li>For each label, report the smallest and the largest <code>daily_cases</code> it contains.</li>
+<li>Look at the numbers from step 2 either side of each cutoff, and say how far you could move the 100 threshold, in either direction, before a single day changed its label.</li>
+</ol>
+<p>For step 3, write down what the answer tells you about how far the labelling depends on the exact value 100.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>group_by(severity)</code> followed by a <code>summarise()</code> containing <code>n()</code>, <code><a href="https://rdrr.io/r/base/Extremes.html">min()</a></code> and <code><a href="https://rdrr.io/r/base/Extremes.html">max()</a></code> answers steps 1 and 2 in one call: <code>group_by()</code> splits the rows into one pile per label, and <code>summarise()</code> computes one row of answers for each pile. If you would rather stay with verbs you have already used, a <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> per label and a <code><a href="https://rdrr.io/r/base/range.html">range()</a></code> on each gets you the same three pairs of numbers with more typing. For the <code>NA</code> check, <code>count()</code> shows a missing category if one exists.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-severity">Worked solution</a></p>
+<div id="exr-move-cutoffs" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 7.2 (Move the cutoffs)</strong></span> The 100 and 300 thresholds are a convention adopted for this course, and other cutoffs are equally defensible. Rebuild <code>severity</code> with cutoffs at 50 and 500 instead, keeping the same boundary conventions (under 50 is Low, 50 up to and including 500 is Medium, over 500 is High).</p>
+<p>Report the three counts under the new rule, and compare them with 215 / 53 / 77. Then write two sentences you would be willing to put in a report under each set of cutoffs, describing how severe 2020 was. Both sentences must be true of the same 345 days.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Copy the <code>case_when()</code> block, change the two numbers, and give the new column a different name so you can <code>count()</code> both and put the results side by side. Do not forget the <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code> line, or your new column will sort alphabetically again.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-move-cutoffs">Worked solution</a></p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/cerm-nus\.github\.io\/r-intro\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+      for (let i=0; i<annoteTargets.length; i++) {
+        const annoteTarget = annoteTargets[i];
+        const targetCell = annoteTarget.getAttribute("data-target-cell");
+        const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+        const contentFn = () => {
+          const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          if (content) {
+            const tipContent = content.cloneNode(true);
+            tipContent.classList.add("code-annotation-tip-content");
+            return tipContent.outerHTML;
+          }
+        }
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          onShow: (instance) => {
+            selectCodeLines(instance.reference);
+            instance.reference.classList.add('code-annotation-active');
+            window.tippy.hideAll();
+          },
+          onHide: (instance) => {
+            unselectCodeLines();
+            instance.reference.classList.remove('code-annotation-active');
+          },
+          maxWidth: 300,
+          delay: [50, 0],
+          duration: [200, 0],
+          offset: [5, 10],
+          arrow: true,
+          appendTo: function(el) {
+            return el.parentElement.parentElement.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto',
+          placement: 'right',
+          popperOptions: {
+            modifiers: [
+            {
+              name: 'flip',
+              options: {
+                flipVariations: false, // true by default
+                allowedAutoPlacements: ['right'],
+                fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                mainAxis: false,
+                altAxis: false
+              }
+            }
+            ]        
+          }      
+        };
+        window.tippy(annoteTarget, config); 
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/missing.html" class="pagination-link" aria-label="Missing values">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/groups.html" class="pagination-link" aria-label="Grouping and summarising">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<div class="footer-logos">
+<p><img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"><img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"><img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
+</div>
+<p>Released under the <a href="https://github.com/CERM-NUS/r-intro/blob/main/LICENSE">MIT Licence</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/conditionals.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/conditionals.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a>. <a href="https://github.com/CERM-NUS/r-intro/issues">Report a problem</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

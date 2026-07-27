@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
+<title>5&nbsp; Transforming data – An Introduction to R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/missing.html" rel="next">
+<link href="../chapters/import.html" rel="prev">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf46b01eabe5934f78e5ab797c839044.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/transform.html">Working with the data</a></li><li class="breadcrumb-item"><a href="../chapters/transform.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">An Introduction to R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source on GitHub" class="quarto-navigation-tool px-1" aria-label="Source on GitHub"><i class="bi bi-github"></i></a>
+    <a href="https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv" title="Download the data" class="quarto-navigation-tool px-1" aria-label="Download the data"><i class="bi bi-file-earmark-spreadsheet"></i></a>
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Before you write any code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting set up</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">The R you cannot avoid</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Objects, vectors and functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/rectangles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rectangles: data frames and tibbles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/import.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reading the epidemic in</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Working with the data</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/transform.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/missing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/conditionals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Showing it to someone</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/visualise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Writing your own code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Writing functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/iteration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loops, and when you need them</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Putting it together</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/capstone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">The data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/build.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/colophon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Colophon</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li>
+<a href="#one-verb-one-job" id="toc-one-verb-one-job" class="nav-link active" data-scroll-target="#one-verb-one-job"><span class="header-section-number">5.1</span> One verb, one job</a>
+  <ul class="collapse">
+<li><a href="#filter-keeps-rows" id="toc-filter-keeps-rows" class="nav-link" data-scroll-target="#filter-keeps-rows"><span class="header-section-number">5.1.1</span> <code>filter()</code> keeps rows</a></li>
+  <li><a href="#arrange-reorders-rows" id="toc-arrange-reorders-rows" class="nav-link" data-scroll-target="#arrange-reorders-rows"><span class="header-section-number">5.1.2</span> <code>arrange()</code> reorders rows</a></li>
+  <li><a href="#select-keeps-columns" id="toc-select-keeps-columns" class="nav-link" data-scroll-target="#select-keeps-columns"><span class="header-section-number">5.1.3</span> <code>select()</code> keeps columns</a></li>
+  <li><a href="#rename-changes-column-names" id="toc-rename-changes-column-names" class="nav-link" data-scroll-target="#rename-changes-column-names"><span class="header-section-number">5.1.4</span> <code>rename()</code> changes column names</a></li>
+  <li><a href="#mutate-makes-new-columns" id="toc-mutate-makes-new-columns" class="nav-link" data-scroll-target="#mutate-makes-new-columns"><span class="header-section-number">5.1.5</span> <code>mutate()</code> makes new columns</a></li>
+  </ul>
+</li>
+  <li><a href="#stringing-verbs-together" id="toc-stringing-verbs-together" class="nav-link" data-scroll-target="#stringing-verbs-together"><span class="header-section-number">5.2</span> Stringing verbs together</a></li>
+  <li><a href="#cumulative-counts-are-not-incidence" id="toc-cumulative-counts-are-not-incidence" class="nav-link" data-scroll-target="#cumulative-counts-are-not-incidence"><span class="header-section-number">5.3</span> Cumulative counts are not incidence</a></li>
+  <li><a href="#lag-and-row-order" id="toc-lag-and-row-order" class="nav-link" data-scroll-target="#lag-and-row-order"><span class="header-section-number">5.4</span> <code>lag()</code> and row order</a></li>
+  <li><a href="#what-belongs-in-the-first-row" id="toc-what-belongs-in-the-first-row" class="nav-link" data-scroll-target="#what-belongs-in-the-first-row"><span class="header-section-number">5.5</span> What belongs in the first row</a></li>
+  <li><a href="#two-checks-on-a-differenced-series" id="toc-two-checks-on-a-differenced-series" class="nav-link" data-scroll-target="#two-checks-on-a-differenced-series"><span class="header-section-number">5.6</span> Two checks on a differenced series</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises"><span class="header-section-number">5.7</span> Exercises</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/transform.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/transform.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/transform.html">Working with the data</a></li><li class="breadcrumb-item"><a href="../chapters/transform.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-transform" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>The file you read in the last chapter has 345 rows and 13 columns. <code>confirmed</code> is a running total: it records how many cases Singapore had confirmed by the end of each day, cumulatively, since the first one. There is no column giving the number of cases confirmed <em>on</em> a given day, and that is the quantity epidemic curves, reproduction number estimates and situation reports are built from. Computing that quantity takes one line of dplyr, and most of this chapter is about the assumptions that line makes.</p>
+<p>Start where the last chapter finished, by reading the file back into a data frame named <code>covid</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="fu">read_covid</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">covid</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 13</span></span>
+<span><span class="co">#&gt;    administrative_area_level_1 confirmed deaths date       stringency_index</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                           &lt;dbl&gt;  &lt;dbl&gt; &lt;date&gt;                &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 Singapore                           0     NA 2020-01-22             19.4</span></span>
+<span><span class="co">#&gt;  2 Singapore                           1     NA 2020-01-23             25  </span></span>
+<span><span class="co">#&gt;  3 Singapore                           3     NA 2020-01-24             25  </span></span>
+<span><span class="co">#&gt;  4 Singapore                           3     NA 2020-01-25             25  </span></span>
+<span><span class="co">#&gt;  5 Singapore                           4     NA 2020-01-26             25  </span></span>
+<span><span class="co">#&gt;  6 Singapore                           5     NA 2020-01-27             25  </span></span>
+<span><span class="co">#&gt;  7 Singapore                           7     NA 2020-01-28             25  </span></span>
+<span><span class="co">#&gt;  8 Singapore                           7     NA 2020-01-29             25  </span></span>
+<span><span class="co">#&gt;  9 Singapore                          10     NA 2020-01-30             25  </span></span>
+<span><span class="co">#&gt; 10 Singapore                          13     NA 2020-01-31             25  </span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 8 more variables: government_response_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   containment_health_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   retail_and_recreation_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   grocery_and_pharmacy_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="one-verb-one-job" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="one-verb-one-job">
+<span class="header-section-number">5.1</span> One verb, one job</h2>
+<p>dplyr is built on a small number of functions with deliberately plain names. Each one takes a data frame as its first argument, does one thing to it, and returns a data frame. They are called verbs because they are things you do to a table. Five of them cover most routine work, and the rest of this section takes them one at a time.</p>
+<section id="filter-keeps-rows" class="level3" data-number="5.1.1"><h3 data-number="5.1.1" class="anchored" data-anchor-id="filter-keeps-rows">
+<span class="header-section-number">5.1.1</span> <code>filter()</code> keeps rows</h3>
+<p>Singapore’s circuit breaker ran from 7 April to 1 June 2020. To look at only those days:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">covid</span>, <span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2020-04-07"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-06-01"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 56 × 13</span></span>
+<span><span class="co">#&gt;    administrative_area_level_1 confirmed deaths date       stringency_index</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                           &lt;dbl&gt;  &lt;dbl&gt; &lt;date&gt;                &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 Singapore                        1481      6 2020-04-07             62.0</span></span>
+<span><span class="co">#&gt;  2 Singapore                        1623      6 2020-04-08             76.8</span></span>
+<span><span class="co">#&gt;  3 Singapore                        1910      6 2020-04-09             76.8</span></span>
+<span><span class="co">#&gt;  4 Singapore                        2108      7 2020-04-10             82.4</span></span>
+<span><span class="co">#&gt;  5 Singapore                        2299      8 2020-04-11             76.8</span></span>
+<span><span class="co">#&gt;  6 Singapore                        2532      8 2020-04-12             76.8</span></span>
+<span><span class="co">#&gt;  7 Singapore                        2918      9 2020-04-13             76.8</span></span>
+<span><span class="co">#&gt;  8 Singapore                        3252     10 2020-04-14             76.8</span></span>
+<span><span class="co">#&gt;  9 Singapore                        3699     10 2020-04-15             76.8</span></span>
+<span><span class="co">#&gt; 10 Singapore                        4427     10 2020-04-16             76.8</span></span>
+<span><span class="co">#&gt; # ℹ 46 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 8 more variables: government_response_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   containment_health_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   retail_and_recreation_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   grocery_and_pharmacy_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The result has fifty-six rows, which is 7 April to 1 June counted inclusively. Two things in that call are worth noting.</p>
+<p>The first is that several conditions separated by commas are combined with <strong>and</strong>: every condition has to hold for a row to be kept. For <strong>or</strong> you need <code>|</code>, because a comma is only ever read as <em>and</em>.</p>
+<p>The second is that <code>date</code> is a <code>Date</code> column compared against a piece of text. R converts the text to a date, which gives the intended result because <code>"2020-04-07"</code> is in ISO order: year, month, day. A date written in the day/month/year order used across much of the world is also accepted, without complaint, and interpreted differently:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"07/04/2020"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "0007-04-20"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>R read <code>07</code> as the year, <code>04</code> as the month and <code>2020</code> as the day, then rolled the impossible day number forward: the seventh of April 2020 has become the twentieth of April in the year 7. There is no error and no warning, and a <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> built on that comparison would return all 345 rows while looking reasonable. Writing dates in ISO order avoids this.</p>
+<p>There is one further point about <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">covid</span>, date <span class="op">=</span> <span class="st">"2020-04-07"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `filter()`:</span></span>
+<span><span class="co">#&gt; ! We detected a named input.</span></span>
+<span><span class="co">#&gt; ℹ This usually means that you've used `=` instead of `==`.</span></span>
+<span><span class="co">#&gt; ℹ Did you mean `date == "2020-04-07"`?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The mistake is the use of one equals sign, which is assignment, where two make a comparison. dplyr recognises the mistake and reports which one you meant. Base R would have treated <code>date</code> as the name of an argument instead, without an error.</p>
+</section><section id="arrange-reorders-rows" class="level3" data-number="5.1.2"><h3 data-number="5.1.2" class="anchored" data-anchor-id="arrange-reorders-rows">
+<span class="header-section-number">5.1.2</span> <code>arrange()</code> reorders rows</h3>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">arrange</span><span class="op">(</span><span class="va">covid</span>, <span class="fu">desc</span><span class="op">(</span><span class="va">stringency_index</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 13</span></span>
+<span><span class="co">#&gt;    administrative_area_level_1 confirmed deaths date       stringency_index</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                           &lt;dbl&gt;  &lt;dbl&gt; &lt;date&gt;                &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 Singapore                        2108      7 2020-04-10             82.4</span></span>
+<span><span class="co">#&gt;  2 Singapore                       12693     12 2020-04-25             82.4</span></span>
+<span><span class="co">#&gt;  3 Singapore                       17101     16 2020-05-01             82.4</span></span>
+<span><span class="co">#&gt;  4 Singapore                        1623      6 2020-04-08             76.8</span></span>
+<span><span class="co">#&gt;  5 Singapore                        1910      6 2020-04-09             76.8</span></span>
+<span><span class="co">#&gt;  6 Singapore                        2299      8 2020-04-11             76.8</span></span>
+<span><span class="co">#&gt;  7 Singapore                        2532      8 2020-04-12             76.8</span></span>
+<span><span class="co">#&gt;  8 Singapore                        2918      9 2020-04-13             76.8</span></span>
+<span><span class="co">#&gt;  9 Singapore                        3252     10 2020-04-14             76.8</span></span>
+<span><span class="co">#&gt; 10 Singapore                        3699     10 2020-04-15             76.8</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 8 more variables: government_response_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   containment_health_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   retail_and_recreation_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   grocery_and_pharmacy_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The Oxford stringency index peaked at 82.41, and three separate days sit at that peak. Sorting does not deduplicate; it puts equal things next to each other and leaves them in the order it found them.</p>
+<p>Negating the value is the other way to reverse a sort, and on a <code>Date</code> column it stops:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">arrange</span><span class="op">(</span><span class="va">covid</span>, <span class="op">-</span><span class="va">date</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `arrange()`:</span></span>
+<span><span class="co">#&gt; ℹ In argument: `..1 = -date`.</span></span>
+<span><span class="co">#&gt; Caused by error in `-.Date`:</span></span>
+<span><span class="co">#&gt; ! unary - is not defined for "Date" objects</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>unary - is not defined for "Date" objects</code>. Negating a value to reverse the sort works for numbers, and dates are stored as numbers underneath, but R does not permit arithmetic that would produce a meaningless date. <code>desc()</code> works on anything that can be sorted, including text and factors.</p>
+</section><section id="select-keeps-columns" class="level3" data-number="5.1.3"><h3 data-number="5.1.3" class="anchored" data-anchor-id="select-keeps-columns">
+<span class="header-section-number">5.1.3</span> <code>select()</code> keeps columns</h3>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">select</span><span class="op">(</span><span class="va">covid</span>, <span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">deaths</span>, <span class="va">stringency_index</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 4</span></span>
+<span><span class="co">#&gt;    date       confirmed deaths stringency_index</span></span>
+<span><span class="co">#&gt;    &lt;date&gt;         &lt;dbl&gt;  &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 2020-01-22         0     NA             19.4</span></span>
+<span><span class="co">#&gt;  2 2020-01-23         1     NA             25  </span></span>
+<span><span class="co">#&gt;  3 2020-01-24         3     NA             25  </span></span>
+<span><span class="co">#&gt;  4 2020-01-25         3     NA             25  </span></span>
+<span><span class="co">#&gt;  5 2020-01-26         4     NA             25  </span></span>
+<span><span class="co">#&gt;  6 2020-01-27         5     NA             25  </span></span>
+<span><span class="co">#&gt;  7 2020-01-28         7     NA             25  </span></span>
+<span><span class="co">#&gt;  8 2020-01-29         7     NA             25  </span></span>
+<span><span class="co">#&gt;  9 2020-01-30        10     NA             25  </span></span>
+<span><span class="co">#&gt; 10 2020-01-31        13     NA             25  </span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The order you name them is the order you get, so <code>select()</code> doubles as a way to move a column to the front. There are helpers for the cases where naming every column is not sensible:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">select</span><span class="op">(</span><span class="va">covid</span>, <span class="va">date</span>, <span class="fu">ends_with</span><span class="op">(</span><span class="st">"_percent_change_from_baseline"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 7</span></span>
+<span><span class="co">#&gt;    date       retail_and_recreation_percent_change_from…¹ grocery_and_pharmacy…²</span></span>
+<span><span class="co">#&gt;    &lt;date&gt;                                           &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 2020-01-22                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  2 2020-01-23                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  3 2020-01-24                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  4 2020-01-25                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  5 2020-01-26                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  6 2020-01-27                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  7 2020-01-28                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  8 2020-01-29                                          NA                     NA</span></span>
+<span><span class="co">#&gt;  9 2020-01-30                                          NA                     NA</span></span>
+<span><span class="co">#&gt; 10 2020-01-31                                          NA                     NA</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span>
+<span><span class="co">#&gt; # ℹ abbreviated names: ¹​retail_and_recreation_percent_change_from_baseline,</span></span>
+<span><span class="co">#&gt; #   ²​grocery_and_pharmacy_percent_change_from_baseline</span></span>
+<span><span class="co">#&gt; # ℹ 4 more variables: parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   workplaces_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   residential_percent_change_from_baseline &lt;dbl&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>starts_with()</code>, <code>ends_with()</code> and <code>contains()</code> work inside <code>select()</code> and in the other places where columns are chosen by name, but not on their own at the console. They belong to a small language called tidyselect, which is only defined in that context. A leading minus drops instead of keeps:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">select</span><span class="op">(</span><span class="va">covid</span>, <span class="op">-</span><span class="va">administrative_area_level_1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 12</span></span>
+<span><span class="co">#&gt;    confirmed deaths date       stringency_index government_response_index</span></span>
+<span><span class="co">#&gt;        &lt;dbl&gt;  &lt;dbl&gt; &lt;date&gt;                &lt;dbl&gt;                     &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1         0     NA 2020-01-22             19.4                      19.3</span></span>
+<span><span class="co">#&gt;  2         1     NA 2020-01-23             25                        24.5</span></span>
+<span><span class="co">#&gt;  3         3     NA 2020-01-24             25                        24.5</span></span>
+<span><span class="co">#&gt;  4         3     NA 2020-01-25             25                        24.5</span></span>
+<span><span class="co">#&gt;  5         4     NA 2020-01-26             25                        24.5</span></span>
+<span><span class="co">#&gt;  6         5     NA 2020-01-27             25                        24.5</span></span>
+<span><span class="co">#&gt;  7         7     NA 2020-01-28             25                        24.5</span></span>
+<span><span class="co">#&gt;  8         7     NA 2020-01-29             25                        24.5</span></span>
+<span><span class="co">#&gt;  9        10     NA 2020-01-30             25                        24.5</span></span>
+<span><span class="co">#&gt; 10        13     NA 2020-01-31             25                        24.5</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 7 more variables: containment_health_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   retail_and_recreation_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   grocery_and_pharmacy_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   workplaces_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That column contains the string <code>"Singapore"</code> in all 345 rows. It is there because the data hub serves many countries from one schema, and it carries no information once you have filtered down to one of them.</p>
+</section><section id="rename-changes-column-names" class="level3" data-number="5.1.4"><h3 data-number="5.1.4" class="anchored" data-anchor-id="rename-changes-column-names">
+<span class="header-section-number">5.1.4</span> <code>rename()</code> changes column names</h3>
+<p><code>retail_and_recreation_percent_change_from_baseline</code> is fifty characters long. The name comes from Google’s published series, where it spells out the measure in full: the percentage change in visits to retail and recreation venues, relative to the baseline period.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mob</span> <span class="op">&lt;-</span> <span class="fu">rename</span><span class="op">(</span></span>
+<span>  <span class="va">covid</span>,</span>
+<span>  retail      <span class="op">=</span> <span class="va">retail_and_recreation_percent_change_from_baseline</span>,</span>
+<span>  grocery     <span class="op">=</span> <span class="va">grocery_and_pharmacy_percent_change_from_baseline</span>,</span>
+<span>  parks       <span class="op">=</span> <span class="va">parks_percent_change_from_baseline</span>,</span>
+<span>  transit     <span class="op">=</span> <span class="va">transit_stations_percent_change_from_baseline</span>,</span>
+<span>  workplaces  <span class="op">=</span> <span class="va">workplaces_percent_change_from_baseline</span>,</span>
+<span>  residential <span class="op">=</span> <span class="va">residential_percent_change_from_baseline</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">select</span><span class="op">(</span><span class="va">mob</span>, <span class="va">date</span>, <span class="va">retail</span>, <span class="va">workplaces</span>, <span class="va">residential</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 4</span></span>
+<span><span class="co">#&gt;    date       retail workplaces residential</span></span>
+<span><span class="co">#&gt;    &lt;date&gt;      &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 2020-01-22     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  2 2020-01-23     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  3 2020-01-24     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  4 2020-01-25     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  5 2020-01-26     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  6 2020-01-27     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  7 2020-01-28     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  8 2020-01-29     NA         NA          NA</span></span>
+<span><span class="co">#&gt;  9 2020-01-30     NA         NA          NA</span></span>
+<span><span class="co">#&gt; 10 2020-01-31     NA         NA          NA</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The new name goes on the left of the <code>=</code> and the old name on the right. This matches <code>mutate()</code> and the other functions that create columns: the thing being created sits on the left of the <code>=</code>.</p>
+<p>The code in this book keeps the long names, because they are what the file ships with and because renaming columns partway through a chapter would make the code harder to copy out. In your own analysis it is simpler to rename once, near the start.</p>
+<p>The same consideration applies to object names. A short name is tolerable for an object that lives for six lines: <code>mob</code> is used once, immediately below, and never again. An object that persists is named after its contents, so columns renamed near the start of an analysis keep names, like <code>retail</code> and <code>workplaces</code>, that say what they measure.</p>
+</section><section id="mutate-makes-new-columns" class="level3" data-number="5.1.5"><h3 data-number="5.1.5" class="anchored" data-anchor-id="mutate-makes-new-columns">
+<span class="header-section-number">5.1.5</span> <code>mutate()</code> makes new columns</h3>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">select</span><span class="op">(</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span><span class="va">covid</span>, cfr <span class="op">=</span> <span class="va">deaths</span> <span class="op">/</span> <span class="va">confirmed</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span>,</span>
+<span>  <span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">deaths</span>, <span class="va">cfr</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 4</span></span>
+<span><span class="co">#&gt;    date       confirmed deaths   cfr</span></span>
+<span><span class="co">#&gt;    &lt;date&gt;         &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 2020-01-22         0     NA    NA</span></span>
+<span><span class="co">#&gt;  2 2020-01-23         1     NA    NA</span></span>
+<span><span class="co">#&gt;  3 2020-01-24         3     NA    NA</span></span>
+<span><span class="co">#&gt;  4 2020-01-25         3     NA    NA</span></span>
+<span><span class="co">#&gt;  5 2020-01-26         4     NA    NA</span></span>
+<span><span class="co">#&gt;  6 2020-01-27         5     NA    NA</span></span>
+<span><span class="co">#&gt;  7 2020-01-28         7     NA    NA</span></span>
+<span><span class="co">#&gt;  8 2020-01-29         7     NA    NA</span></span>
+<span><span class="co">#&gt;  9 2020-01-30        10     NA    NA</span></span>
+<span><span class="co">#&gt; 10 2020-01-31        13     NA    NA</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>mutate()</code> works on whole columns at a time. There is no loop over rows; <code>deaths / confirmed</code> divides two vectors of 345 numbers element by element and hands back a third. This is the main habit shift coming from a spreadsheet, where a formula is written for one cell and then copied down.</p>
+<p>The case fatality ratio at the end of 2020 was 29 in 58,599, or about 0.05%. That is low by comparison with most countries in that year, and the explanation lies in who was infected: the great majority of Singapore’s 2020 cases came from the migrant-worker dormitory outbreak that dominated April to August, in a population of working-age adults with a low expected fatality rate. The ratio is not comparable with one computed on a population of a different age structure, and it should be reported with that context attached.</p>
+</section></section><section id="stringing-verbs-together" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="stringing-verbs-together">
+<span class="header-section-number">5.2</span> Stringing verbs together</h2>
+<p>That last call nests one verb inside another. To make a column and then choose four columns, the code reads inside out: <code>mutate()</code> sits in the middle, <code>select()</code> wraps around it, and the data frame you started from is in the interior. Adding a <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> and an <code>arrange()</code> makes it harder still to follow:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span></span>
+<span>    <span class="fu">select</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">covid</span>, <span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2020-04-07"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-06-01"</span><span class="op">)</span>,</span>
+<span>      <span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">stringency_index</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="fu">desc</span><span class="op">(</span><span class="va">stringency_index</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
+<span><span class="co">#&gt;   date       confirmed stringency_index</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 2020-04-10      2108             82.4</span></span>
+<span><span class="co">#&gt; 2 2020-04-25     12693             82.4</span></span>
+<span><span class="co">#&gt; 3 2020-05-01     17101             82.4</span></span>
+<span><span class="co">#&gt; 4 2020-04-08      1623             76.8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>That has to be read from the innermost bracket outwards, which is the reverse of the order in which the operations happen. The pipe removes the nesting:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2020-04-07"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2020-06-01"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">stringency_index</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">stringency_index</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
+<span><span class="co">#&gt;   date       confirmed stringency_index</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;         &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 2020-04-10      2108             82.4</span></span>
+<span><span class="co">#&gt; 2 2020-04-25     12693             82.4</span></span>
+<span><span class="co">#&gt; 3 2020-05-01     17101             82.4</span></span>
+<span><span class="co">#&gt; 4 2020-04-08      1623             76.8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>x %&gt;% f(y)</code> means <code>f(x, y)</code>. The thing on the left is passed in as the first argument of the function on the right. Because every dplyr verb takes a data frame first and returns a data frame, they chain without any glue.</p>
+<p>Read <code>%&gt;%</code> as “and then”. Take covid, and then keep the circuit-breaker days, and then keep three columns, and then sort by stringency, and then show me four rows. That is the order the sentence happens in and the order the code is written in.</p>
+<p>A few conventions are worth adopting now. Put the <code>%&gt;%</code> at the end of the line rather than the start of the next one, because R needs to see that the line is unfinished. Indent the continuation lines. Build the chain one verb at a time, running it after each addition, rather than writing eight lines before running any of them. RStudio has a keyboard shortcut for the pipe: Ctrl+Shift+M on Windows and Linux, Cmd+Shift+M on a Mac.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The other pipe
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R gained a pipe of its own in version 4.1, written <code>|&gt;</code>. It does the same basic thing and needs no packages. It differs in the details: <code>%&gt;%</code> lets you write <code>.</code> to put the incoming value somewhere other than the first argument, while <code>|&gt;</code> has a narrower placeholder with different rules, and the two behave differently with anonymous functions. This book uses <code>%&gt;%</code> throughout, so <code>|&gt;</code> in code you find elsewhere expresses the same idea in the other spelling.</p>
+</div>
+</div>
+</section><section id="cumulative-counts-are-not-incidence" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="cumulative-counts-are-not-incidence">
+<span class="header-section-number">5.3</span> Cumulative counts are not incidence</h2>
+<p>The rest of the chapter depends on the distinction between two quantities.</p>
+<p><code>confirmed</code> only ever increases. It increased when Singapore was recording three cases a day in February, when it recorded 1,426 in a single day in April, and again in December when transmission had largely stopped. A cumulative curve cannot fall, so it cannot show a peak or a turning point. What it shows is the total to date, which is a real quantity but rarely the one an analysis needs.</p>
+<p>Incidence is the number of new cases per unit time: a rate, which rises and falls. It is the quantity models are fitted to and reproduction numbers are computed from, and it is the one of the two that can show whether last week was better than the week before.</p>
+<p>Both curves below are made from the same 345 numbers.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid_inc</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>daily_cases <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_cum</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">covid_inc</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">label_comma</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cumulative confirmed cases"</span>, x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_inc</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="va">covid_inc</span>, <span class="fu">aes</span><span class="op">(</span><span class="va">date</span>, <span class="va">daily_cases</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_col</span><span class="op">(</span>width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">label_comma</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"New cases each day"</span>, x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_cum</span> <span class="op">/</span> <span class="va">p_inc</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div id="fig-cumulative-vs-incident" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two stacked time series for 2020. The upper panel is a smooth S-shaped curve rising from zero to about 58,600 and then flattening. The lower panel is a jagged bar chart peaking above 1,400 in late April, falling through the middle of the year, with a second smaller rise from late July into August and one tall isolated spike.">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-cumulative-vs-incident-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="transform_files/figure-html/fig-cumulative-vs-incident-1.svg" class="img-fluid figure-img" alt="Two stacked time series for 2020. The upper panel is a smooth S-shaped curve rising from zero to about 58,600 and then flattening. The lower panel is a jagged bar chart peaking above 1,400 in late April, falling through the middle of the year, with a second smaller rise from late July into August and one tall isolated spike.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cumulative-vs-incident-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.1: The same epidemic, twice. Above, the cumulative confirmed count. Below, new cases per day, derived from it.
+</figcaption></figure>
+</div>
+</div>
+</div>
+<p>The top panel rises steeply through the middle of the year and flattens at the right-hand edge, which is the only shape a cumulative count can take. The peak is not visible in it, and neither is the fact that half the year’s cases had been confirmed by 20 May.</p>
+<p>The bottom panel shows the shape of the epidemic. It climbs through April to a single highest day of 1,426 on 20 April, stays high through May, then falls unevenly until the week of 5 July, before a second rise carries it back up through late July into early August and it dies away from mid-August onwards. The tall isolated spike is 5 August, which recorded 908 cases against an August median of 91 and a next-highest August day of 313. Singapore’s Ministry of Health attributed that day to clearance testing in the dormitories detecting past infections. On the cumulative curve that day appears only as a slight change of slope, where it would be easy to miss.</p>
+<p>The two presentations also differ in what they allow to be claimed. A cumulative curve continues to rise after an intervention whatever the intervention did, so it can usually be described as flattening. An incidence curve makes the claim checkable directly against the daily numbers.</p>
+</section><section id="lag-and-row-order" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="lag-and-row-order">
+<span class="header-section-number">5.4</span> <code>lag()</code> and row order</h2>
+<p>The line that computed the daily counts was this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">daily_cases</span> <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> shifts a vector one position to the right, so that each element lines up with the one before it. On a short example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] NA  0  1  3  3</span></span>
+<span><span class="va">x</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] NA  1  2  0  1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Element two of <code>lag(x)</code> is element one of <code>x</code>. Subtracting gives the difference between consecutive elements: the increments. The first element has nothing before it, so <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> puts <code>NA</code> there, and the subtraction propagates it.</p>
+<p>There is a precondition here. <strong><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> is positional, not date-aware.</strong> It does not inspect the <code>date</code> column; it takes the row physically above, whatever that row contains. If the rows are in some other order, <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> neither warns nor errors, and the differences it returns can be between days that are months apart.</p>
+<p>Suppose you had sorted by stringency index earlier in the session, for some other purpose, and then computed daily cases without re-sorting.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Predict before you run
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Of the 345 daily case counts produced from wrongly ordered rows, how many will come out negative? Decide on a number before reading on.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">scrambled</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">stringency_index</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>daily_cases <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">scrambled</span><span class="op">$</span><span class="va">daily_cases</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 8</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">scrambled</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 42</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Eight rows out of 345 are negative, and the median of the wrong answer is 42 against a true value of 40. With the table sorted by something other than date, roughly 97% of the resulting daily counts still look like plausible daily counts, and some are correct by accident, wherever two adjacent rows happened to be adjacent days.</p>
+<p>This is what makes the error hard to catch: a bug that produces obvious nonsense is noticed at once, whereas a bug that produces 337 plausible numbers and 8 impossible ones can survive until the negative values appear in a figure and have to be explained.</p>
+<p>The safeguard is to put <code>arrange(date)</code> in the chain immediately before the <code>mutate()</code>. It adds one line and changes nothing when the data are already sorted by date, as they are in this file.</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">&lt;-</span> <span class="va">covid</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>daily_cases <span class="op">=</span> <span class="va">confirmed</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lag.html">lag</a></span><span class="op">(</span><span class="va">confirmed</span>, default <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span>  <span class="co"># this file starts at zero, so default = 0 records a true zero</span></span>
+<span></span>
+<span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">daily_cases</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 345 × 3</span></span>
+<span><span class="co">#&gt;    date       confirmed daily_cases</span></span>
+<span><span class="co">#&gt;    &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1 2020-01-22         0           0</span></span>
+<span><span class="co">#&gt;  2 2020-01-23         1           1</span></span>
+<span><span class="co">#&gt;  3 2020-01-24         3           2</span></span>
+<span><span class="co">#&gt;  4 2020-01-25         3           0</span></span>
+<span><span class="co">#&gt;  5 2020-01-26         4           1</span></span>
+<span><span class="co">#&gt;  6 2020-01-27         5           1</span></span>
+<span><span class="co">#&gt;  7 2020-01-28         7           2</span></span>
+<span><span class="co">#&gt;  8 2020-01-29         7           0</span></span>
+<span><span class="co">#&gt;  9 2020-01-30        10           3</span></span>
+<span><span class="co">#&gt; 10 2020-01-31        13           3</span></span>
+<span><span class="co">#&gt; # ℹ 335 more rows</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="what-belongs-in-the-first-row" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="what-belongs-in-the-first-row">
+<span class="header-section-number">5.5</span> What belongs in the first row</h2>
+<p><code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> on its own leaves <code>NA</code> at the top, because there is no previous row to subtract. The <code>default = 0</code> argument fills that gap with a zero instead. Whether the zero is appropriate depends on what the series records; R will insert it either way.</p>
+<p>Here it is appropriate, for a reason visible in the first row of the table:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">date</span>, <span class="va">confirmed</span>, <span class="va">daily_cases</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 3</span></span>
+<span><span class="co">#&gt;   date       confirmed daily_cases</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 2020-01-22         0           0</span></span>
+<span><span class="co">#&gt; 2 2020-01-23         1           1</span></span>
+<span><span class="co">#&gt; 3 2020-01-24         3           2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>confirmed</code> is 0 on 22 January 2020. Zero cases had been confirmed by the end of that day, so zero cases were confirmed <em>during</em> it. The zero is an observation rather than a gap, and recording it as <code>NA</code> would discard a genuine zero and shorten the series by one day in every count, sum and plot downstream.</p>
+<p>The situation differs if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then <code>default = 0</code> would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the appropriate value is <code>NA</code>, because the data carry no information about how many cases occurred on the first day of a window whose start was not observed.</p>
+<p>The choice therefore turns on the first value of the series. Look at it: if it is zero, <code>default = 0</code> records a true zero; if it is anything else, plain <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> leaves an <code>NA</code>, which is an accurate statement of what is not known. This file starts at zero, which is why <code>default = 0</code> is used in the code above, and that reason is worth writing in a comment beside it.</p>
+</section><section id="two-checks-on-a-differenced-series" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="two-checks-on-a-differenced-series">
+<span class="header-section-number">5.6</span> Two checks on a differenced series</h2>
+<p>A derived column looks no different from one that came out of the file, so errors in it are easy to miss. Two inexpensive checks catch most of what can go wrong when differencing a cumulative series.</p>
+<p>The first is that a difference of a non-decreasing count cannot be negative. If a negative appears, either the rows are out of order or the source revised its figures downward.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">daily_cases</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 0 × 14</span></span>
+<span><span class="co">#&gt; # ℹ 14 variables: administrative_area_level_1 &lt;chr&gt;, confirmed &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   deaths &lt;dbl&gt;, date &lt;date&gt;, stringency_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   government_response_index &lt;dbl&gt;, containment_health_index &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   retail_and_recreation_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   grocery_and_pharmacy_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   parks_percent_change_from_baseline &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   transit_stations_percent_change_from_baseline &lt;dbl&gt;, …</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The result is zero rows: an empty tibble that still carries its column names and types, so you can see that the check ran rather than failed.</p>
+<p>The second is that the daily numbers must add back up to the cumulative total. The increments telescope: every intermediate value cancels, leaving the last one.</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">confirmed</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 58599</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Both expressions return 58,599. Run the same check on the scrambled version and it fails, because the “last” row in stringency order is 22 January, where the cumulative total is 0.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">scrambled</span><span class="op">$</span><span class="va">daily_cases</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">scrambled</span><span class="op">$</span><span class="va">confirmed</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The check passes on the sorted table and fails on the scrambled one, which is what makes it worth the two lines it takes to write. Both checks are worth keeping in any script that differences a cumulative series.</p>
+<p>One caveat applies when the same recipe is used on <code>deaths</code>. That column is missing for the first 59 days of 2020, and the second check does not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason lies in the <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code>. Singapore’s first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is <code>2 - NA</code>, which is <code>NA</code>, and a sum told to skip missing values skips those two deaths along with it. Differencing recovers changes; it cannot recover the level a series started at. This is a property of the file rather than an error in the code, and what to do about it is a decision about what a blank in that column means.</p>
+</section><section id="exercises" class="level2" data-number="5.7"><h2 data-number="5.7" class="anchored" data-anchor-id="exercises">
+<span class="header-section-number">5.7</span> Exercises</h2>
+<div id="exr-verbs" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 5.1 (Build a circuit-breaker table)</strong></span> Using only <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code>, <code>select()</code>, <code>rename()</code>, <code>arrange()</code> and the pipe, produce a table covering the circuit breaker (7 April to 1 June 2020 inclusive) that contains the date, the cumulative confirmed count, the stringency index, and the retail and workplace mobility columns under short names of your choosing. Sort it so that the deepest workplace mobility drops appear first.</p>
+<p>Then answer two things from the result. How many rows does it have, and does that match the number of calendar days in the period? And what do the top three rows have in common as dates, once you look them up?</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>rename()</code> and <code>select()</code> can both give a column a new name, so you can do it in one step or two. For the second question, count the days from 7 April to 1 June by hand and remember that both endpoints are included.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-verbs">Worked solution</a></p>
+<div id="exr-daily-cases" class="theorem exercise">
+<p><span class="theorem-title"><strong>Exercise 5.2 (Difference the deaths series)</strong></span> Apply the same pattern you used for cases to the <code>deaths</code> column: sort by date, then make a <code>daily_deaths</code> column by subtracting the lagged cumulative count.</p>
+<p>Then run both of the checks from this chapter on it. Are there any negative values? Does the total of the daily numbers equal the final cumulative figure? Report exactly what you get from each check, including anything R does with missing values along the way.</p>
+<p>Finally, find the largest single-day increase in deaths and the date it happened. Leave the shortfall unrepaired; what the exercise asks for is the row on which it arises, identified exactly.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Stuck? Open for a hint (not the answer)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code><a href="https://rdrr.io/r/base/sum.html">sum()</a></code> on a vector containing <code>NA</code> returns <code>NA</code>, so you will need to decide what to tell it to do about that, and the decision is part of the answer. Look at the rows either side of the first date on which <code>deaths</code> is not missing.</p>
+</div>
+</div>
+</div>
+<p><a href="../appendices/solutions.html#sec-sol-daily-cases">Worked solution</a></p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/cerm-nus\.github\.io\/r-intro\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+      for (let i=0; i<annoteTargets.length; i++) {
+        const annoteTarget = annoteTargets[i];
+        const targetCell = annoteTarget.getAttribute("data-target-cell");
+        const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+        const contentFn = () => {
+          const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          if (content) {
+            const tipContent = content.cloneNode(true);
+            tipContent.classList.add("code-annotation-tip-content");
+            return tipContent.outerHTML;
+          }
+        }
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          onShow: (instance) => {
+            selectCodeLines(instance.reference);
+            instance.reference.classList.add('code-annotation-active');
+            window.tippy.hideAll();
+          },
+          onHide: (instance) => {
+            unselectCodeLines();
+            instance.reference.classList.remove('code-annotation-active');
+          },
+          maxWidth: 300,
+          delay: [50, 0],
+          duration: [200, 0],
+          offset: [5, 10],
+          arrow: true,
+          appendTo: function(el) {
+            return el.parentElement.parentElement.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto',
+          placement: 'right',
+          popperOptions: {
+            modifiers: [
+            {
+              name: 'flip',
+              options: {
+                flipVariations: false, // true by default
+                allowedAutoPlacements: ['right'],
+                fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                mainAxis: false,
+                altAxis: false
+              }
+            }
+            ]        
+          }      
+        };
+        window.tippy(annoteTarget, config); 
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../chapters/import.html" class="pagination-link" aria-label="Reading the epidemic in">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reading the epidemic in</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/missing.html" class="pagination-link" aria-label="Missing values">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<div class="footer-logos">
+<p><img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"><img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"><img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
+</div>
+<p>Released under the <a href="https://github.com/CERM-NUS/r-intro/blob/main/LICENSE">MIT Licence</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/transform.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/transform.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a>. <a href="https://github.com/CERM-NUS/r-intro/issues">Report a problem</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

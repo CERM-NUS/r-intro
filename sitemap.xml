@@ -2,78 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://cerm-nus.github.io/r-intro/index.html</loc>
-    <lastmod>2026-07-26T05:06:09.609Z</lastmod>
+    <lastmod>2026-07-27T08:42:07.615Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/setup.html</loc>
-    <lastmod>2026-07-26T05:21:06.511Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/setup.html</loc>
+    <lastmod>2026-07-27T06:41:47.825Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/good-practice.html</loc>
-    <lastmod>2026-07-26T05:21:06.513Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/foundations.html</loc>
+    <lastmod>2026-07-27T09:06:34.814Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/foundations.html</loc>
-    <lastmod>2026-07-26T05:21:06.515Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/rectangles.html</loc>
+    <lastmod>2026-07-27T08:43:36.757Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/rectangles.html</loc>
-    <lastmod>2026-07-26T05:05:20.271Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/import.html</loc>
+    <lastmod>2026-07-27T08:45:34.742Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/import.html</loc>
-    <lastmod>2026-07-26T05:21:21.471Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/transform.html</loc>
+    <lastmod>2026-07-27T08:46:03.716Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/transform.html</loc>
-    <lastmod>2026-07-26T05:21:06.512Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/missing.html</loc>
+    <lastmod>2026-07-27T08:50:24.877Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/missing.html</loc>
-    <lastmod>2026-07-26T05:21:06.513Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/conditionals.html</loc>
+    <lastmod>2026-07-27T08:46:04.449Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/conditionals.html</loc>
-    <lastmod>2026-07-26T05:05:48.254Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/groups.html</loc>
+    <lastmod>2026-07-27T08:37:40.438Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/groups.html</loc>
-    <lastmod>2026-07-26T05:21:06.514Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/visualise.html</loc>
+    <lastmod>2026-07-27T08:50:17.061Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/visualise.html</loc>
-    <lastmod>2026-07-26T05:07:11.777Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/functions.html</loc>
+    <lastmod>2026-07-27T08:42:54.113Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/functions.html</loc>
-    <lastmod>2026-07-26T05:21:06.514Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/iteration.html</loc>
+    <lastmod>2026-07-27T08:45:31.764Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/iteration.html</loc>
-    <lastmod>2026-07-26T05:06:42.854Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/capstone.html</loc>
+    <lastmod>2026-07-27T08:48:27.627Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/capstone.html</loc>
-    <lastmod>2026-07-26T05:09:51.542Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/good-practice.html</loc>
+    <lastmod>2026-07-27T08:41:20.905Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/next-steps.html</loc>
-    <lastmod>2026-07-26T05:06:02.180Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/chapters/next-steps.html</loc>
+    <lastmod>2026-07-27T08:42:42.559Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/solutions.html</loc>
-    <lastmod>2026-07-26T05:21:21.472Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/appendices/solutions.html</loc>
+    <lastmod>2026-07-27T08:59:22.436Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/data.html</loc>
-    <lastmod>2026-07-26T05:21:06.513Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/appendices/data.html</loc>
+    <lastmod>2026-07-27T08:42:15.370Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/build.html</loc>
-    <lastmod>2026-07-26T05:21:06.514Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/appendices/build.html</loc>
+    <lastmod>2026-07-27T09:00:54.386Z</lastmod>
   </url>
   <url>
-    <loc>https://cerm-nus.github.io/r-intro/colophon.html</loc>
-    <lastmod>2026-07-26T05:07:28.392Z</lastmod>
+    <loc>https://cerm-nus.github.io/r-intro/appendices/colophon.html</loc>
+    <lastmod>2026-07-27T05:52:04.404Z</lastmod>
   </url>
 </urlset>

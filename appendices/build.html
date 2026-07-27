@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
+<title>Appendix C — How this book is built – An Introduction to R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../appendices/colophon.html" rel="next">
+<link href="../appendices/data.html" rel="prev">
+<link href="../assets/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-cf46b01eabe5934f78e5ab797c839044.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+</head>
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendices/solutions.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendices/build.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">An Introduction to R</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source on GitHub" class="quarto-navigation-tool px-1" aria-label="Source on GitHub"><i class="bi bi-github"></i></a>
+    <a href="https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv" title="Download the data" class="quarto-navigation-tool px-1" aria-label="Download the data"><i class="bi bi-file-earmark-spreadsheet"></i></a>
+    <a href="https://github.com/CERM-NUS/r-intro" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Before you write any code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting set up</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">The R you cannot avoid</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Objects, vectors and functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/rectangles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Rectangles: data frames and tibbles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/import.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Reading the epidemic in</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Working with the data</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/transform.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Transforming data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/missing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Missing values</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/conditionals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Making decisions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/groups.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Grouping and summarising</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Showing it to someone</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/visualise.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Plots</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+ <span class="menu-text">Writing your own code</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Writing functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/iteration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loops, and when you need them</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Putting it together</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 ">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/capstone.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/solutions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">The data</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/build.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/colophon.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Colophon</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#the-repository" id="toc-the-repository" class="nav-link active" data-scroll-target="#the-repository"><span class="header-section-number">C.1</span> The repository</a></li>
+  <li>
+<a href="#quarto.yml-section-by-section" id="toc-quarto.yml-section-by-section" class="nav-link" data-scroll-target="#quarto.yml-section-by-section"><span class="header-section-number">C.2</span> <code>_quarto.yml</code>, section by section</a>
+  <ul class="collapse">
+<li><a href="#project" id="toc-project" class="nav-link" data-scroll-target="#project"><span class="header-section-number">C.2.1</span> <code>project:</code></a></li>
+  <li><a href="#book" id="toc-book" class="nav-link" data-scroll-target="#book"><span class="header-section-number">C.2.2</span> <code>book:</code></a></li>
+  <li><a href="#chapters-and-appendices" id="toc-chapters-and-appendices" class="nav-link" data-scroll-target="#chapters-and-appendices"><span class="header-section-number">C.2.3</span> <code>chapters:</code> and <code>appendices:</code></a></li>
+  <li><a href="#page-footer" id="toc-page-footer" class="nav-link" data-scroll-target="#page-footer"><span class="header-section-number">C.2.4</span> <code>page-footer:</code></a></li>
+  <li><a href="#format" id="toc-format" class="nav-link" data-scroll-target="#format"><span class="header-section-number">C.2.5</span> <code>format:</code></a></li>
+  <li><a href="#execute-and-why-chapters-should-not-override-it" id="toc-execute-and-why-chapters-should-not-override-it" class="nav-link" data-scroll-target="#execute-and-why-chapters-should-not-override-it"><span class="header-section-number">C.2.6</span> <code>execute:</code> and why chapters should not override it</a></li>
+  </ul>
+</li>
+  <li><a href="#common.r" id="toc-common.r" class="nav-link" data-scroll-target="#common.r"><span class="header-section-number">C.3</span> <code>_common.R</code></a></li>
+  <li>
+<a href="#renv-and-the-lockfile" id="toc-renv-and-the-lockfile" class="nav-link" data-scroll-target="#renv-and-the-lockfile"><span class="header-section-number">C.4</span> renv and the lockfile</a>
+  <ul class="collapse">
+<li><a href="#dependencies.r" id="toc-dependencies.r" class="nav-link" data-scroll-target="#dependencies.r"><span class="header-section-number">C.4.1</span> <code>_dependencies.R</code></a></li>
+  <li><a href="#rendering-from-another-projects-directory" id="toc-rendering-from-another-projects-directory" class="nav-link" data-scroll-target="#rendering-from-another-projects-directory"><span class="header-section-number">C.4.2</span> Rendering from another project’s directory</a></li>
+  </ul>
+</li>
+  <li><a href="#freeze" id="toc-freeze" class="nav-link" data-scroll-target="#freeze"><span class="header-section-number">C.5</span> Freeze</a></li>
+  <li>
+<a href="#publishing" id="toc-publishing" class="nav-link" data-scroll-target="#publishing"><span class="header-section-number">C.6</span> Publishing</a>
+  <ul class="collapse">
+<li><a href="#what-the-split-buys-and-what-it-costs" id="toc-what-the-split-buys-and-what-it-costs" class="nav-link" data-scroll-target="#what-the-split-buys-and-what-it-costs"><span class="header-section-number">C.6.1</span> What the split buys, and what it costs</a></li>
+  <li><a href="#why-there-is-no-continuous-integration" id="toc-why-there-is-no-continuous-integration" class="nav-link" data-scroll-target="#why-there-is-no-continuous-integration"><span class="header-section-number">C.6.2</span> Why there is no continuous integration</a></li>
+  <li><a href="#nojekyll-and-why-this-repository-does-not-have-one" id="toc-nojekyll-and-why-this-repository-does-not-have-one" class="nav-link" data-scroll-target="#nojekyll-and-why-this-repository-does-not-have-one"><span class="header-section-number">C.6.3</span> <code>.nojekyll</code>, and why this repository does not have one</a></li>
+  <li><a href="#the-_files-rule-in-.gitignore" id="toc-the-_files-rule-in-.gitignore" class="nav-link" data-scroll-target="#the-_files-rule-in-.gitignore"><span class="header-section-number">C.6.4</span> The <code>*_files/</code> rule in <code>.gitignore</code></a></li>
+  </ul>
+</li>
+  <li><a href="#forking-it" id="toc-forking-it" class="nav-link" data-scroll-target="#forking-it"><span class="header-section-number">C.7</span> Forking it</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/appendices/build.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/appendices/build.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendices/solutions.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendices/build.html"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">How this book is built</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-build" class="quarto-section-identifier">Appendix C — How this book is built</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>The good-practice page near the end of the book (<a href="../chapters/good-practice.html" class="quarto-xref"><span>Chapter 13</span></a>) makes a case for projects, relative paths, a locked set of package versions and a build anyone else can reproduce. The book itself follows the same arrangement, and this appendix describes how it is put together. Where the arrangement is awkward, or where a choice is a judgement rather than a rule, that is stated explicitly.</p>
+<p>None of this is needed to work through the book; it is needed to rebuild the book, to fork it for another course, or to work out why a render failed.</p>
+<section id="the-repository" class="level2" data-number="C.1"><h2 data-number="C.1" class="anchored" data-anchor-id="the-repository">
+<span class="header-section-number">C.1</span> The repository</h2>
+<pre><code>r-intro/
+├── _quarto.yml            project and book configuration
+├── _common.R              sourced by every chapter, in a hidden chunk
+├── _dependencies.R        never sourced, never rendered; see below
+├── .Rprofile              one line, and renv wrote it
+├── .gitignore             short, and one line of it is load-bearing
+├── .gitattributes         keeps generated files out of diffs
+├── LICENSE                MIT
+├── renv.lock              exact versions of every package
+├── renv/                  activate.R, settings.json, and the library itself
+├── index.qmd              the front page
+├── chapters/              the 14 chapters, one file each
+│   └── setup.qmd …        the first of them
+├── appendices/            the 4 appendices, one file each
+│   ├── solutions.qmd
+│   ├── data.qmd
+│   ├── build.qmd          this page
+│   └── colophon.qmd
+├── R/nus_theme.R          the ggplot2 theme and the colour palette
+├── scss/nus.scss          the site styling, layered on bootswatch litera
+├── scripts/check_palette.R      the palette's accessibility tests
+├── scripts/publish.sh           render, then push the site to gh-pages
+├── scripts/stamp-build.sh       records which commit produced the site
+├── scripts/check-pages-sync.sh  reports whether the live site matches main
+├── scripts/hooks/pre-push       reminds you that pushing is not publishing
+├── assets/                favicon, and the three footer logos
+├── data/sg_covid_data.csv the dataset, all 23 kB of it
+└── _freeze/               cached chunk output, committed on purpose</code></pre>
+<p>The rendered site is not in that list. Its absence is deliberate, and the publishing section below explains it. <code>_freeze/</code> is generated and in version control anyway, which is unusual enough that it gets a section of its own too.</p>
+<p>One file per chapter, and the chapter list in <code>_quarto.yml</code> is the only place the reading order is written down. Renaming a file means editing <code>_quarto.yml</code>, and forgetting to means the chapter silently disappears from the book while still sitting in the repository — an easy way to lose a page.</p>
+</section><section id="quarto.yml-section-by-section" class="level2" data-number="C.2"><h2 data-number="C.2" class="anchored" data-anchor-id="quarto.yml-section-by-section">
+<span class="header-section-number">C.2</span> <code>_quarto.yml</code>, section by section</h2>
+<p>The whole build is one YAML file. It opens with a warning to whoever edits it next:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verified against Quarto 1.10.18. The project: and book: schemas are closed,</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># so an unrecognised key there is a hard render failure — check</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># /Applications/quarto/share/schema/definitions.yml before adding one.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Under <code>project:</code> and <code>book:</code>, Quarto validates keys against a fixed schema. A typo is not ignored and does not produce a warning; the render stops. The schema files shipped with your Quarto installation are the authority, and they describe the version you are running.</p>
+<section id="project" class="level3" data-number="C.2.1"><h3 data-number="C.2.1" class="anchored" data-anchor-id="project">
+<span class="header-section-number">C.2.1</span> <code>project:</code>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">project</span><span class="kw">:</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">type</span><span class="kw">:</span><span class="at"> book</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">execute-dir</span><span class="kw">:</span><span class="at"> project</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">post-render</span><span class="kw">:</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> scripts/stamp-build.sh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>type: book</code> is what turns a folder of <code>.qmd</code> files into a numbered book with parts, appendices, previous and next links, and a single search index.</p>
+<p>There is no <code>output-dir</code>, which is a decision rather than an oversight. Quarto therefore renders into its default <code>_book/</code>, and <code>_book/</code> is gitignored, because the rendered site is not kept on this branch at all. What happens to it instead is the publishing section.</p>
+<p><code>execute-dir: project</code> sets R’s working directory to the project root for every chunk in every chapter. Without it, each chapter would execute in its own directory — <code>chapters/</code> or <code>appendices/</code> here — and the hidden setup chunk’s <code>source("_common.R")</code> would not find its file. Setting it means <code>here::here("data", "sg_covid_data.csv")</code> resolves identically from every chapter, including this one.</p>
+<p><code>post-render:</code> runs <code>scripts/stamp-build.sh</code> after the last page is written. It drops a small <code>build-info.json</code> into the output recording which commit the site was rendered from. That file has a job, and the job only makes sense alongside the rest of the publishing arrangement, so it is explained there too.</p>
+</section><section id="book" class="level3" data-number="C.2.2"><h3 data-number="C.2.2" class="anchored" data-anchor-id="book">
+<span class="header-section-number">C.2.2</span> <code>book:</code>
+</h3>
+<p>Metadata first: title, subtitle, author, <code>date: today</code> with an explicit <code>date-format</code>, and a description that becomes the page’s meta description and the social preview text.</p>
+<p><code>site-url</code> and <code>repo-url</code> together are what make the “Edit this page”, “Report an issue” and “View source” links work. <code>repo-actions: [edit, issue, source]</code> turns all three on. They appear in the right-hand margin of every page, and they cost nothing to maintain. A student who spots a wrong number is two clicks from reporting it, and one of those clicks lands them in a text editor with the offending line in front of them.</p>
+<p><code>repo-branch: main</code> matters because Quarto builds the edit URL from it. Point it at a branch that does not exist and every edit link 404s, on every page, silently.</p>
+<p>Then the reading conveniences: <code>search: true</code>, <code>reader-mode: true</code> (the button that collapses both sidebars), <code>page-navigation: true</code> and <code>back-to-top-navigation: true</code>.</p>
+<p>The sidebar is docked rather than floating, collapsed to one level so the parts are visible but the sections are not, and carries two tools: a link to the source on GitHub, and a direct download link for the CSV. The download link points at <code>raw.githubusercontent.com</code>, not at the repository page, so it downloads the file instead of showing a preview of it.</p>
+</section><section id="chapters-and-appendices" class="level3" data-number="C.2.3"><h3 data-number="C.2.3" class="anchored" data-anchor-id="chapters-and-appendices">
+<span class="header-section-number">C.2.3</span> <code>chapters:</code> and <code>appendices:</code>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">chapters</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> index.qmd</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">part</span><span class="kw">:</span><span class="at"> </span><span class="st">"Before you write any code"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">chapters</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/setup.qmd</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">    # ... parts II to V ...</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">part</span><span class="kw">:</span><span class="at"> </span><span class="st">"Putting it together"</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">chapters</span><span class="kw">:</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/capstone.qmd</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/good-practice.qmd</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/next-steps.qmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The parts are headings in the sidebar and nothing else; they carry no files of their own. <code>index.qmd</code> sits outside any part because a book’s front page is not a chapter.</p>
+<p><code>appendices:</code> is a separate list, and Quarto numbers it separately: chapters get 1, 2, 3, appendices get A, B, C, D. The <code>crossref: appendix-title: "Appendix"</code> setting at the bottom of the file is what makes a reference to one of them read “Appendix B” rather than just “B”.</p>
+</section><section id="page-footer" class="level3" data-number="C.2.4"><h3 data-number="C.2.4" class="anchored" data-anchor-id="page-footer">
+<span class="header-section-number">C.2.4</span> <code>page-footer:</code>
+</h3>
+<p>The footer carries the three institutional logos as a raw HTML block, plus the licence on the left and the Quarto credit and issue link on the right. The logos are <code>&lt;img&gt;</code> tags pointing at <code>assets/logos/</code>, styled by a <code>.footer-logos</code> rule in <code>scss/nus.scss</code>. They are raster PNGs rather than SVGs because that is the artwork as supplied, and redrawing an institution’s mark is not a thing to do casually.</p>
+</section><section id="format" class="level3" data-number="C.2.5"><h3 data-number="C.2.5" class="anchored" data-anchor-id="format">
+<span class="header-section-number">C.2.5</span> <code>format:</code>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">theme</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">litera</span><span class="kw">,</span><span class="at"> scss/nus.scss</span><span class="kw">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Bootswatch <code>litera</code> underneath, the project’s own SCSS on top. <code>litera</code> was chosen for a reason that has nothing to do with taste: it is one of the few bundled themes that does not fetch a web font from <code>fonts.googleapis.com</code>. The book therefore renders the same offline as it does on a fast connection, which matters for a course taught on university wifi.</p>
+<p>The rest of the HTML block, in the order it appears:</p>
+<p><code>toc: true</code> with <code>toc-depth: 3</code> and a custom <code>toc-title</code>. <code>number-sections: true</code>, so sections can be referenced by number. <code>anchor-sections: true</code> gives every heading a link target, which is what lets you point a student at one paragraph rather than a chapter. <code>smooth-scroll: true</code> is cosmetic.</p>
+<p><code>code-copy: true</code> puts a copy button on every code block. <code>code-overflow: scroll</code> gives a long line its own horizontal scrollbar rather than wrapping it, which is the less obvious choice of the two. This dataset has column names 49 characters long — <code>retail_and_recreation_percent_change_from_baseline</code> is one — and wrapping breaks them mid-identifier, so the name a student is meant to read and retype arrives in two halves.</p>
+<p><code>code-link: true</code> turns every function call in every code block into a link to that function’s documentation, so <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> in a chunk is clickable and lands on the dplyr reference page. It needs <code>downlit</code> and <code>xml2</code> installed. Neither is called by name anywhere in the book, so both are in the lockfile only because <code>_dependencies.R</code> names them, which is a trap the renv section comes back to.</p>
+<p><code>code-annotations: hover</code> is how the numbered callouts in code blocks behave.</p>
+<p><code>df-print: default</code> is deliberate. Set it to <code>kable</code> and every data frame in the book renders as a tidy HTML table with proper borders, which looks better but looks nothing like what the student sees in their own console. A beginner comparing the book against their screen would then have to work out which difference matters, so the book’s data frames print exactly the way the console prints them.</p>
+<p>Figures: <code>fig-width: 7</code>, <code>fig-height: 4.2</code>, <code>fig-align: center</code>, <code>fig-format: svg</code>. SVG because plot text stays sharp at any zoom and the files are usually smaller than PNG for this kind of chart. <code>tbl-cap-location: bottom</code> follows the usual convention of captions below tables and above figures.</p>
+</section><section id="execute-and-why-chapters-should-not-override-it" class="level3" data-number="C.2.6"><h3 data-number="C.2.6" class="anchored" data-anchor-id="execute-and-why-chapters-should-not-override-it">
+<span class="header-section-number">C.2.6</span> <code>execute:</code> and why chapters should not override it</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">freeze</span><span class="kw">:</span><span class="at"> auto</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">echo</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">warning</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">message</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Warnings and messages are on, globally and on purpose. <code>read_csv()</code>’s column specification, <code>geom_histogram()</code>’s note about picking 30 bins, and <code>summarise()</code>’s <code>.groups</code> notice are all messages, and the book teaches students to read all three. A chapter that sets <code>message: false</code> to tidy its output removes material the text refers to.</p>
+<p>Because these are set globally, chapters should not set them again. Repeating <code>#| echo: true</code> on a chunk is harmless but noisy; repeating it inconsistently is how a chapter ends up with three different behaviours for no reason anybody can reconstruct later. The same goes for <code>comment</code>, <code>collapse</code>, and the figure dimensions, all of which are set once in the <code>knitr:</code> block at the bottom:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">knitr</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">opts_chunk</span><span class="kw">:</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">comment</span><span class="kw">:</span><span class="at"> </span><span class="st">"#&gt;"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">collapse</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">dev</span><span class="kw">:</span><span class="at"> </span><span class="st">"svg"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>comment: "#&gt;"</code> prefixes every line of output. It means you can select a whole block, code and output together, paste it into your console, and have it run: the output lines are comments. <code>collapse: true</code> puts code and its output in one block rather than two.</p>
+<p>Two per-chunk options are used, and only these two. <code>#| eval: false</code> for anything that must not run during a render, which means <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code>, <code>renv::</code> calls, <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> demonstrations, <code><a href="https://rdrr.io/r/utils/View.html">View()</a></code>. <code>#| error: true</code> for chunks that are supposed to fail, where the error message is what the reader is meant to see.</p>
+</section></section><section id="common.r" class="level2" data-number="C.3"><h2 data-number="C.3" class="anchored" data-anchor-id="common.r">
+<span class="header-section-number">C.3</span> <code>_common.R</code>
+</h2>
+<p>Every chapter opens with the same four lines:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="in">#| label: setup</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="in">#| include: false</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="in">source("_common.R")</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>include: false</code> hides the chunk and its output. The reader never sees it.</p>
+<p>There is a reason for the repetition. Quarto’s freeze machinery gives each chapter its own R session, which is what makes a single chapter re-renderable without re-running the whole book. A variable created in chapter 4 does not exist in chapter 5. So anything more than one chapter needs has to be defined in a file that every chapter sources, and <code>_common.R</code> is that file. It attaches the packages, sets the ggplot2 theme, defines <code>read_covid()</code> and <code>covid_daily()</code>, and runs the guard described in the next section.</p>
+<p>The leading underscore is a Quarto convention: files and directories starting with <code>_</code> are not treated as book content and are not copied to the output.</p>
+</section><section id="renv-and-the-lockfile" class="level2" data-number="C.4"><h2 data-number="C.4" class="anchored" data-anchor-id="renv-and-the-lockfile">
+<span class="header-section-number">C.4</span> renv and the lockfile</h2>
+<p><code>renv</code> records the exact version of every package the book was built with. It does this in <code>renv.lock</code>, a JSON file with one entry per package:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="er">"here":</span> <span class="fu">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"Package"</span><span class="fu">:</span> <span class="st">"here"</span><span class="fu">,</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"Version"</span><span class="fu">:</span> <span class="st">"1.0.2"</span><span class="fu">,</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"Source"</span><span class="fu">:</span> <span class="st">"Repository"</span><span class="fu">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>      <span class="er">...</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">"Repository"</span><span class="fu">:</span> <span class="st">"CRAN"</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="er">,</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>(Trimmed. Each real entry also carries the package’s title, licence, dependencies and maintainer.)</p>
+<p>The lockfile is a manifest, not a copy of the packages. It is a few hundred kB of text that says which versions to go and get.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lock</span> <span class="op">&lt;-</span> <span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/lockfiles.html">lockfile_read</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">lock</span><span class="op">$</span><span class="va">R</span><span class="op">$</span><span class="va">Version</span></span>
+<span><span class="co">#&gt; [1] "4.6.1"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">lock</span><span class="op">$</span><span class="va">Packages</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 109</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>109 packages, for a book whose <code>_common.R</code> calls <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> four times. Almost all of them are dependencies of dependencies, which is the honest reason to use a lockfile at all: that graph is far too large to keep track of by hand, and “install the tidyverse” resolves to a different set of versions every month.</p>
+<p>The three commands you need:</p>
+<p><code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> reads the lockfile and installs exactly those versions into <code>renv/library</code>. This is the first thing to run in a fresh clone. It takes a few minutes once.</p>
+<p><code><a href="https://rstudio.github.io/renv/reference/status.html">renv::status()</a></code> compares what is installed against what is recorded, and tells you which way they disagree.</p>
+<p><code><a href="https://rstudio.github.io/renv/reference/snapshot.html">renv::snapshot()</a></code> writes the current state back into the lockfile. Run it after adding a package, and commit the resulting diff along with the change that needed it.</p>
+<p>The library itself is not in version control. renv writes and maintains <code>renv/.gitignore</code> for you:</p>
+<pre><code>library/
+local/
+cellar/
+lock/
+python/
+sandbox/
+staging/</code></pre>
+<p><code>renv.lock</code>, <code>renv/activate.R</code> and <code>renv/settings.json</code> are tracked. Those three plus the ignore rules are what makes a clean checkout reproducible without committing several hundred megabytes of compiled code.</p>
+<p><code>.Rprofile</code> is one line, and renv wrote it:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"renv/activate.R"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>R runs <code>.Rprofile</code> from the working directory at startup. That line activates the project library, and it is the whole mechanism.</p>
+<section id="dependencies.r" class="level3" data-number="C.4.1"><h3 data-number="C.4.1" class="anchored" data-anchor-id="dependencies.r">
+<span class="header-section-number">C.4.1</span> <code>_dependencies.R</code>
+</h3>
+<p>renv finds dependencies by scanning source files for <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> calls. Its scanner automatically adds <code>rmarkdown</code> when it sees <code>.Rmd</code> files, but not for <code>.qmd</code>. This book has no <code>.Rmd</code> files, so without intervention <code><a href="https://rstudio.github.io/renv/reference/snapshot.html">renv::snapshot()</a></code> leaves <code>knitr</code> and <code>rmarkdown</code> out of the lockfile entirely, and a clean checkout fails to render with an error that points nowhere near the cause.</p>
+<p><code>_dependencies.R</code> is a file that exists only to be scanned. It is never sourced and never rendered. It lists the packages the chapters use plus the ones the toolchain needs but nothing calls by name: <code>knitr</code>, <code>rmarkdown</code>, <code>downlit</code>, <code>xml2</code>, <code>sessioninfo</code>. If you add a package to a chapter, add it there too, or it will work on your machine and nowhere else.</p>
+</section><section id="rendering-from-another-projects-directory" class="level3" data-number="C.4.2"><h3 data-number="C.4.2" class="anchored" data-anchor-id="rendering-from-another-projects-directory">
+<span class="header-section-number">C.4.2</span> Rendering from another project’s directory</h3>
+<p>Quarto decides which renv to activate by reading <code>.Rprofile</code> <strong>relative to the directory you invoked it from</strong>, not relative to the project you asked it to render. So this is fine:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/r-intro</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>and this is not:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/sph5421-course      <span class="co"># another R project, with its own .Rprofile and its own renv</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render ../r-intro</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The second one starts R in <code>~/sph5421-course</code>, reads that project’s <code>.Rprofile</code>, activates that project’s library, and then renders this book against whatever versions happen to be sitting there. <code>execute-dir: project</code> moves the working directory afterwards, so <code>here()</code> and every relative path still work, and the render completes.</p>
+<p>Nothing fails visibly: the versions in a neighbouring project are usually close enough that most of the book builds, and the problem surfaces three chapters later when a <code>dplyr</code> deprecation warning appears on a page that never had one.</p>
+<p>So <code>_common.R</code> checks, before it does anything else:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/eval.html">local</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files.html">file.exists</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">proj</span>, <span class="st">"_quarto.yml"</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html">dirname</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span> <span class="op">!=</span> <span class="va">proj</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/basename.html">dirname</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">expected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/normalizePath.html">normalizePath</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">proj</span>, <span class="st">"renv"</span>, <span class="st">"library"</span><span class="op">)</span>, mustWork <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">active</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/normalizePath.html">normalizePath</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/libPaths.html">.libPaths</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, mustWork <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">active</span>, <span class="va">expected</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span></span>
+<span>      <span class="st">"Wrong package library.\n"</span>,</span>
+<span>      <span class="st">"  active:   "</span>, <span class="va">active</span>, <span class="st">"\n"</span>,</span>
+<span>      <span class="st">"  expected: "</span>, <span class="va">expected</span>, <span class="st">"/...\n"</span>,</span>
+<span>      <span class="st">"Run `quarto render` from the project root ("</span>, <span class="va">proj</span>, <span class="st">")."</span>,</span>
+<span>      call. <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It walks up from the working directory until it finds <code>_quarto.yml</code>, works out where that project’s library ought to be, and compares it against the library R is actually using. When they disagree the render stops on the first chapter with:</p>
+<pre><code>Error: Wrong package library.
+  active:   /Users/you/sph5421-course/renv/library/macos/R-4.6/aarch64-apple-darwin25.4.0
+  expected: /Users/you/r-intro/renv/library/...
+Run `quarto render` from the project root (/Users/you/r-intro).</code></pre>
+<p>The paths in the message will be your own, and the fix is always the same: <code>cd</code> into the project root and render from there.</p>
+<p>Here is the library this page was built against:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/libPaths.html">.libPaths</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "/Users/smishra/Documents/GitHub/r-intro/renv/library/macos/R-4.4/aarch64-apple-darwin20"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If that path does not contain <code>r-intro/renv</code>, the guard has a bug, which would also be worth an issue.</p>
+</section></section><section id="freeze" class="level2" data-number="C.5"><h2 data-number="C.5" class="anchored" data-anchor-id="freeze">
+<span class="header-section-number">C.5</span> Freeze</h2>
+<p><code>freeze: auto</code> means a chapter’s R code is executed when the chapter’s <code>.qmd</code> changes, and not otherwise. The output of every chunk is cached under <code>_freeze/</code>, and <code>_freeze/</code> is committed.</p>
+<p>The payoff is that anyone can clone the repository and rebuild the site without R, without renv, and without the several minutes of computation. It also means a one-word fix to chapter 9 does not re-execute chapters 1 through 8, which turns a two-minute render into a five-second one and makes previewing a small change practical.</p>
+<p>The cost is a failure mode. <strong>Freeze watches the <code>.qmd</code> file, not the things it depends on.</strong> Edit <code>_common.R</code>, change the colour palette in <code>R/nus_theme.R</code>, or replace the CSV, and nothing re-runs. The book will render happily and every page will still show the old output. There is no warning, because from Quarto’s point of view nothing changed.</p>
+<p>There is no command-line flag to force it. When you have changed something shared, delete the cache:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> _freeze/</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>or delete one chapter’s directory under <code>_freeze/chapters/</code> if you know that only one is affected. Doing this after any change to <code>_common.R</code> is a habit worth building, and the reason <code>_freeze/</code> is listed in <code>.gitattributes</code> as generated is that the resulting diff is enormous and carries no information worth reading.</p>
+</section><section id="publishing" class="level2" data-number="C.6"><h2 data-number="C.6" class="anchored" data-anchor-id="publishing">
+<span class="header-section-number">C.6</span> Publishing</h2>
+<p><code>main</code> holds the source and nothing else. The rendered site lives on a branch of its own, <code>gh-pages</code>, which carries the built HTML and nothing else, and that is the branch GitHub Pages is configured to serve. Rendering locally puts the book in <code>_book/</code>, which is gitignored, so you can build and reread it as often as you like without git ever noticing.</p>
+<p>Publishing is one command:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/publish.sh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It renders the book and hands the result to <code>quarto publish gh-pages --no-prompt</code>, which pushes the output onto <code>gh-pages</code>. Then it checks what actually went out: that the expected number of pages exist, counting recursively because pages now render into <code>_book/chapters/</code> and <code>_book/appendices/</code> as well as the top level; that no page got stranded next to its source, which a failed render can now leave anywhere in the tree; that <code>search.json</code> is present, since a missing search index makes the search box return nothing rather than fail visibly; and that every <code>solutions.html#sec-sol-…</code> link in the book has an anchor waiting for it in <code>appendices/solutions.html</code>, with the back-links from each solution to its exercise checked the same way. A failed render announces itself; a dead cross-link does not, and this book cross-links every exercise to its worked answer, so the script checks them.</p>
+<p>It refuses to start in three cases. If a <code>quarto preview</code> is running, because the preview watches the same files, races the render, and has left the output half-moved. If you are not on <code>main</code>. And if the working tree is dirty, which is the interesting one and needs the next section first.</p>
+<section id="what-the-split-buys-and-what-it-costs" class="level3" data-number="C.6.1"><h3 data-number="C.6.1" class="anchored" data-anchor-id="what-the-split-buys-and-what-it-costs">
+<span class="header-section-number">C.6.1</span> What the split buys, and what it costs</h3>
+<p>The reason to keep the site off <code>main</code> is diffs: generated HTML is not source, and a re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and <code>git log</code> on that chapter becomes something you scroll past rather than read. The problem stops being cosmetic as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files that cannot be resolved by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.</p>
+<p>The cost is real and worth naming, because the previous arrangement was better at one thing. When the site was committed alongside the source, forgetting to rebuild was impossible to miss: you edited a chapter and the working tree stayed dirty until you rendered, so staleness announced itself for free.</p>
+<p>Split source from output and that goes away. <code>main</code> is clean whether or not you have ever published. You can edit a chapter, commit, push, watch GitHub show your change, and have the live site still serving last month’s text with nothing anywhere indicating it. The three small scripts below exist to replace the visibility the split removed.</p>
+<p><code>scripts/stamp-build.sh</code> runs as the <code>post-render</code> step and writes <code>build-info.json</code> into the output: the commit HEAD was at, whether the tree was dirty at the time, the build timestamp, and the Quarto version. Rendered HTML has no record of which revision of the source produced it, and this file supplies it.</p>
+<p><code>scripts/check-pages-sync.sh</code> reads that file off <code>gh-pages</code> and compares the commit in it against the tip of <code>main</code>. It exits 0 in sync, 1 when the site is stale, and 2 when it cannot tell — no <code>gh-pages</code> branch yet, no <code>build-info.json</code> in it, no network. <code>--local</code> skips the fetch and works with the refs you already have. <code>publish.sh</code> runs it at the end as its own last check.</p>
+<p>One detail of that script is worth copying. It does not compare commit counts; it compares the <em>files</em> that changed since the publish against a list of things the rendered site is actually built from — the <code>.qmd</code> files, <code>_quarto.yml</code>, <code>_common.R</code>, <code>R/</code>, <code>scss/</code>, <code>data/</code>, <code>assets/</code> — and if the only commits since were a README edit or a licence tweak, the site is still correct and it says so. A check that reported “stale” every time you fixed a typo in a comment would be ignored within a week, and an ignored check still leaves you believing something is being watched.</p>
+<p><code>scripts/hooks/pre-push</code> prints a reminder when the commits you are pushing touch anything on that list. It is not installed by default; enable it with:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config core.hooksPath scripts/hooks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It prints the reminder and nothing more. It does not block the push, and that is deliberate: pushing source before publishing is a normal thing to do, and a hook that refused would be routed around with <code>--no-verify</code> the second time it got in the way.</p>
+<p>That is where the dirty-tree rule in <code>publish.sh</code> comes back. Render with uncommitted changes and the stamp names a commit that does not contain what was rendered, so every check downstream is reasoning from a false statement — the sync check compares against source that was never published and reports agreement that is not there. <code>stamp-build.sh</code> does record <code>"dirty": true</code> when it happens, and the sync check treats that as stale outright rather than pretending, but refusing to publish from a dirty tree in the first place is cheaper than either.</p>
+</section><section id="why-there-is-no-continuous-integration" class="level3" data-number="C.6.2"><h3 data-number="C.6.2" class="anchored" data-anchor-id="why-there-is-no-continuous-integration">
+<span class="header-section-number">C.6.2</span> Why there is no continuous integration</h3>
+<p>There is no GitHub Action here, and the reason has not changed. This book is built with Quarto 1.10.18, on one laptop, against a package library pinned by <code>renv.lock</code>. Any route that renders on a server adds a second Quarto at a second version, and a newer Quarto does not fail loudly on an older book. It produces slightly different HTML from the version the book was checked against, which is a category of bug you find weeks later on one page. Publishing from here keeps the render on the machine the versions are pinned to, and only the output travels.</p>
+</section><section id="nojekyll-and-why-this-repository-does-not-have-one" class="level3" data-number="C.6.3"><h3 data-number="C.6.3" class="anchored" data-anchor-id="nojekyll-and-why-this-repository-does-not-have-one">
+<span class="header-section-number">C.6.3</span> <code>.nojekyll</code>, and why this repository does not have one</h3>
+<p>GitHub Pages runs Jekyll over your site by default, and Jekyll ignores every file and directory whose name begins with an underscore. Quarto’s HTML output is full of them. An empty <code>.nojekyll</code> at the root of the published site turns Jekyll off entirely, and without it the site deploys with no CSS at all, which looks exactly like a broken theme but is not one.</p>
+<p>The published site has one. This repository does not, and there is nothing under <code>project: resources:</code> copying one into the output either, because Quarto writes that file itself during <code>quarto publish</code> and puts something in it: a deploy id, which it reads back from the live site afterwards to confirm that what is being served is the copy it just pushed. Ship your own <code>.nojekyll</code> and you overwrite that id, and the verification fails on a deploy that worked perfectly.</p>
+</section><section id="the-_files-rule-in-.gitignore" class="level3" data-number="C.6.4"><h3 data-number="C.6.4" class="anchored" data-anchor-id="the-_files-rule-in-.gitignore">
+<span class="header-section-number">C.6.4</span> The <code>*_files/</code> rule in <code>.gitignore</code>
+</h3>
+<pre><code># Chapters render to their source directory before Quarto moves them into
+# _book, so a failed render can leave them behind. No leading slash: chapters
+# and appendices now live in subdirectories, and _book/ is ignored separately,
+# so unanchored is what catches the strays without touching the output.
+*_files/</code></pre>
+<p>Knitr writes a chapter’s figures into <code>&lt;chapter&gt;_files/</code> next to the source, and Quarto moves them into the output directory at the end of the render. A render that dies partway through leaves those directories behind, and they are rubbish that should not be in git. Because chapters and appendices now live in subdirectories, a stray can sit at any depth — <code>chapters/visualise_files/</code>, not just <code>./visualise_files/</code> — so the pattern is written without a leading slash and matches at <strong>any depth</strong>.</p>
+<p>That breadth is safe because <code>_book/</code> is ignored on its own line above it: git does not descend into an ignored directory, so the pattern catches the strays without ever reaching the figure directories inside the rendered site. The distinction matters because the output still goes through git on its way out — that is what publishing to a branch is — and the failure mode from getting it wrong is worth naming: the book renders correctly on <code>localhost</code>, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem. When every chapter sat at the top level the same rule was written the other way around, as <code>/*_files/</code> anchored to the repository root, because an unanchored pattern would also have matched <code>_book/visualise_files/</code> along with the strays. The move into subdirectories flipped it.</p>
+<p><code>.gitattributes</code> finishes the job, marking the generated directory so it stays out of GitHub’s language statistics and out of diffs:</p>
+<pre><code>_freeze/** linguist-generated=true
+_freeze/** -diff</code></pre>
+<p>Without it, GitHub reads the repository as mostly generated JSON and SVG rather than R, and re-running one chapter arrives as a pull request with thousands of changed lines that carry nothing to review.</p>
+</section></section><section id="forking-it" class="level2" data-number="C.7"><h2 data-number="C.7" class="anchored" data-anchor-id="forking-it">
+<span class="header-section-number">C.7</span> Forking it</h2>
+<p>The licence permits forking the book; the rest of this section is the procedure.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/CERM-NUS/r-intro.git my-course</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> my-course</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Open <code>r-intro.Rproj</code> in RStudio. The <code>.Rproj</code> file keeps its old name after a clone, so rename it now if the old one will confuse you later. Then, in the R console:</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/restore.html">restore</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Answer yes. The restore takes several minutes on a cold cache. When it finishes, from a terminal <strong>in that directory</strong>:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That builds the book and opens it in a browser with live reload: save a <code>.qmd</code> and the page updates. It is the right mode for writing. <code>./scripts/publish.sh</code> is the one for shipping, and it will refuse to run while a preview is still going, so stop the preview first.</p>
+<p>Four things to change before you publish your version:</p>
+<p><code>_quarto.yml</code> needs a new <code>site-url</code>, <code>repo-url</code> and probably <code>repo-branch</code>, or every edit link on your site will point at the original repository.</p>
+<p>The logos in <code>assets/logos/</code> have to go, or be replaced with your own. They are the trade marks of NUS, the Saw Swee Hock School of Public Health, CERM and the ML &amp; GHN network, and the MIT licence on the text and code does not cover them. Remove the <code>page-footer</code> HTML block along with the files.</p>
+<p><code>LICENSE</code> should keep the original copyright line if you keep any of the original text, and add yours.</p>
+<p>If you swap the dataset, <code>_common.R</code> is the only place that reads it, but <code>data.qmd</code> documents the columns of <em>this</em> file and will be wrong the moment you change it. Rewrite that appendix or delete it, since a reader who trusts it will be reading a description of a file that is no longer there.</p>
+<p>Then commit your sources, push, and run <code>./scripts/publish.sh</code>. That creates the <code>gh-pages</code> branch the first time it runs, and once it has, go to the repository’s Pages settings and set it to deploy from <code>gh-pages</code>. Until you do that last step the branch exists and nothing serves it.</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/cerm-nus\.github\.io\/r-intro\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+      for (let i=0; i<annoteTargets.length; i++) {
+        const annoteTarget = annoteTargets[i];
+        const targetCell = annoteTarget.getAttribute("data-target-cell");
+        const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+        const contentFn = () => {
+          const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          if (content) {
+            const tipContent = content.cloneNode(true);
+            tipContent.classList.add("code-annotation-tip-content");
+            return tipContent.outerHTML;
+          }
+        }
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          onShow: (instance) => {
+            selectCodeLines(instance.reference);
+            instance.reference.classList.add('code-annotation-active');
+            window.tippy.hideAll();
+          },
+          onHide: (instance) => {
+            unselectCodeLines();
+            instance.reference.classList.remove('code-annotation-active');
+          },
+          maxWidth: 300,
+          delay: [50, 0],
+          duration: [200, 0],
+          offset: [5, 10],
+          arrow: true,
+          appendTo: function(el) {
+            return el.parentElement.parentElement.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto',
+          placement: 'right',
+          popperOptions: {
+            modifiers: [
+            {
+              name: 'flip',
+              options: {
+                flipVariations: false, // true by default
+                allowedAutoPlacements: ['right'],
+                fallbackPlacements: ['right', 'top', 'top-start', 'top-end', 'bottom', 'bottom-start', 'bottom-end', 'left'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                mainAxis: false,
+                altAxis: false
+              }
+            }
+            ]        
+          }      
+        };
+        window.tippy(annoteTarget, config); 
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../appendices/data.html" class="pagination-link" aria-label="The data">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">The data</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../appendices/colophon.html" class="pagination-link" aria-label="Colophon">
+        <span class="nav-page-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Colophon</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<div class="footer-logos">
+<p><img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"><img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"><img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
+</div>
+<p>Released under the <a href="https://github.com/CERM-NUS/r-intro/blob/main/LICENSE">MIT Licence</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/appendices/build.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/appendices/build.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a>. <a href="https://github.com/CERM-NUS/r-intro/issues">Report a problem</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
