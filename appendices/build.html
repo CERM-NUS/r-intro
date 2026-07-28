@@ -414,6 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ├── scripts/publish.sh           render, then push the site to gh-pages
 ├── scripts/stamp-build.sh       records which commit produced the site
 ├── scripts/make-redirects.sh    redirect stubs at the old flat page URLs
+├── scripts/fix-footer-paths.sh  footer logo paths, per page depth
 ├── scripts/check-pages-sync.sh  reports whether the live site matches main
 ├── scripts/hooks/pre-push       reminds you that pushing is not publishing
 ├── assets/                favicon, and the three footer logos
@@ -467,7 +468,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="page-footer" class="level3" data-number="C.2.4"><h3 data-number="C.2.4" class="anchored" data-anchor-id="page-footer">
 <span class="header-section-number">C.2.4</span> <code>page-footer:</code>
 </h3>
-<p>The footer carries the three institutional logos as a raw HTML block, plus the licence on the left and the Quarto credit and issue link on the right. The logos are <code>&lt;img&gt;</code> tags pointing at <code>assets/logos/</code>, styled by a <code>.footer-logos</code> rule in <code>scss/nus.scss</code>. They are raster PNGs rather than SVGs because that is the artwork as supplied, and redrawing an institution’s mark is not a thing to do casually.</p>
+<p>The footer carries the three institutional logos as a raw HTML block, plus the licence on the left and the Quarto credit and issue link on the right. The logos are <code>&lt;img&gt;</code> tags pointing at <code>assets/logos/</code>, styled by a <code>.footer-logos</code> rule in <code>scss/nus.scss</code>. They are raster PNGs rather than SVGs because that is the artwork as supplied, and redrawing an institution’s mark is not a thing to do casually. A raw footer block is emitted verbatim on every page, so its relative <code>src</code> resolves only at the site root; <code>scripts/fix-footer-paths.sh</code>, a third <code>post-render</code> step, rewrites the paths per page depth, and <code>publish.sh</code> refuses to publish if any subdirectory page still carries the unrewritten form.</p>
 </section><section id="format" class="level3" data-number="C.2.5"><h3 data-number="C.2.5" class="anchored" data-anchor-id="format">
 <span class="header-section-number">C.2.5</span> <code>format:</code>
 </h3>
@@ -1130,7 +1131,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">
 <div class="footer-logos">
-<p><img class="logo-sshsph" src="assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"><img class="logo-cerm" src="assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"><img class="logo-mlghn" src="assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
+<p><img class="logo-sshsph" src="../assets/logos/sshsph.png" alt="NUS Saw Swee Hock School of Public Health"><img class="logo-cerm" src="../assets/logos/cerm.png" alt="Centre for Epidemic Research and Modelling"><img class="logo-mlghn" src="../assets/logos/mlghn.png" alt="Machine Learning and Global Health Network"></p>
 </div>
 <p>Released under the <a href="https://github.com/CERM-NUS/r-intro/blob/main/LICENSE">MIT Licence</a>.</p>
 </div>   
