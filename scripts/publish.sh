@@ -120,6 +120,13 @@ stray=$(find "$ROOT" -path "$ROOT/$OUT" -prune -o -path "$ROOT/renv" -prune -o -
 [ -f "$ROOT/$OUT/search.json" ] || fail "$OUT/search.json is missing. Search will silently return nothing."
 [ -f "$ROOT/$OUT/build-info.json" ] || fail "$OUT/build-info.json is missing. The post-render stamp did not run."
 
+# The footer logos live at the site root, so a page in a subdirectory must
+# reference them as ../assets/logos/. The raw footer HTML says assets/logos/
+# verbatim, and if fix-footer-paths.sh did not run, the logos 404 on every
+# page except the index — silently, because the render itself succeeds.
+badlogo=$(grep -l 'src="assets/logos/' "$ROOT/$OUT/chapters"/*.html "$ROOT/$OUT/appendices"/*.html 2>/dev/null | wc -l | tr -d ' ')
+[ "$badlogo" = "0" ] || fail "$badlogo page(s) in subdirectories reference assets/logos/ relatively. The footer logos would 404 — did the fix-footer-paths post-render hook run?"
+
 echo "==> checking every solution link resolves"
 # Match href attributes only. Scanning raw text also picks up prose that
 # mentions the link pattern — build.qmd discusses "solutions.html#sec-sol-…"

@@ -341,6 +341,7 @@ through all of this properly, including how to fork the book for another course.
 | `scripts/check-pages-sync.sh` | Answers "is what is live still what `main` says?" — exit 0 in sync, 1 stale, 2 cannot tell |
 | `scripts/stamp-build.sh` | Quarto `post-render` hook; writes `build-info.json` into the output so the site records the commit that produced it |
 | `scripts/make-redirects.sh` | Quarto `post-render` hook; writes redirect stubs at the book's old flat page URLs so links made before the subdirectory move keep working |
+| `scripts/fix-footer-paths.sh` | Quarto `post-render` hook; rewrites the footer logo `src`s per page depth, because the raw footer HTML's relative path only resolves at the site root |
 | `scripts/check_palette.R` | Accessibility tests for the figure palette: colour-vision-deficiency simulation scored by CIEDE2000, greyscale separation, WCAG thin-line contrast. Base R only, so it runs before `renv::restore()` has finished |
 | `scripts/hooks/pre-push` | Non-blocking reminder that pushing the source is not the same as publishing the site |
 

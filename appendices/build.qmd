@@ -37,6 +37,7 @@ r-intro/
 ├── scripts/publish.sh           render, then push the site to gh-pages
 ├── scripts/stamp-build.sh       records which commit produced the site
 ├── scripts/make-redirects.sh    redirect stubs at the old flat page URLs
+├── scripts/fix-footer-paths.sh  footer logo paths, per page depth
 ├── scripts/check-pages-sync.sh  reports whether the live site matches main
 ├── scripts/hooks/pre-push       reminds you that pushing is not publishing
 ├── assets/                favicon, and the three footer logos
@@ -112,7 +113,7 @@ The parts are headings in the sidebar and nothing else; they carry no files of t
 
 ### `page-footer:`
 
-The footer carries the three institutional logos as a raw HTML block, plus the licence on the left and the Quarto credit and issue link on the right. The logos are `<img>` tags pointing at `assets/logos/`, styled by a `.footer-logos` rule in `scss/nus.scss`. They are raster PNGs rather than SVGs because that is the artwork as supplied, and redrawing an institution's mark is not a thing to do casually.
+The footer carries the three institutional logos as a raw HTML block, plus the licence on the left and the Quarto credit and issue link on the right. The logos are `<img>` tags pointing at `assets/logos/`, styled by a `.footer-logos` rule in `scss/nus.scss`. They are raster PNGs rather than SVGs because that is the artwork as supplied, and redrawing an institution's mark is not a thing to do casually. A raw footer block is emitted verbatim on every page, so its relative `src` resolves only at the site root; `scripts/fix-footer-paths.sh`, a third `post-render` step, rewrites the paths per page depth, and `publish.sh` refuses to publish if any subdirectory page still carries the unrewritten form.
 
 ### `format:`
 
