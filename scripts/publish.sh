@@ -124,7 +124,9 @@ stray=$(find "$ROOT" -path "$ROOT/$OUT" -prune -o -path "$ROOT/renv" -prune -o -
 # reference them as ../assets/logos/. The raw footer HTML says assets/logos/
 # verbatim, and if fix-footer-paths.sh did not run, the logos 404 on every
 # page except the index — silently, because the render itself succeeds.
-badlogo=$(grep -l 'src="assets/logos/' "$ROOT/$OUT/chapters"/*.html "$ROOT/$OUT/appendices"/*.html 2>/dev/null | wc -l | tr -d ' ')
+# The || true matters: grep exits 1 when it finds nothing, which is the
+# success case here, and pipefail would otherwise turn it into a script exit.
+badlogo=$( { grep -l 'src="assets/logos/' "$ROOT/$OUT/chapters"/*.html "$ROOT/$OUT/appendices"/*.html 2>/dev/null || true; } | wc -l | tr -d ' ')
 [ "$badlogo" = "0" ] || fail "$badlogo page(s) in subdirectories reference assets/logos/ relatively. The footer logos would 404 — did the fix-footer-paths post-render hook run?"
 
 echo "==> checking every solution link resolves"
