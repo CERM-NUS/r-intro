@@ -67,7 +67,7 @@ What `ode()` gives back is a matrix, not a tibble. Your first move will be `as_t
 visualising chapter. Two evenings of this course will be spent on models and about ten minutes
 of each of them on plotting, because you already did the plotting.
 
-Two things will catch you, so they are worth naming now.
+Two things will catch you, so here they are before they do.
 
 The `time` column that comes out of `ode()` counts steps from zero. It is not a date. If you
 want to line a trajectory up against the `daily_cases` column you built, you have to decide what
@@ -175,7 +175,7 @@ When you read an error, work out which line names *your* code and which lines na
 underneath it. The fix is almost always at the boundary between them.
 
 If you are working in RStudio you will also see `Run rlang::last_trace() to see where the error
-occurred.`, and it is worth running. It prints the full chain of calls with your own function at
+occurred.`, and you should run it. It prints the full chain of calls with your own function at
 the top and the failing one at the bottom, and for a pipeline buried inside a function it is
 often the quickest way to find which of your six lines broke.
 
@@ -300,8 +300,8 @@ its own.
 
 Reduce the example to the smallest code that still fails. If your pipeline is forty lines, cut it
 in half and see whether the error survives, then repeat. Most bugs reduce to three or four lines,
-and the process of cutting often finds the answer, so it is worth doing even when you intend to
-ask anyway. If the problem needs data, do not attach a 30 MB CSV: `dput(head(covid, 5))` prints a
+and the process of cutting often finds the answer, so do it even when you intend to ask anyway.
+If the problem needs data, do not attach a 30 MB CSV: `dput(head(covid, 5))` prints a
 few rows as code that anyone can paste into their own session.
 
 The [reprex](https://cran.r-project.org/package=reprex) package automates the tidy version of
@@ -319,7 +319,7 @@ reprex::reprex({
 })
 ```
 
-The clean session is what makes this worth doing. It catches the case where your code only works
+The clean session is the point of the exercise. It catches the case where your code only works
 because of something you loaded an hour ago and forgot about, which accounts for a large share of
 problems that look like package bugs.
 

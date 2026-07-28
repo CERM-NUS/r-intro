@@ -127,9 +127,9 @@ The differences that matter in practice are the following.
 covid
 ```
 
-The printout shows ten rows, then a count of what was left out, then the names and types of the columns too wide to show. The `<chr>`, `<dbl>` and `<date>` labels under the column names are worth attention: a column that is character when you assumed it was numeric is a frequent source of confusion, and the tibble reports the type before any analysis is written.
+The printout shows ten rows, then a count of what was left out, then the names and types of the columns too wide to show. Read the `<chr>`, `<dbl>` and `<date>` labels under the column names: a column that is character when you assumed it was numeric is a frequent source of confusion, and the tibble reports the type before any analysis is written.
 
-An old-style data frame does not do this. Print the same 345 rows as a `data.frame` and R sends all of them to the console without type labels, so the header scrolls off the screen. It is worth doing once to see what it looks like, then using `head()`:
+An old-style data frame does not do this. Print the same 345 rows as a `data.frame` and R sends all of them to the console without type labels, so the header scrolls off the screen. Do it once to see what it looks like, then use `head()`:
 
 ```{r}
 #| label: print-df
@@ -251,7 +251,7 @@ table(covid$administrative_area_level_1)
 
 The column has one distinct value across all 345 rows. A column that never varies cannot explain, predict, group or distinguish anything. It is present because this extract was taken from a multi-country archive in which the column did vary, and selecting a single country left the label behind.
 
-Counting distinct values in every column is a habit worth forming on any new dataset, because both ends of the result tell you something. A column with one distinct value carries no information. A column with as many distinct values as there are rows is an identifier rather than a measurement, which is what `date` is here. Anything in between is a variable you can actually work with.
+Counting distinct values in every column is a habit to build on any new dataset, because both ends of the result tell you something. A column with one distinct value carries no information. A column with as many distinct values as there are rows is an identifier rather than a measurement, which is what `date` is here. Anything in between is a variable you can actually work with.
 
 ```{r}
 #| label: distinct-counts

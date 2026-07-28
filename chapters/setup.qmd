@@ -42,7 +42,7 @@ The bottom right pane is a stack of tabs: **Files** for browsing your folders, *
 
 If the layout does not suit you, Tools, Global Options, Pane Layout will rearrange it.
 
-One piece of console behaviour is worth recognising now, because it comes up in the first hour. If the prompt changes from `>` to `+`, R has judged your command incomplete and is waiting for the rest of it.
+One piece of console behaviour comes up in the first hour, so recognise it now. If the prompt changes from `>` to `+`, R has judged your command incomplete and is waiting for the rest of it.
 
 ```r
 > mean(c(1, 2, 3)
@@ -54,7 +54,7 @@ That happens when you leave a bracket or a quote unclosed. Press <kbd>Esc</kbd>:
 
 ## Three keyboard shortcuts
 
-RStudio has hundreds of keyboard shortcuts and you can see the whole list with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> on Windows or <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> on a Mac. Three of them are worth learning before you write anything.
+RStudio has hundreds of keyboard shortcuts and you can see the whole list with <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> on Windows or <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> on a Mac. Learn three of them before you write anything.
 
 **Run the current line.** <kbd>Ctrl</kbd>+<kbd>Enter</kbd> on Windows and Linux, <kbd>Cmd</kbd>+<kbd>Enter</kbd> on a Mac. Put your cursor anywhere on a line in your script, press it, and that line is sent to the console and executed. The cursor then drops to the next line, so you can run a script line by line by holding the shortcut down. If you have text selected, it runs the selection instead. This is the shortcut you will use most.
 
@@ -78,7 +78,7 @@ Everything you type in the console runs immediately and is then, for practical p
 
 A script is a file. It runs top to bottom in a fixed order. You can open it in six months, send it to a co-author, put it in a repository, and re-run it to get the same numbers.
 
-Use the console for inspecting the data to see what is in it: `nrow(covid)`, `names(covid)`, checking whether a column is a character or a number. These are questions whose answers you will not need again. Anything you would have to redo, or would need to defend, goes in the script; a line you had to stop and think about is exactly the kind of line worth keeping in a file.
+Use the console for inspecting the data to see what is in it: `nrow(covid)`, `names(covid)`, checking whether a column is a character or a number. These are questions whose answers you will not need again. Anything you would have to redo, or would need to defend, goes in the script; a line you had to stop and think about is exactly the kind of line to keep in a file.
 
 The awkward case is the analysis that lives entirely in the console. It works until R restarts, at which point the objects are gone and there is no record of how they were made.
 

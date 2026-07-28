@@ -127,7 +127,7 @@ The last column uses `lag()` again, this time outside a `mutate()` on the COVID 
 
 `prealloc_secs` barely moves, because `x[i] <- value` writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.
 
-The exact timings will differ from one machine to another. On a 345-day dataset the difference is immaterial; on a stochastic simulation with 100,000 iterations the gap is large enough to be worth avoiding, and growing a vector inside a loop is a common cause of slow R code.
+The exact timings will differ from one machine to another. On a 345-day dataset the difference is immaterial; on a stochastic simulation with 100,000 iterations the gap is large enough to care about, and growing a vector inside a loop is a common cause of slow R code.
 
 ## `seq_along()`, `seq_len()`, and the 1:0 trap
 

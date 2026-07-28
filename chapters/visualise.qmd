@@ -23,7 +23,7 @@ ggplot(covid, aes(x = date, y = confirmed)) +
 
 That curve is accurate, and there is very little to read off it. Cumulative curves have much the same shape in every epidemic: flat, then steep, then flat again at a higher level. The circuit breaker is not visible in it, nor is the August reporting artifact, and telling a month with 200 cases apart from a month with 20,000 means reading two values off the axis and subtracting them.
 
-The variable worth plotting, `daily_cases`, exists because you built it in an earlier chapter with `mutate()` and `lag()`. Teaching ggplot2 before that would have meant demonstrating it on the cumulative column.
+The variable to plot, `daily_cases`, exists because you built it in an earlier chapter with `mutate()` and `lag()`. Teaching ggplot2 before that would have meant demonstrating it on the cumulative column.
 
 ```{r}
 #| label: fig-daily
@@ -105,7 +105,7 @@ ggplot(covid, aes(x = date, y = daily_cases)) %>%
   geom_line()
 ```
 
-The error is worth reading to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.
+Read the error to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.
 
 Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific about the fix. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.
 
@@ -236,7 +236,7 @@ ggplot(covid, aes(x = date, y = daily_cases)) +
 
 Twelve labels is about the limit before they start colliding at this figure width. `"2 months"` with `"%b %Y"` is the version that survives being shrunk into a two-column manuscript. The interval string accepts `"1 week"`, `"3 months"`, `"1 year"` and so on, in the obvious way.
 
-The format codes worth remembering are `%b` for Jan, `%B` for January, `%d` for the day number, `%Y` for a four-digit year and `%y` for two. `?strptime` lists the rest.
+The format codes to remember are `%b` for Jan, `%B` for January, `%d` for the day number, `%Y` for a four-digit year and `%y` for two. `?strptime` lists the rest.
 
 ### A reference line
 
@@ -435,7 +435,7 @@ covid %>%
 
 `month.name` is a built-in constant: a character vector of the twelve month names in calendar order, available in any R session without a package. Typing `month.name` at the console prints it.
 
-Order-of-levels problems are worth recognising as a category, because they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The `severity` column avoids it because `covid_daily()` builds it with `factor(severity, levels = c("Low", "Medium", "High"))` rather than letting R sort High, Low, Medium.
+Recognise order-of-levels problems as a category: they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The `severity` column avoids it because `covid_daily()` builds it with `factor(severity, levels = c("Low", "Medium", "High"))` rather than letting R sort High, Low, Medium.
 
 Two `facet_wrap()` arguments do most of the work. `ncol` (or `nrow`) sets the layout. `scales` decides whether panels share axes: `"fixed"` is the default and is what you want when the point is comparison; `"free_x"`, used above, gives each month its own date range so the twelve panels do not each show ten days of line and eleven months of blank; `"free_y"` lets each panel find its own vertical scale, which makes small panels legible at the cost of comparability between panels. Free scales change what the figure can be used for, so choose them deliberately.
 
@@ -495,7 +495,7 @@ Stacked against the case curve, it shows something a single panel cannot. String
 
 The small movements after July do not support interpretation. There are 23 changes in the index after 1 July, several of them one-day blips that cannot be distinguished from encoding artifacts. A single-day rise in a composite index is not evidence of a policy announcement.
 
-Patchwork's other operators are worth knowing. `+` packs plots into a grid and lets patchwork choose the shape, `|` forces a row, `/` forces a column, and they nest with brackets: `(a | b) / c`. `plot_layout()` controls proportions, and `plot_annotation()` adds text to the assembly rather than to any one panel:
+Patchwork's other operators are good to know. `+` packs plots into a grid and lets patchwork choose the shape, `|` forces a row, `/` forces a column, and they nest with brackets: `(a | b) / c`. `plot_layout()` controls proportions, and `plot_annotation()` adds text to the assembly rather than to any one panel:
 
 ```{r}
 #| label: fig-patchwork-annotated

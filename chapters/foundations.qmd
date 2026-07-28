@@ -31,7 +31,7 @@ Two things happened. R evaluated the right-hand side, and it bound the result to
 
 That date is the first day this file records a confirmed case. Day one of the file, 22 January, has `confirmed` equal to zero.
 
-In RStudio, `Alt` and minus (`Option` and minus on a Mac) types `<-` for you. The operator comes up constantly, so the shortcut is worth learning early.
+In RStudio, `Alt` and minus (`Option` and minus on a Mac) types `<-` for you. The operator comes up constantly, so learn the shortcut early.
 
 ### Why an arrow and not an equals sign
 
@@ -224,7 +224,7 @@ mean(covid$deaths, na.rm = TRUE)
 
 Whether that is the right thing to do is a question about the deaths data, not about R. `na.rm = TRUE` drops the 59 unrecorded days and averages the 286 that remain, so the number returned is the mean of the days the source reported, which is not the mean of 2020. Which of the two you want depends on the question being asked, and the default behaviour at least requires the choice to be made explicitly.
 
-Two more properties of `NA` are worth knowing. Testing it with `==` does not work, because "an unknown value" is not equal to anything, including another unknown value:
+Two more properties of `NA` come up in daily work. Testing it with `==` does not work, because "an unknown value" is not equal to anything, including another unknown value:
 
 ```{r}
 #| label: na-equals
@@ -342,7 +342,7 @@ args(mean)
 
 `round(x, digits = 0)` means that if you do not say otherwise, you get whole numbers. `mean(x, ...)` is less helpful, because `mean` is generic and the real arguments live in the method; this is one of the places where R's help page tells you more than the code does.
 
-`round()` has one behaviour worth noting here:
+`round()` has one behaviour to watch for:
 
 ```{r}
 #| label: banker
@@ -400,7 +400,7 @@ The distinction matters in practice. `install.packages()` belongs at the console
 
 ### The masking message
 
-`library(tidyverse)` prints a block of text when it loads. It is worth reading.
+`library(tidyverse)` prints a block of text when it loads. Read it.
 
 ```
 ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──

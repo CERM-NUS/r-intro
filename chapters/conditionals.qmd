@@ -158,7 +158,7 @@ covid %>%
   count(incomplete)
 ```
 
-`case_when()` returns `NA` for unmatched rows rather than complaining, so this only shows up if you look. `.default` catches everything that falls through and is worth using whenever your conditions are meant to be exhaustive:
+`case_when()` returns `NA` for unmatched rows rather than complaining, so this only shows up if you look. `.default` catches everything that falls through; use it whenever your conditions are meant to be exhaustive:
 
 ```{r}
 covid %>%
@@ -172,18 +172,18 @@ covid %>%
   count(severity_alt)
 ```
 
-Two details of that block are worth adopting. The recoded column gets a new name, `severity_alt`, rather than overwriting `severity`, so both versions remain available to count side by side while you check the change. The category labels are also spelled exactly as the existing column has them, because later steps match text literally: a lower-case `"high"` would start a fourth category rather than match `"High"`.
+Two details of that block deserve to stick. The recoded column gets a new name, `severity_alt`, rather than overwriting `severity`, so both versions remain available to count side by side while you check the change. The category labels are also spelled exactly as the existing column has them, because later steps match text literally: a lower-case `"high"` would start a fourth category rather than match `"High"`.
 
 ## Boundary values
 
-"100 to 300" is ambiguous in English and unambiguous in code, so writing the code forces a decision that the specification may have left open: a day with exactly 100 cases could be Low or Medium, and 300 could be Medium or High. The `case_when()` settles both questions one way or the other, so the convention is worth choosing deliberately.
+"100 to 300" is ambiguous in English and unambiguous in code, so writing the code forces a decision that the specification may have left open: a day with exactly 100 cases could be Low or Medium, and 300 could be Medium or High. The `case_when()` settles both questions one way or the other, so choose the convention deliberately.
 
 This dataset contains days sitting on both ends of the rule.
 
 ::: {.callout-important}
 ## Predict before you run
 
-Consider two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. The boundary cases are the ones worth checking, because they are where an off-by-one in the cutoffs shows up.
+Consider two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. Check the boundary cases: they are where an off-by-one in the cutoffs shows up.
 :::
 
 ```{r}

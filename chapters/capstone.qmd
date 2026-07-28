@@ -130,14 +130,14 @@ april %>%
 The peak is 20 April, thirteen days after the circuit breaker began. Reported cases continued to
 rise for two weeks after Singapore closed workplaces and required people to stay at home.
 
-That is not a paradox and it is worth being precise about why. Reported cases are the output of
+That is not a paradox, and the reason matters. Reported cases are the output of
 a testing programme, not a direct measurement of infection. Through April, testing in the
 migrant-worker dormitories was expanding fast, and the dormitory outbreak dominated the national
 count from April to August. A rising reported curve during that period is partly transmission
 and partly the swab rate catching up with infections that had already happened. The two cannot be
 separated from this file, and the report should say so.
 
-Two details of that output are worth noting. `median_daily` prints as `488.` with a trailing
+Note two details of that output. `median_daily` prints as `488.` with a trailing
 full stop, which is the tibble telling you the value is not a whole number: it is 487.5, the
 average of the two middle days. The `deaths` total is 12 here, which is reliable for April
 because the `deaths` column has no missing values from 21 March onwards. Earlier in the year it
@@ -250,7 +250,7 @@ april_mobility
 
 Renaming inside `select()` is what gets you a readable legend without a second call. Backticks
 are needed around `Retail and recreation` because it contains spaces; R will accept a name like
-that as long as you quote it that way, and it is worth doing here because that string goes
+that as long as you quote it that way, and here it should be done, because that string goes
 straight onto the plot.
 
 ```{r}

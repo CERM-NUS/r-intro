@@ -173,7 +173,7 @@ covid %>%
   head(3)
 ```
 
-That works: it gives the right twelve groups in the right order, and for a one-off count it is adequate. The class of the column it creates is worth checking, though:
+That works: it gives the right twelve groups in the right order, and for a one-off count it is adequate. Check the class of the column it creates, though:
 
 ```{r}
 covid %>%

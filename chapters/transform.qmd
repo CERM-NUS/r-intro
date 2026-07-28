@@ -27,7 +27,7 @@ Singapore's circuit breaker ran from 7 April to 1 June 2020. To look at only tho
 filter(covid, date >= "2020-04-07", date <= "2020-06-01")
 ```
 
-The result has fifty-six rows, which is 7 April to 1 June counted inclusively. Two things in that call are worth noting.
+The result has fifty-six rows, which is 7 April to 1 June counted inclusively. Two things in that call need attention.
 
 The first is that several conditions separated by commas are combined with **and**: every condition has to hold for a row to be kept. For **or** you need `|`, because a comma is only ever read as *and*.
 
@@ -153,7 +153,7 @@ covid %>%
 
 Read `%>%` as "and then". Take covid, and then keep the circuit-breaker days, and then keep three columns, and then sort by stringency, and then show me four rows. That is the order the sentence happens in and the order the code is written in.
 
-A few conventions are worth adopting now. Put the `%>%` at the end of the line rather than the start of the next one, because R needs to see that the line is unfinished. Indent the continuation lines. Build the chain one verb at a time, running it after each addition, rather than writing eight lines before running any of them. RStudio has a keyboard shortcut for the pipe: Ctrl+Shift+M on Windows and Linux, Cmd+Shift+M on a Mac.
+Adopt a few conventions now, while the chains are short. Put the `%>%` at the end of the line rather than the start of the next one, because R needs to see that the line is unfinished. Indent the continuation lines. Build the chain one verb at a time, running it after each addition, rather than writing eight lines before running any of them. RStudio has a keyboard shortcut for the pipe: Ctrl+Shift+M on Windows and Linux, Cmd+Shift+M on a Mac.
 
 ::: {.callout-note}
 ## The other pipe
@@ -264,7 +264,7 @@ covid %>% select(date, confirmed, daily_cases) %>% head(3)
 
 The situation differs if the series does not start at zero. Suppose your extract began on 1 March, when the cumulative total was already 106. Then `default = 0` would compute 106 new cases on 1 March, which is not what happened; those 106 accumulated over the preceding weeks. On that series the appropriate value is `NA`, because the data carry no information about how many cases occurred on the first day of a window whose start was not observed.
 
-The choice therefore turns on the first value of the series. Look at it: if it is zero, `default = 0` records a true zero; if it is anything else, plain `lag()` leaves an `NA`, which is an accurate statement of what is not known. This file starts at zero, which is why `default = 0` is used in the code above, and that reason is worth writing in a comment beside it.
+The choice therefore turns on the first value of the series. Look at it: if it is zero, `default = 0` records a true zero; if it is anything else, plain `lag()` leaves an `NA`, which is an accurate statement of what is not known. This file starts at zero, which is why `default = 0` is used in the code above, and that reason belongs in a comment beside it.
 
 ## Two checks on a differenced series
 
@@ -291,7 +291,7 @@ Both expressions return 58,599. Run the same check on the scrambled version and 
 sum(scrambled$daily_cases) == max(scrambled$confirmed)
 ```
 
-The check passes on the sorted table and fails on the scrambled one, which is what makes it worth the two lines it takes to write. Both checks are worth keeping in any script that differences a cumulative series.
+The check passes on the sorted table and fails on the scrambled one, which justifies the two lines it takes. Keep both checks in any script that differences a cumulative series.
 
 One caveat applies when the same recipe is used on `deaths`. That column is missing for the first 59 days of 2020, and the second check does not reconcile on it: you get 27 deaths back out of a cumulative total that ends at 29. The reason lies in the `lag()`. Singapore's first two deaths are both recorded on 21 March, which is also the first day the column carries a number at all, so the difference on that row is `2 - NA`, which is `NA`, and a sum told to skip missing values skips those two deaths along with it. Differencing recovers changes; it cannot recover the level a series started at. This is a property of the file rather than an error in the code, and what to do about it is a decision about what a blank in that column means.
 

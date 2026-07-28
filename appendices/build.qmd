@@ -306,7 +306,7 @@ Here is the library this page was built against:
 .libPaths()[1]
 ```
 
-If that path does not contain `r-intro/renv`, the guard has a bug, which would also be worth an issue.
+If that path does not contain `r-intro/renv`, the guard has a bug; please open an issue for that as well.
 
 ## Freeze
 
@@ -323,7 +323,7 @@ rm -rf _freeze/
 quarto render
 ```
 
-or delete one chapter's directory under `_freeze/chapters/` if you know that only one is affected. Doing this after any change to `_common.R` is a habit worth building, and the reason `_freeze/` is listed in `.gitattributes` as generated is that the resulting diff is enormous and carries no information worth reading.
+or delete one chapter's directory under `_freeze/chapters/` if you know that only one is affected. Doing this after any change to `_common.R` is a habit to build, and the reason `_freeze/` is listed in `.gitattributes` as generated is that the resulting diff is enormous and carries no information anyone needs to read.
 
 ## Publishing
 
@@ -343,7 +343,7 @@ It refuses to start in three cases. If a `quarto preview` is running, because th
 
 The reason to keep the site off `main` is diffs: generated HTML is not source, and a re-render rewrites every page, so fixing two words in one chapter arrives as a commit touching ninety files, and `git log` on that chapter becomes something you scroll past rather than read. The problem stops being cosmetic as soon as a second person edits chapters, because HTML merges badly: two people who touched different chapters still both regenerated the whole site, and git offers you conflicts in dozens of files that cannot be resolved by reading them. With the output on its own branch, a chapter edit is a one-file diff, and a merge is a merge of prose.
 
-The cost is real and worth naming, because the previous arrangement was better at one thing. When the site was committed alongside the source, forgetting to rebuild was impossible to miss: you edited a chapter and the working tree stayed dirty until you rendered, so staleness announced itself for free.
+The cost is real: the previous arrangement was better at one thing. When the site was committed alongside the source, forgetting to rebuild was impossible to miss: you edited a chapter and the working tree stayed dirty until you rendered, so staleness announced itself for free.
 
 Split source from output and that goes away. `main` is clean whether or not you have ever published. You can edit a chapter, commit, push, watch GitHub show your change, and have the live site still serving last month's text with nothing anywhere indicating it. The three small scripts below exist to replace the visibility the split removed.
 
@@ -353,7 +353,7 @@ A second `post-render` step, `scripts/make-redirects.sh`, writes a small stub pa
 
 `scripts/check-pages-sync.sh` reads that file off `gh-pages` and compares the commit in it against the tip of `main`. It exits 0 in sync, 1 when the site is stale, and 2 when it cannot tell — no `gh-pages` branch yet, no `build-info.json` in it, no network. `--local` skips the fetch and works with the refs you already have. `publish.sh` runs it at the end as its own last check.
 
-One detail of that script is worth copying. It does not compare commit counts; it compares the *files* that changed since the publish against a list of things the rendered site is actually built from — the `.qmd` files, `_quarto.yml`, `_common.R`, `R/`, `scss/`, `data/`, `assets/` — and if the only commits since were a README edit or a licence tweak, the site is still correct and it says so. A check that reported "stale" every time you fixed a typo in a comment would be ignored within a week, and an ignored check still leaves you believing something is being watched.
+One detail of that script deserves copying. It does not compare commit counts; it compares the *files* that changed since the publish against a list of things the rendered site is actually built from — the `.qmd` files, `_quarto.yml`, `_common.R`, `R/`, `scss/`, `data/`, `assets/` — and if the only commits since were a README edit or a licence tweak, the site is still correct and it says so. A check that reported "stale" every time you fixed a typo in a comment would be ignored within a week, and an ignored check still leaves you believing something is being watched.
 
 `scripts/hooks/pre-push` prints a reminder when the commits you are pushing touch anything on that list. It is not installed by default; enable it with:
 
@@ -387,7 +387,7 @@ The published site has one. This repository does not, and there is nothing under
 
 Knitr writes a chapter's figures into `<chapter>_files/` next to the source, and Quarto moves them into the output directory at the end of the render. A render that dies partway through leaves those directories behind, and they are rubbish that should not be in git. Because chapters and appendices now live in subdirectories, a stray can sit at any depth — `chapters/visualise_files/`, not just `./visualise_files/` — so the pattern is written without a leading slash and matches at **any depth**.
 
-That breadth is safe because `_book/` is ignored on its own line above it: git does not descend into an ignored directory, so the pattern catches the strays without ever reaching the figure directories inside the rendered site. The distinction matters because the output still goes through git on its way out — that is what publishing to a branch is — and the failure mode from getting it wrong is worth naming: the book renders correctly on `localhost`, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem. When every chapter sat at the top level the same rule was written the other way around, as `/*_files/` anchored to the repository root, because an unanchored pattern would also have matched `_book/visualise_files/` along with the strays. The move into subdirectories flipped it.
+That breadth is safe because `_book/` is ignored on its own line above it: git does not descend into an ignored directory, so the pattern catches the strays without ever reaching the figure directories inside the rendered site. The distinction matters because the output still goes through git on its way out — that is what publishing to a branch is — and the failure mode from getting it wrong should be stated plainly: the book renders correctly on `localhost`, publishes, and the live site shows a broken-image icon in place of every plot, with nothing in the local build indicating the problem. When every chapter sat at the top level the same rule was written the other way around, as `/*_files/` anchored to the repository root, because an unanchored pattern would also have matched `_book/visualise_files/` along with the strays. The move into subdirectories flipped it.
 
 `.gitattributes` finishes the job, marking the generated directory so it stays out of GitHub's language statistics and out of diffs:
 

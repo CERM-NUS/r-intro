@@ -41,7 +41,7 @@ covid <- read_csv(here("data", "sg_covid_data.csv"))
 
 The object is named after what it holds: `covid`, not `df` or `data` — the latter masks a base R function. The file itself is read-only: the CSV in `data/` is never edited, and every repair happens in code.
 
-The output above is a message rather than an error, and each line of it is worth reading.
+The output above is a message rather than an error; read each line of it.
 
 `Rows: 345 Columns: 13`. Check this against what you expect before you do anything else. If you were told the file covers a year of daily data and R reports 345 rows, that is 2020 from 22 January onward, and it adds up. If R had said 344, you would want to know which day went missing and why.
 
@@ -165,7 +165,7 @@ That produces a warning rather than an error, and the data still loads, with `NA
 head(problems(bad))
 ```
 
-The first failure is at row 2, column 1, where a double was expected and the value `Singapore` was found. Two columns times 345 rows is 690 failures here. When a real import produces a handful of failures rather than hundreds, those few rows are usually the ones worth inspecting: typically a note typed into a numeric field.
+The first failure is at row 2, column 1, where a double was expected and the value `Singapore` was found. Two columns times 345 rows is 690 failures here. When a real import produces a handful of failures rather than hundreds, those few rows are usually the ones to inspect: typically a note typed into a numeric field.
 
 When you only need part of a wide file, `cols_only()` reads the named columns and skips the rest, which on a large file saves both time and memory:
 
@@ -210,7 +210,7 @@ sum(is.na(covid$parks_percent_change_from_baseline))
 
 The six mobility columns are missing for the first 24 rows, up to and including 14 February. Google's Community Mobility Reports express each day as a percentage change from a baseline computed over 3 January to 6 February 2020, so the series cannot start until that baseline period has finished. Neither gap is a fault in the file; in both cases the source has no value to report. `glimpse()` makes both visible immediately after loading.
 
-Three further functions are worth knowing. `head()` and `tail()` show the first and last rows, and `tail()` is the one that catches a summary row left at the bottom of a spreadsheet. `summary()` gives a five-number summary of every numeric column plus a count of `NA`s. `View()` opens the spreadsheet viewer in RStudio, which is convenient for a small file and unhelpful on a large one; keep it at the console rather than in a script, because it does nothing in a rendered document.
+Four further functions round out the set. `head()` and `tail()` show the first and last rows, and `tail()` is the one that catches a summary row left at the bottom of a spreadsheet. `summary()` gives a five-number summary of every numeric column plus a count of `NA`s. `View()` opens the spreadsheet viewer in RStudio, which is convenient for a small file and unhelpful on a large one; keep it at the console rather than in a script, because it does nothing in a rendered document.
 
 ```{r}
 #| label: view

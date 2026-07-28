@@ -63,7 +63,7 @@ n_distinct(covid$date)
 all(diff(covid$date) == 1)
 ```
 
-The file has 345 rows and 345 distinct dates, and every consecutive difference is exactly one day, so there are no gaps or duplicates to reconcile. This is unusual enough in real epidemiological data that it is worth naming: most surveillance extracts you meet later will have missing days, repeated days, or both, and the check above is the one to run first.
+The file has 345 rows and 345 distinct dates, and every consecutive difference is exactly one day, so there are no gaps or duplicates to reconcile. Real epidemiological data is rarely this clean: most surveillance extracts you meet later will have missing days, repeated days, or both, and the check above is the one to run first.
 
 The series opens on 22 January 2020, the day before the count moves off zero.
 

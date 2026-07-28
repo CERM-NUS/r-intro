@@ -20,17 +20,17 @@ The functions chapter showed the failure this habit prevents: an object left in 
 
 ## Data you do not edit
 
-Whatever arrives from the source is stored and not edited afterwards: not to fix a date format, not to fill in a blank, not to delete a duplicated row. This book has followed that rule throughout. The Singapore file needed real repairs, including cumulative columns differenced into daily ones and two blocks of missing values handled, and every repair was made in code, in @sec-transform and @sec-missing, where it can be read, checked and disagreed with. A repair written in a script carries its justification with it and survives the arrival of an updated source file; an edit typed into a spreadsheet does neither.
+Whatever arrives from the source is stored and left untouched. If a date format is wrong, a cell is blank, or a row is duplicated, the repair goes in code, not in the file. This book has followed that rule throughout. The Singapore file needed real repairs, including cumulative columns differenced into daily ones and two blocks of missing values handled, and every repair was made in code, in @sec-transform and @sec-missing, where it can be read, checked and disagreed with. A repair written in a script carries its justification with it and survives the arrival of an updated source file; an edit typed into a spreadsheet does neither.
 
 ## Names and comments
 
 The naming rules from @sec-foundations: `snake_case`, with nouns for data and verbs for functions. `daily_cases` is data and `classify_severity()` is a function, and in `monthly_report <- summarise_by_month(covid)` the distinction is visible without consulting anything. Names that carry no information about their contents, such as `df2` or `temp`, force the code to be re-run to find out what is in them, and names already taken by base R, such as `data`, `c` and `T`, mask the originals when they are reused.
 
-A comment earns its place when it records what the code cannot say. The code already shows what it does, so a comment that restates the line above it adds nothing; a comment that explains why this threshold was chosen, or where this constant comes from, is the one worth writing.
+A comment earns its place when it records what the code cannot say. The code already shows what it does, so a comment that restates the line above it adds nothing; a comment that explains why this threshold was chosen, or where this constant comes from, is the one to write.
 
 ## Reports that rerun
 
-The capstone asked for a report that reads from the top with no hidden state: the raw file in, the finished page out, in one render (@sec-capstone). That property is worth keeping in every report, not only in assessed ones. With prose and code in one `.qmd` file, re-rendering recomputes every number in the text, so a figure or a value written into a sentence cannot drift away from the code that produced it. A document assembled by pasting numbers into a separate file agrees with the analysis only until the analysis changes.
+The capstone asked for a report that reads from the top with no hidden state: the raw file in, the finished page out, in one render (@sec-capstone). Keep that property in every report, not only in assessed ones. With prose and code in one `.qmd` file, re-rendering recomputes every number in the text, so a figure or a value written into a sentence cannot drift away from the code that produced it. A document assembled by pasting numbers into a separate file agrees with the analysis only until the analysis changes.
 
 ## Asking for help
 
@@ -50,7 +50,7 @@ renv::restore()   # on a new machine, or when you come back to it
 
 `renv::init()` is run once, when the project starts. After a package is added or updated, `renv::snapshot()` writes the new state of the library into the lockfile. On a new machine, or after a fresh clone, `renv::restore()` installs the recorded versions. Commit `renv.lock` alongside the code: the repository together with the lockfile records which package versions produced the results. Without a lockfile, "install the tidyverse and run my script" means whatever the tidyverse happens to be on the day someone tries, and package behaviour does change between versions. This book uses `renv`, and its `renv.lock` is committed, so cloning the repository and running `renv::restore()` builds the library the book was written against.
 
-The limits of pinning are worth stating. `renv` pins R packages; it does not pin R itself, the operating system, or the system libraries a package compiles against. Reproducing those requires containers, which are outside the scope of this book. Pinning packages addresses the largest and most frequent source of version drift. @sec-build describes how this book's own library, lockfile and build fit together.
+Pinning has limits. `renv` pins R packages; it does not pin R itself, the operating system, or the system libraries a package compiles against. Reproducing those requires containers, which are outside the scope of this book. Pinning packages addresses the largest and most frequent source of version drift. @sec-build describes how this book's own library, lockfile and build fit together.
 
 ## Version control: Git
 
