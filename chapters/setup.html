@@ -343,10 +343,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-console-and-the-script" id="toc-the-console-and-the-script" class="nav-link" data-scroll-target="#the-console-and-the-script"><span class="header-section-number">1.4</span> The console and the script</a></li>
   <li><a href="#packages-install.packages-and-library" id="toc-packages-install.packages-and-library" class="nav-link" data-scroll-target="#packages-install.packages-and-library"><span class="header-section-number">1.5</span> Packages, <code>install.packages()</code> and <code>library()</code></a></li>
   <li><a href="#getting-the-data" id="toc-getting-the-data" class="nav-link" data-scroll-target="#getting-the-data"><span class="header-section-number">1.6</span> Getting the data</a></li>
+  <li><a href="#make-the-folder-a-project" id="toc-make-the-folder-a-project" class="nav-link" data-scroll-target="#make-the-folder-a-project"><span class="header-section-number">1.7</span> Make the folder a project</a></li>
   <li>
-<a href="#does-it-work" id="toc-does-it-work" class="nav-link" data-scroll-target="#does-it-work"><span class="header-section-number">1.7</span> Does it work?</a>
+<a href="#does-it-work" id="toc-does-it-work" class="nav-link" data-scroll-target="#does-it-work"><span class="header-section-number">1.8</span> Does it work?</a>
   <ul class="collapse">
-<li><a href="#when-it-does-not-work" id="toc-when-it-does-not-work" class="nav-link" data-scroll-target="#when-it-does-not-work"><span class="header-section-number">1.7.1</span> When it does not work</a></li>
+<li><a href="#when-it-does-not-work" id="toc-when-it-does-not-work" class="nav-link" data-scroll-target="#when-it-does-not-work"><span class="header-section-number">1.8.1</span> When it does not work</a></li>
   </ul>
 </li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/setup.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/setup.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
@@ -448,9 +449,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 │   └── sg_covid_data.csv
 └── analysis.R</code></pre>
 <p>Two warnings about that download. Some browsers append <code>.txt</code> to files they treat as plain text, so check that what landed on disk is called <code>sg_covid_data.csv</code> and not <code>sg_covid_data.csv.txt</code>. Second, avoid opening it in Excel to inspect it. Excel offers to save the file back on closing, and saving can rewrite the date column into whatever format your regional settings prefer. To look inside the file, read it into R instead: <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv()</a></code> reads the file and does not write to it. The raw file is never edited; every repair to the data happens later, in code. That is what the check below does.</p>
-</section><section id="does-it-work" class="level2" data-number="1.7"><h2 data-number="1.7" class="anchored" data-anchor-id="does-it-work">
-<span class="header-section-number">1.7</span> Does it work?</h2>
-<p>Open a new script, type the following in, and run it a line at a time.</p>
+</section><section id="make-the-folder-a-project" class="level2" data-number="1.7"><h2 data-number="1.7" class="anchored" data-anchor-id="make-the-folder-a-project">
+<span class="header-section-number">1.7</span> Make the folder a project</h2>
+<p>With the folder made, turn it into an RStudio project. Go to File, New Project, Existing Directory, browse to the course folder, and click Create Project. RStudio closes and reopens inside the project, and an <code>.Rproj</code> file appears in the folder.</p>
+<p>The <code>.Rproj</code> file does three things for you. R now starts with that folder as its working directory, so <code>data/sg_covid_data.csv</code> resolves without a path being typed. The project gets its own R session and its own command history, separate from anything else you have open. And it marks the folder: from now on you open the work by double-clicking the <code>.Rproj</code> file, and everything starts pointed at the right place. If you took the ZIP download in the previous section, you already have a project file, <code>r-intro.Rproj</code>, and can skip these steps.</p>
+</section><section id="does-it-work" class="level2" data-number="1.8"><h2 data-number="1.8" class="anchored" data-anchor-id="does-it-work">
+<span class="header-section-number">1.8</span> Does it work?</h2>
+<p>Open a new script with File, New File, R Script; the green-plus button at the top left of the toolbar does the same thing, as does <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> on a Mac. Save it straight away with File, Save, naming it <code>analysis.R</code> — with a project open, the save dialog already starts in the project folder, so the folder ends up matching the tree shown in “Getting the data”. Then type the following in, and run it a line at a time with <kbd>Ctrl</kbd>+<kbd>Enter</kbd>, or <kbd>Cmd</kbd>+<kbd>Enter</kbd> on a Mac.</p>
 <div class="cell">
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
 <span></span>
@@ -483,8 +488,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>A line should appear in the Plots pane, climbing from zero in January to just under sixty thousand by December. Yours will have ggplot2’s default grey background, whereas the figures here do not, because the book applies its own theme to every figure. The data and the geometry are the same.</p>
 <p>If the plot does not appear and the Plots pane looks squashed, drag the divider between the panes to make it taller. RStudio cannot draw into a pane a few pixels high.</p>
-<section id="when-it-does-not-work" class="level3" data-number="1.7.1"><h3 data-number="1.7.1" class="anchored" data-anchor-id="when-it-does-not-work">
-<span class="header-section-number">1.7.1</span> When it does not work</h3>
+<section id="when-it-does-not-work" class="level3" data-number="1.8.1"><h3 data-number="1.8.1" class="anchored" data-anchor-id="when-it-does-not-work">
+<span class="header-section-number">1.8.1</span> When it does not work</h3>
 <p>Three failures account for nearly all of them.</p>
 <pre><code>Error in library(tidyverse) : there is no package called ‘tidyverse’</code></pre>
 <p>The install did not finish, or finished with an error you scrolled past. Run <code>install.packages("tidyverse")</code> again and watch the output this time. On Windows, if it complains that the package is in use, restart R first.</p>
@@ -496,7 +501,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "/Users/smishra/Documents/GitHub/r-intro"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Yours will print something else. The fix is a project file rather than a call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code>, whose path is specific to one machine and to the current arrangement of its folders. The pattern to adopt is one folder per piece of work, with an <code>.Rproj</code> file in it. For this course, take the folder you made and use File, New Project, Existing Directory, pointing RStudio at that folder. From then on you open the work by double-clicking the <code>.Rproj</code> file: R starts with that folder as its working directory, with its own session and command history, and <code>data/sg_covid_data.csv</code> resolves without a path.</p>
+<p>Yours will print something else. The fix is a project file rather than a call to <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code>, whose path is specific to one machine and to the current arrangement of its folders. If you skipped “Make the folder a project” above, go back to it now: with a project open, R’s working directory is the project folder, and <code>data/sg_covid_data.csv</code> resolves without a path.</p>
 <pre><code>Error: unexpected input in "covid &lt;- read_csv(“"</code></pre>
 <p>Something in the line is not valid R. That particular one is a smart quote, the curly <code>“</code> that Word and Slack substitute for the straight <code>"</code>. R does not recognise it as a quote character at all. If instead you left out a comma you get its sibling:</p>
 <pre><code>Error: unexpected symbol in "covid &lt;- read_csv("data/sg_covid_data.csv" nrow"</code></pre>
