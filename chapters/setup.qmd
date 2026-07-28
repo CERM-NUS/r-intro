@@ -138,9 +138,15 @@ sph5421/
 
 Two warnings about that download. Some browsers append `.txt` to files they treat as plain text, so check that what landed on disk is called `sg_covid_data.csv` and not `sg_covid_data.csv.txt`. Second, avoid opening it in Excel to inspect it. Excel offers to save the file back on closing, and saving can rewrite the date column into whatever format your regional settings prefer. To look inside the file, read it into R instead: `read_csv()` reads the file and does not write to it. The raw file is never edited; every repair to the data happens later, in code. That is what the check below does.
 
+## Make the folder a project
+
+With the folder made, turn it into an RStudio project. Go to File, New Project, Existing Directory, browse to the course folder, and click Create Project. RStudio closes and reopens inside the project, and an `.Rproj` file appears in the folder.
+
+The `.Rproj` file does three things for you. R now starts with that folder as its working directory, so `data/sg_covid_data.csv` resolves without a path being typed. The project gets its own R session and its own command history, separate from anything else you have open. And it marks the folder: from now on you open the work by double-clicking the `.Rproj` file, and everything starts pointed at the right place. If you took the ZIP download in the previous section, you already have a project file, `r-intro.Rproj`, and can skip these steps.
+
 ## Does it work?
 
-Open a new script, type the following in, and run it a line at a time.
+Open a new script with File, New File, R Script; the green-plus button at the top left of the toolbar does the same thing, as does <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> on a Mac. Save it straight away with File, Save, naming it `analysis.R` — with a project open, the save dialog already starts in the project folder, so the folder ends up matching the tree shown in "Getting the data". Then type the following in, and run it a line at a time with <kbd>Ctrl</kbd>+<kbd>Enter</kbd>, or <kbd>Cmd</kbd>+<kbd>Enter</kbd> on a Mac.
 
 ```{r}
 #| label: does-it-work
@@ -191,7 +197,7 @@ R is looking in the wrong place. The message reports the directory it searched, 
 getwd()
 ```
 
-Yours will print something else. The fix is a project file rather than a call to `setwd()`, whose path is specific to one machine and to the current arrangement of its folders. The pattern to adopt is one folder per piece of work, with an `.Rproj` file in it. For this course, take the folder you made and use File, New Project, Existing Directory, pointing RStudio at that folder. From then on you open the work by double-clicking the `.Rproj` file: R starts with that folder as its working directory, with its own session and command history, and `data/sg_covid_data.csv` resolves without a path.
+Yours will print something else. The fix is a project file rather than a call to `setwd()`, whose path is specific to one machine and to the current arrangement of its folders. If you skipped "Make the folder a project" above, go back to it now: with a project open, R's working directory is the project folder, and `data/sg_covid_data.csv` resolves without a path.
 
 ```
 Error: unexpected input in "covid <- read_csv(“"
