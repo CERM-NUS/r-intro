@@ -414,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">date</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The file has 345 rows and 345 distinct dates, and every consecutive difference is exactly one day, so there are no gaps or duplicates to reconcile. This is unusual enough in real epidemiological data that it is worth naming: most surveillance extracts you meet later will have missing days, repeated days, or both, and the check above is the one to run first.</p>
+<p>The file has 345 rows and 345 distinct dates, and every consecutive difference is exactly one day, so there are no gaps or duplicates to reconcile. Real epidemiological data is rarely this clean: most surveillance extracts you meet later will have missing days, repeated days, or both, and the check above is the one to run first.</p>
 <p>The series opens on 22 January 2020, the day before the count moves off zero.</p>
 <div class="cell">
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>

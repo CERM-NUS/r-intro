@@ -390,7 +390,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;  &lt;int&gt;      &lt;int&gt;       &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1         0     59          0     24         24          24</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Naming six columns by hand does not scale to a file with two hundred of them, and there are ways to run one count over every column at once without typing any of their names. At six columns the typing is worth it, because the output states on its face what was counted. The case counts and the policy indices are complete for all 345 days, <code>deaths</code> is missing on 59 of them, and every mobility column is missing on exactly 24.</p>
+<p>Naming six columns by hand does not scale to a file with two hundred of them, and there are ways to run one count over every column at once without typing any of their names. At six columns, type them out: the output states on its face what was counted. The case counts and the policy indices are complete for all 345 days, <code>deaths</code> is missing on 59 of them, and every mobility column is missing on exactly 24.</p>
 <p>The same count in all six columns suggests that they went missing together, for one shared reason, and the structure of the gaps confirms this.</p>
 <div class="cell">
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>

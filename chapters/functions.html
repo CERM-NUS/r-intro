@@ -381,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 48</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>A looser cut-off is also worth checking, because it shows whether the answer is sensitive to where you draw the line.</p>
+<p>Also try a looser cut-off, because it shows whether the answer is sensitive to where you draw the line.</p>
 <div class="cell">
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">retail_and_recreation_percent_change_from_baseline</span> <span class="op">&lt;</span> <span class="op">-</span><span class="fl">20</span><span class="op">)</span> <span class="op">%&gt;%</span></span>

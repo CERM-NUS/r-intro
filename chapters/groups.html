@@ -618,7 +618,7 @@ Predict before you run
 <span><span class="co">#&gt; 2 2020-02      29</span></span>
 <span><span class="co">#&gt; 3 2020-03      31</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>That works: it gives the right twelve groups in the right order, and for a one-off count it is adequate. The class of the column it creates is worth checking, though:</p>
+<p>That works: it gives the right twelve groups in the right order, and for a one-off count it is adequate. Check the class of the column it creates, though:</p>
 <div class="cell">
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>month_chr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">date</span>, <span class="fl">1</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>

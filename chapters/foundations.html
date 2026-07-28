@@ -405,7 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Two things happened. R evaluated the right-hand side, and it bound the result to the name <code>first_case</code>. Assignment produces no output; to see the value, type the name on its own line, as above.</p>
 <p>That date is the first day this file records a confirmed case. Day one of the file, 22 January, has <code>confirmed</code> equal to zero.</p>
-<p>In RStudio, <code>Alt</code> and minus (<code>Option</code> and minus on a Mac) types <code>&lt;-</code> for you. The operator comes up constantly, so the shortcut is worth learning early.</p>
+<p>In RStudio, <code>Alt</code> and minus (<code>Option</code> and minus on a Mac) types <code>&lt;-</code> for you. The operator comes up constantly, so learn the shortcut early.</p>
 <section id="why-an-arrow-and-not-an-equals-sign" class="level3" data-number="2.1.1"><h3 data-number="2.1.1" class="anchored" data-anchor-id="why-an-arrow-and-not-an-equals-sign">
 <span class="header-section-number">2.1.1</span> Why an arrow and not an equals sign</h3>
 <p>R inherited <code>&lt;-</code> from S, and S inherited it from APL, whose keyboards had a single key that produced a real <code>←</code> character. When S moved to keyboards without that key, the arrow was spelled out as two characters and stuck.</p>
@@ -565,7 +565,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; [1] 23.75874</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Whether that is the right thing to do is a question about the deaths data, not about R. <code>na.rm = TRUE</code> drops the 59 unrecorded days and averages the 286 that remain, so the number returned is the mean of the days the source reported, which is not the mean of 2020. Which of the two you want depends on the question being asked, and the default behaviour at least requires the choice to be made explicitly.</p>
-<p>Two more properties of <code>NA</code> are worth knowing. Testing it with <code>==</code> does not work, because “an unknown value” is not equal to anything, including another unknown value:</p>
+<p>Two more properties of <code>NA</code> come up in daily work. Testing it with <code>==</code> does not work, because “an unknown value” is not equal to anything, including another unknown value:</p>
 <div class="cell">
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="cn">NA</span> <span class="op">==</span> <span class="cn">NA</span></span>
 <span><span class="co">#&gt; [1] NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -674,7 +674,7 @@ Predict before you run
 <span><span class="co">#&gt; NULL</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><code>round(x, digits = 0)</code> means that if you do not say otherwise, you get whole numbers. <code>mean(x, ...)</code> is less helpful, because <code>mean</code> is generic and the real arguments live in the method; this is one of the places where R’s help page tells you more than the code does.</p>
-<p><code><a href="https://rdrr.io/r/base/Round.html">round()</a></code> has one behaviour worth noting here:</p>
+<p><code><a href="https://rdrr.io/r/base/Round.html">round()</a></code> has one behaviour to watch for:</p>
 <div class="cell">
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span>
@@ -711,7 +711,7 @@ Predict before you run
 <p>The distinction matters in practice. <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code> belongs at the console, typed by hand, and not in a script; running it on every render costs minutes and requires an internet connection. <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> belongs at the top of every script, because a script that does not load the packages it uses will fail on any machine where those packages are not already attached. The quotation marks are required by one and not the other, which is an inconsistency in R rather than a mistake on your part.</p>
 <section id="the-masking-message" class="level3" data-number="2.7.1"><h3 data-number="2.7.1" class="anchored" data-anchor-id="the-masking-message">
 <span class="header-section-number">2.7.1</span> The masking message</h3>
-<p><code><a href="https://tidyverse.tidyverse.org">library(tidyverse)</a></code> prints a block of text when it loads. It is worth reading.</p>
+<p><code><a href="https://tidyverse.tidyverse.org">library(tidyverse)</a></code> prints a block of text when it loads. Read it.</p>
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.2.1     ✔ readr     2.2.0
 ✔ forcats   1.0.1     ✔ stringr   1.6.0

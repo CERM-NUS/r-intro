@@ -476,13 +476,13 @@ window.Quarto = {
 <span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
 <span><span class="co">#&gt;       n grow_secs prealloc_secs grow_vs_previous_row</span></span>
 <span><span class="co">#&gt;   &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 10000    0.0670      0.001000                 NA  </span></span>
-<span><span class="co">#&gt; 2 20000    0.278       0                         4.1</span></span>
-<span><span class="co">#&gt; 3 40000    1.05        0                         3.8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#&gt; 1 10000    0.0630      0.001000                 NA  </span></span>
+<span><span class="co">#&gt; 2 20000    0.261       0                         4.1</span></span>
+<span><span class="co">#&gt; 3 40000    0.973       0.001000                  3.7</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The last column uses <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> again, this time outside a <code>mutate()</code> on the COVID data. Each doubling of <code>n</code> multiplies the growing version’s time by roughly four. That is the signature of a quadratic cost, and here is where it comes from: <code>x &lt;- c(x, i)</code> does not append, because R has no append operation. It allocates a brand new vector one element longer, copies the whole of <code>x</code> into it, adds the new value, and throws the old one away. Do that <code>n</code> times and you have copied roughly <code>n²/2</code> values.</p>
 <p><code>prealloc_secs</code> barely moves, because <code>x[i] &lt;- value</code> writes into memory that already exists. Those numbers are down at the resolution of the timer, which is why there is no ratio column for them.</p>
-<p>The exact timings will differ from one machine to another. On a 345-day dataset the difference is immaterial; on a stochastic simulation with 100,000 iterations the gap is large enough to be worth avoiding, and growing a vector inside a loop is a common cause of slow R code.</p>
+<p>The exact timings will differ from one machine to another. On a 345-day dataset the difference is immaterial; on a stochastic simulation with 100,000 iterations the gap is large enough to care about, and growing a vector inside a loop is a common cause of slow R code.</p>
 </section><section id="seq_along-seq_len-and-the-10-trap" class="level2" data-number="11.5"><h2 data-number="11.5" class="anchored" data-anchor-id="seq_along-seq_len-and-the-10-trap">
 <span class="header-section-number">11.5</span> <code>seq_along()</code>, <code>seq_len()</code>, and the 1:0 trap</h2>
 <p><code>1:length(x)</code> and <code>1:nrow(df)</code> are the direct way to write a sequence of positions, and they fail in one case, which does occur in practice: <code>:</code> counts downwards when the second value is smaller than the first.</p>

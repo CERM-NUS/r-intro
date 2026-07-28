@@ -423,7 +423,7 @@ Figure&nbsp;9.1: The column that ships in the file. It only goes up.
 </div>
 </div>
 <p>That curve is accurate, and there is very little to read off it. Cumulative curves have much the same shape in every epidemic: flat, then steep, then flat again at a higher level. The circuit breaker is not visible in it, nor is the August reporting artifact, and telling a month with 200 cases apart from a month with 20,000 means reading two values off the axis and subtracting them.</p>
-<p>The variable worth plotting, <code>daily_cases</code>, exists because you built it in an earlier chapter with <code>mutate()</code> and <code>lag()</code>. Teaching ggplot2 before that would have meant demonstrating it on the cumulative column.</p>
+<p>The variable to plot, <code>daily_cases</code>, exists because you built it in an earlier chapter with <code>mutate()</code> and <code>lag()</code>. Teaching ggplot2 before that would have meant demonstrating it on the cumulative column.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(covid, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> daily_cases)) <span class="sc">+</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -541,7 +541,7 @@ Figure&nbsp;9.5: Colour set as a constant. No legend, because nothing was mapped
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ✖ You've supplied a &lt;ggplot2::ggplot&gt; object.</span></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Did you use `%&gt;%` or `|&gt;` instead of `+`?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The error is worth reading to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.</p>
+<p>Read the error to the end. The first line names the function that failed. The second states the rule that was broken. The third says what was actually supplied. The fourth identifies the likely mistake and names the fix.</p>
 <p>Read every line of an R error before returning to your script. Recent tidyverse errors are written to be this specific about the fix. Errors elsewhere in R are often much less informative, and reading the message is how you find out which kind you have.</p>
 <p>The historical reason for the split: ggplot2 reached CRAN in 2007, and magrittr’s <code>%&gt;%</code> arrived in 2014. By then there were seven years of published code written against <code>+</code>. Changing the operator would have broken all of it at once, so ggplot2 kept <code>+</code>, and the two operators have coexisted since.</p>
 <p>The two do combine, and combining them is how you plot a subset:</p>
@@ -732,7 +732,7 @@ Figure&nbsp;9.12: Monthly ticks. <code>%b</code> is the abbreviated month name.
 </div>
 </div>
 <p>Twelve labels is about the limit before they start colliding at this figure width. <code>"2 months"</code> with <code>"%b %Y"</code> is the version that survives being shrunk into a two-column manuscript. The interval string accepts <code>"1 week"</code>, <code>"3 months"</code>, <code>"1 year"</code> and so on, in the obvious way.</p>
-<p>The format codes worth remembering are <code>%b</code> for Jan, <code>%B</code> for January, <code>%d</code> for the day number, <code>%Y</code> for a four-digit year and <code>%y</code> for two. <code>?strptime</code> lists the rest.</p>
+<p>The format codes to remember are <code>%b</code> for Jan, <code>%B</code> for January, <code>%d</code> for the day number, <code>%Y</code> for a four-digit year and <code>%y</code> for two. <code>?strptime</code> lists the rest.</p>
 </section>
 <section id="a-reference-line" class="level3" data-number="9.4.2">
 <h3 data-number="9.4.2" class="anchored" data-anchor-id="a-reference-line"><span class="header-section-number">9.4.2</span> A reference line</h3>
@@ -1007,7 +1007,7 @@ Figure&nbsp;9.21: Same plot, with month_name as a factor whose levels are in cal
 </div>
 </div>
 <p><code>month.name</code> is a built-in constant: a character vector of the twelve month names in calendar order, available in any R session without a package. Typing <code>month.name</code> at the console prints it.</p>
-<p>Order-of-levels problems are worth recognising as a category, because they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The <code>severity</code> column avoids it because <code>covid_daily()</code> builds it with <code>factor(severity, levels = c("Low", "Medium", "High"))</code> rather than letting R sort High, Low, Medium.</p>
+<p>Recognise order-of-levels problems as a category: they present as plotting bugs. Bars in the wrong order, legend entries in the wrong order and panels in the wrong order are all the same problem, and all are fixed in the data rather than in the plot. The <code>severity</code> column avoids it because <code>covid_daily()</code> builds it with <code>factor(severity, levels = c("Low", "Medium", "High"))</code> rather than letting R sort High, Low, Medium.</p>
 <p>Two <code>facet_wrap()</code> arguments do most of the work. <code>ncol</code> (or <code>nrow</code>) sets the layout. <code>scales</code> decides whether panels share axes: <code>"fixed"</code> is the default and is what you want when the point is comparison; <code>"free_x"</code>, used above, gives each month its own date range so the twelve panels do not each show ten days of line and eleven months of blank; <code>"free_y"</code> lets each panel find its own vertical scale, which makes small panels legible at the cost of comparability between panels. Free scales change what the figure can be used for, so choose them deliberately.</p>
 </section>
 <section id="labels" class="level2" data-number="9.8">
@@ -1074,7 +1074,7 @@ Figure&nbsp;9.23: Cases above, policy stringency below, sharing a time axis.
 <p><code>stringency_index</code> is the Oxford Government Response Tracker’s summary of how restrictive a country’s policy was on a given day, on a 0 to 100 scale. In this file it runs from 19.44 to 82.41.</p>
 <p>Stacked against the case curve, it shows something a single panel cannot. Stringency is a staircase, because policy changes on announced dates and holds until the next announcement, while the case series varies from day to day. The step on 7 April is the circuit breaker, and it is large: stringency goes from 45.37 to 62.04 in one day, retail mobility from -15 to -51, workplaces from -24 to -52. The index reaches its maximum of 82.41 for the first time on 10 April, three days later, and cases keep climbing for another ten days after that.</p>
 <p>The small movements after July do not support interpretation. There are 23 changes in the index after 1 July, several of them one-day blips that cannot be distinguished from encoding artifacts. A single-day rise in a composite index is not evidence of a policy announcement.</p>
-<p>Patchwork’s other operators are worth knowing. <code>+</code> packs plots into a grid and lets patchwork choose the shape, <code>|</code> forces a row, <code>/</code> forces a column, and they nest with brackets: <code>(a | b) / c</code>. <code>plot_layout()</code> controls proportions, and <code>plot_annotation()</code> adds text to the assembly rather than to any one panel:</p>
+<p>Patchwork’s other operators are good to know. <code>+</code> packs plots into a grid and lets patchwork choose the shape, <code>|</code> forces a row, <code>/</code> forces a column, and they nest with brackets: <code>(a | b) / c</code>. <code>plot_layout()</code> controls proportions, and <code>plot_annotation()</code> adds text to the assembly rather than to any one panel:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>(p_cases <span class="sc">/</span> p_stringency) <span class="sc">+</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_layout</span>(<span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>)) <span class="sc">+</span></span>

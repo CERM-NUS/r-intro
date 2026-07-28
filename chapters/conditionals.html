@@ -522,7 +522,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 Medium        53</span></span>
 <span><span class="co">#&gt; 3 &lt;NA&gt;          77</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p><code>case_when()</code> returns <code>NA</code> for unmatched rows rather than complaining, so this only shows up if you look. <code>.default</code> catches everything that falls through and is worth using whenever your conditions are meant to be exhaustive:</p>
+<p><code>case_when()</code> returns <code>NA</code> for unmatched rows rather than complaining, so this only shows up if you look. <code>.default</code> catches everything that falls through; use it whenever your conditions are meant to be exhaustive:</p>
 <div class="cell">
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
@@ -540,10 +540,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; 2 Low            215</span></span>
 <span><span class="co">#&gt; 3 Medium          53</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Two details of that block are worth adopting. The recoded column gets a new name, <code>severity_alt</code>, rather than overwriting <code>severity</code>, so both versions remain available to count side by side while you check the change. The category labels are also spelled exactly as the existing column has them, because later steps match text literally: a lower-case <code>"high"</code> would start a fourth category rather than match <code>"High"</code>.</p>
+<p>Two details of that block deserve to stick. The recoded column gets a new name, <code>severity_alt</code>, rather than overwriting <code>severity</code>, so both versions remain available to count side by side while you check the change. The category labels are also spelled exactly as the existing column has them, because later steps match text literally: a lower-case <code>"high"</code> would start a fourth category rather than match <code>"High"</code>.</p>
 </section><section id="boundary-values" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="boundary-values">
 <span class="header-section-number">7.5</span> Boundary values</h2>
-<p>“100 to 300” is ambiguous in English and unambiguous in code, so writing the code forces a decision that the specification may have left open: a day with exactly 100 cases could be Low or Medium, and 300 could be Medium or High. The <code>case_when()</code> settles both questions one way or the other, so the convention is worth choosing deliberately.</p>
+<p>“100 to 300” is ambiguous in English and unambiguous in code, so writing the code forces a decision that the specification may have left open: a day with exactly 100 cases could be Low or Medium, and 300 could be Medium or High. The <code>case_when()</code> settles both questions one way or the other, so choose the convention deliberately.</p>
 <p>This dataset contains days sitting on both ends of the rule.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -555,7 +555,7 @@ Predict before you run
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Consider two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. The boundary cases are the ones worth checking, because they are where an off-by-one in the cutoffs shows up.</p>
+<p>Consider two days in August: 18 August had exactly 100 new cases, and 6 August had 301. Under the cutoffs written above, write down the label each of them gets before you look. Check the boundary cases: they are where an off-by-one in the cutoffs shows up.</p>
 </div>
 </div>
 <div class="cell">
