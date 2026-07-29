@@ -554,7 +554,7 @@ The file extension chooses the format. Use `.png` for anything with many plotted
 ggsave(tempfile(fileext = ".svg"), plot = p_cases)
 ```
 
-The error names the missing package, which is the pattern to expect from ggplot2 when a format needs a helper. `install.packages("svglite")` fixes it if you want SVG. When you install a package for a real project, record it afterwards with `renv::snapshot()`; package pinning is covered in @sec-good-practice.
+The error names the missing package, which is the pattern to expect from ggplot2 when a format needs a helper. `install.packages("svglite")` fixes it if you want SVG. When you install a package for a real project, record the addition afterwards with `renv::snapshot()`, so the project library stays pinned.
 
 Saving a figure by right-clicking the plot pane and choosing Export produces a file at whatever size the pane happened to be, records nothing about how the figure was made, and has to be repeated by hand whenever the data changes. A call to `ggsave()` in the script regenerates the figure at a stated size every time the script runs. That is the property the report-rerun habit depends on: when the data changes and the script runs again, every figure saved by code is rewritten at its stated size by the same run that updates the tables and the numbers in the text, whereas a figure exported by hand has to be re-exported by hand and is easily forgotten.
 

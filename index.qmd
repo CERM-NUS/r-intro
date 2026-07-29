@@ -70,7 +70,7 @@ Read error messages to the end. R's errors usually run to two or three lines and
 
 Run everything as you read. When a chunk produces something, look at it before scrolling on, then change one thing and run it again: change the `100` to `50`, swap `mean` for `median`, or remove the `na.rm = TRUE` and see what changes. Every chunk can be re-run from the top of its chapter, so an experiment that fails costs nothing.
 
-Chapters render in separate R sessions and each one is self-contained, so you can restart R at any point and pick up at the top of a chapter. @sec-functions explains why frequent restarts matter.
+Chapters render in separate R sessions and each one is self-contained, so you can restart R at any point and pick up at the top of a chapter.
 
 ## Corrections
 

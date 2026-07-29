@@ -258,7 +258,7 @@ Counting distinct values in every column is a habit to build on any new dataset,
 sapply(covid, function(column) length(unique(column)))
 ```
 
-The `function(column)` argument is an anonymous function, defined at the point of use rather than given a name; writing your own functions is covered in @sec-functions.
+The `function(column)` argument is an anonymous function, defined at the point of use rather than given a name.
 
 `stringency_index` takes 13 distinct values over the year, which reflects how it is constructed: it is a score assembled from a handful of policy indicators, so it changes only when one of those indicators changes. The series therefore moves in steps, and each step marks a discrete policy change.
 

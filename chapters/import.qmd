@@ -230,7 +230,7 @@ read_covid <- function() {
 }
 ```
 
-The name follows the same convention as object names: a function is named for what it does, and @sec-functions covers how to write your own. It does no cleaning or repair: counts are still cumulative and `NA`s are still `NA`s. Where a later chapter corrects something, it does so in code you can read.
+The name follows the same convention as object names: a function is named for what it does. It does no cleaning or repair: counts are still cumulative and `NA`s are still `NA`s. Where a later chapter corrects something, it does so in code you can read.
 
 ## A first plot {#sec-first-plot}
 
