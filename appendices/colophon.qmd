@@ -83,4 +83,4 @@ Reports that a passage is confusing are as welcome as reports that a number is w
 
 ## Acknowledgements
 
-Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. Responsibility for the final content rests with the author.
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. A later revision — the reorganisation of the sources into `chapters/` and `appendices/`, the restructuring of the good-practice material into the chapters and a consolidated page, and the language passes across every chapter — was made with Kimi Code (Moonshot AI, K3 model). Responsibility for the final content rests with the author.

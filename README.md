@@ -386,4 +386,6 @@ the data in coursework or a paper, cite those sources rather than this book.
 
 Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped
 draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers
-against the data. Responsibility for the result is entirely human.
+against the data. A later revision — the repository reorganisation, the restructuring of the
+good-practice material, and the language passes across the chapters — was made with Kimi Code
+(Moonshot AI, K3 model). Responsibility for the result is entirely human.
