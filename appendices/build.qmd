@@ -103,8 +103,8 @@ The sidebar is docked rather than floating, collapsed to one level so the parts 
     - part: "Putting it together"
       chapters:
         - chapters/capstone.qmd
-        - chapters/next-steps.qmd
         - chapters/good-practice.qmd
+        - chapters/next-steps.qmd
 ```
 
 The parts are headings in the sidebar and nothing else; they carry no files of their own. `index.qmd` sits outside any part because a book's front page is not a chapter.

@@ -81,8 +81,8 @@ book:
     - part: "Putting it together"
       chapters:
         - chapters/capstone.qmd
-        - chapters/next-steps.qmd
         - chapters/good-practice.qmd
+        - chapters/next-steps.qmd
 
   appendices:
     - appendices/solutions.qmd
