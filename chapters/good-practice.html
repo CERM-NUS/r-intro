@@ -5,7 +5,7 @@
 <meta name="generator" content="quarto-1.6.42">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
-<title>14&nbsp; Good practice – An Introduction to R</title>
+<title>13&nbsp; Good practice – An Introduction to R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,8 +61,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../appendices/solutions.html" rel="next">
-<link href="../chapters/next-steps.html" rel="prev">
+<link href="../chapters/next-steps.html" rel="next">
+<link href="../chapters/capstone.html" rel="prev">
 <link href="../assets/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/good-practice.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/good-practice.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -281,14 +281,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
   </div>
 </li>
       </ul>
@@ -336,20 +336,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#projects-and-paths" id="toc-projects-and-paths" class="nav-link active" data-scroll-target="#projects-and-paths"><span class="header-section-number">14.1</span> Projects and paths</a></li>
-  <li><a href="#a-clean-session" id="toc-a-clean-session" class="nav-link" data-scroll-target="#a-clean-session"><span class="header-section-number">14.2</span> A clean session</a></li>
-  <li><a href="#data-you-do-not-edit" id="toc-data-you-do-not-edit" class="nav-link" data-scroll-target="#data-you-do-not-edit"><span class="header-section-number">14.3</span> Data you do not edit</a></li>
-  <li><a href="#names-and-comments" id="toc-names-and-comments" class="nav-link" data-scroll-target="#names-and-comments"><span class="header-section-number">14.4</span> Names and comments</a></li>
-  <li><a href="#reports-that-rerun" id="toc-reports-that-rerun" class="nav-link" data-scroll-target="#reports-that-rerun"><span class="header-section-number">14.5</span> Reports that rerun</a></li>
-  <li><a href="#asking-for-help" id="toc-asking-for-help" class="nav-link" data-scroll-target="#asking-for-help"><span class="header-section-number">14.6</span> Asking for help</a></li>
-  <li><a href="#packages-and-versions-renv" id="toc-packages-and-versions-renv" class="nav-link" data-scroll-target="#packages-and-versions-renv"><span class="header-section-number">14.7</span> Packages and versions: renv</a></li>
-  <li><a href="#version-control-git" id="toc-version-control-git" class="nav-link" data-scroll-target="#version-control-git"><span class="header-section-number">14.8</span> Version control: Git</a></li>
-  <li><a href="#the-checklist" id="toc-the-checklist" class="nav-link" data-scroll-target="#the-checklist"><span class="header-section-number">14.9</span> The checklist</a></li>
+<li><a href="#projects-and-paths" id="toc-projects-and-paths" class="nav-link active" data-scroll-target="#projects-and-paths"><span class="header-section-number">13.1</span> Projects and paths</a></li>
+  <li><a href="#a-clean-session" id="toc-a-clean-session" class="nav-link" data-scroll-target="#a-clean-session"><span class="header-section-number">13.2</span> A clean session</a></li>
+  <li><a href="#data-you-do-not-edit" id="toc-data-you-do-not-edit" class="nav-link" data-scroll-target="#data-you-do-not-edit"><span class="header-section-number">13.3</span> Data you do not edit</a></li>
+  <li><a href="#names-and-comments" id="toc-names-and-comments" class="nav-link" data-scroll-target="#names-and-comments"><span class="header-section-number">13.4</span> Names and comments</a></li>
+  <li><a href="#reports-that-rerun" id="toc-reports-that-rerun" class="nav-link" data-scroll-target="#reports-that-rerun"><span class="header-section-number">13.5</span> Reports that rerun</a></li>
+  <li><a href="#asking-for-help" id="toc-asking-for-help" class="nav-link" data-scroll-target="#asking-for-help"><span class="header-section-number">13.6</span> Asking for help</a></li>
+  <li><a href="#packages-and-versions-renv" id="toc-packages-and-versions-renv" class="nav-link" data-scroll-target="#packages-and-versions-renv"><span class="header-section-number">13.7</span> Packages and versions: renv</a></li>
+  <li><a href="#version-control-git" id="toc-version-control-git" class="nav-link" data-scroll-target="#version-control-git"><span class="header-section-number">13.8</span> Version control: Git</a></li>
+  <li><a href="#the-checklist" id="toc-the-checklist" class="nav-link" data-scroll-target="#the-checklist"><span class="header-section-number">13.9</span> The checklist</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/good-practice.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/good-practice.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/good-practice.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></a></li></ol></nav><div class="quarto-title">
-<h1 class="title"><span id="sec-good-practice" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></span></h1>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/good-practice.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-good-practice" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></h1>
 </div>
 
 
@@ -364,28 +364,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </header><p>The working habits this book recommends were introduced where they were first needed, each next to the code that depends on it. This page gathers them in one place, so that they can be reviewed as a set once the chapters behind them have been read. The first six sections restate habits already met and point to the chapters that treat them in full. The two sections after that, on package versions and on version control, are treated fully here because nothing else in the book covers them. The page ends with a checklist.</p>
-<section id="projects-and-paths" class="level2" data-number="14.1"><h2 data-number="14.1" class="anchored" data-anchor-id="projects-and-paths">
-<span class="header-section-number">14.1</span> Projects and paths</h2>
+<section id="projects-and-paths" class="level2" data-number="13.1"><h2 data-number="13.1" class="anchored" data-anchor-id="projects-and-paths">
+<span class="header-section-number">13.1</span> Projects and paths</h2>
 <p>The habit from <a href="import.html" class="quarto-xref"><span>Chapter 4</span></a>: one folder per piece of work, with an <code>.Rproj</code> file in it, and work opened by double-clicking that file. Inside the project, paths are built with <code>here()</code> and never with <code><a href="https://rdrr.io/r/base/getwd.html">setwd()</a></code> or an absolute path. The <code>.Rproj</code> file marks the project root, and <code>here()</code> builds paths down from that root, so the same script runs on a colleague’s machine and on a teaching-lab computer without a path being edited.</p>
-</section><section id="a-clean-session" class="level2" data-number="14.2"><h2 data-number="14.2" class="anchored" data-anchor-id="a-clean-session">
-<span class="header-section-number">14.2</span> A clean session</h2>
+</section><section id="a-clean-session" class="level2" data-number="13.2"><h2 data-number="13.2" class="anchored" data-anchor-id="a-clean-session">
+<span class="header-section-number">13.2</span> A clean session</h2>
 <p>The functions chapter showed the failure this habit prevents: an object left in the global environment from an earlier run supplies a value the script never computes, and the result is a number that is wrong without looking wrong (<a href="functions.html" class="quarto-xref"><span>Chapter 10</span></a>). The defence is two settings and one keyboard shortcut. In RStudio’s Global Options, set “Save workspace to .RData on exit” to Never and untick “Restore .RData into workspace at startup”, so that each session starts empty. Then restart R several times an hour with <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>, or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd> on a Mac, and run the script from the top. A script that runs in a fresh session depends only on what it contains; one that does not has a dependency on something outside the file, and the restart has found it.</p>
 <p><code>rm(list = ls())</code> is not a substitute for restarting. It removes the objects in the global environment and changes nothing else: attached packages stay attached, session-wide options keep their values, and objects whose names begin with a dot are not listed by <code><a href="https://rdrr.io/r/base/ls.html">ls()</a></code> and so are never removed. Restarting R clears all of these and takes about as long as typing the <code><a href="https://rdrr.io/r/base/rm.html">rm()</a></code> call.</p>
-</section><section id="data-you-do-not-edit" class="level2" data-number="14.3"><h2 data-number="14.3" class="anchored" data-anchor-id="data-you-do-not-edit">
-<span class="header-section-number">14.3</span> Data you do not edit</h2>
+</section><section id="data-you-do-not-edit" class="level2" data-number="13.3"><h2 data-number="13.3" class="anchored" data-anchor-id="data-you-do-not-edit">
+<span class="header-section-number">13.3</span> Data you do not edit</h2>
 <p>Whatever arrives from the source is stored and left untouched. If a date format is wrong, a cell is blank, or a row is duplicated, the repair goes in code, not in the file. This book has followed that rule throughout. The Singapore file needed real repairs, including cumulative columns differenced into daily ones and two blocks of missing values handled, and every repair was made in code, in <a href="transform.html" class="quarto-xref"><span>Chapter 5</span></a> and <a href="missing.html" class="quarto-xref"><span>Chapter 6</span></a>, where it can be read, checked and disagreed with. A repair written in a script carries its justification with it and survives the arrival of an updated source file; an edit typed into a spreadsheet does neither.</p>
-</section><section id="names-and-comments" class="level2" data-number="14.4"><h2 data-number="14.4" class="anchored" data-anchor-id="names-and-comments">
-<span class="header-section-number">14.4</span> Names and comments</h2>
+</section><section id="names-and-comments" class="level2" data-number="13.4"><h2 data-number="13.4" class="anchored" data-anchor-id="names-and-comments">
+<span class="header-section-number">13.4</span> Names and comments</h2>
 <p>The naming rules from <a href="foundations.html" class="quarto-xref"><span>Chapter 2</span></a>: <code>snake_case</code>, with nouns for data and verbs for functions. <code>daily_cases</code> is data and <code>classify_severity()</code> is a function, and in <code>monthly_report &lt;- summarise_by_month(covid)</code> the distinction is visible without consulting anything. Names that carry no information about their contents, such as <code>df2</code> or <code>temp</code>, force the code to be re-run to find out what is in them, and names already taken by base R, such as <code>data</code>, <code>c</code> and <code>T</code>, mask the originals when they are reused.</p>
 <p>A comment earns its place when it records what the code cannot say. The code already shows what it does, so a comment that restates the line above it adds nothing; a comment that explains why this threshold was chosen, or where this constant comes from, is the one to write.</p>
-</section><section id="reports-that-rerun" class="level2" data-number="14.5"><h2 data-number="14.5" class="anchored" data-anchor-id="reports-that-rerun">
-<span class="header-section-number">14.5</span> Reports that rerun</h2>
+</section><section id="reports-that-rerun" class="level2" data-number="13.5"><h2 data-number="13.5" class="anchored" data-anchor-id="reports-that-rerun">
+<span class="header-section-number">13.5</span> Reports that rerun</h2>
 <p>The capstone asked for a report that reads from the top with no hidden state: the raw file in, the finished page out, in one render (<a href="capstone.html" class="quarto-xref"><span>Chapter 12</span></a>). Keep that property in every report, not only in assessed ones. With prose and code in one <code>.qmd</code> file, re-rendering recomputes every number in the text, so a figure or a value written into a sentence cannot drift away from the code that produced it. A document assembled by pasting numbers into a separate file agrees with the analysis only until the analysis changes.</p>
-</section><section id="asking-for-help" class="level2" data-number="14.6"><h2 data-number="14.6" class="anchored" data-anchor-id="asking-for-help">
-<span class="header-section-number">14.6</span> Asking for help</h2>
-<p>The question that gets answered is the one a reader can run: the smallest piece of code that still shows the problem, the exact error text, what you expected instead, and your R and package versions. <a href="next-steps.html" class="quarto-xref"><span>Chapter 13</span></a> covers this in full, including the <code>reprex</code> package, which runs an example in a clean R session and formats the code and its real output together, ready to paste into a question.</p>
-</section><section id="packages-and-versions-renv" class="level2" data-number="14.7"><h2 data-number="14.7" class="anchored" data-anchor-id="packages-and-versions-renv">
-<span class="header-section-number">14.7</span> Packages and versions: renv</h2>
+</section><section id="asking-for-help" class="level2" data-number="13.6"><h2 data-number="13.6" class="anchored" data-anchor-id="asking-for-help">
+<span class="header-section-number">13.6</span> Asking for help</h2>
+<p>The question that gets answered is the one a reader can run: the smallest piece of code that still shows the problem, the exact error text, what you expected instead, and your R and package versions. <a href="next-steps.html" class="quarto-xref"><span>Chapter 14</span></a> covers this in full, including the <code>reprex</code> package, which runs an example in a clean R session and formats the code and its real output together, ready to paste into a question.</p>
+</section><section id="packages-and-versions-renv" class="level2" data-number="13.7"><h2 data-number="13.7" class="anchored" data-anchor-id="packages-and-versions-renv">
+<span class="header-section-number">13.7</span> Packages and versions: renv</h2>
 <p>A script can fail a year after it was written without anything in it changing, because the packages it calls do change. <code>renv</code> gives a project its own package library and a lockfile, <code>renv.lock</code>, which records the exact version of every package in it. Three commands cover ordinary use:</p>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/init.html">init</a></span><span class="op">(</span><span class="op">)</span>      <span class="co"># once, when you start the project</span></span>
@@ -394,8 +394,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p><code><a href="https://rstudio.github.io/renv/reference/init.html">renv::init()</a></code> is run once, when the project starts. After a package is added or updated, <code><a href="https://rstudio.github.io/renv/reference/snapshot.html">renv::snapshot()</a></code> writes the new state of the library into the lockfile. On a new machine, or after a fresh clone, <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> installs the recorded versions. Commit <code>renv.lock</code> alongside the code: the repository together with the lockfile records which package versions produced the results. Without a lockfile, “install the tidyverse and run my script” means whatever the tidyverse happens to be on the day someone tries, and package behaviour does change between versions. This book uses <code>renv</code>, and its <code>renv.lock</code> is committed, so cloning the repository and running <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> builds the library the book was written against.</p>
 <p>Pinning has limits. <code>renv</code> pins R packages; it does not pin R itself, the operating system, or the system libraries a package compiles against. Reproducing those requires containers, which are outside the scope of this book. Pinning packages addresses the largest and most frequent source of version drift. <a href="../appendices/build.html" class="quarto-xref"><span>Appendix C</span></a> describes how this book’s own library, lockfile and build fit together.</p>
-</section><section id="version-control-git" class="level2" data-number="14.8"><h2 data-number="14.8" class="anchored" data-anchor-id="version-control-git">
-<span class="header-section-number">14.8</span> Version control: Git</h2>
+</section><section id="version-control-git" class="level2" data-number="13.8"><h2 data-number="13.8" class="anchored" data-anchor-id="version-control-git">
+<span class="header-section-number">13.8</span> Version control: Git</h2>
 <p>Version control records the state of a project over time. Every commit is a complete state of the project with a timestamp, an author and a message, and once pushed it also exists on a machine that is not your laptop. History can be rewritten deliberately, but it cannot be altered by accident, and rewriting a commit that someone else has already pulled is visible to them. Saving successive copies of a script under new filenames records none of that: no timestamped author, no message, and no way to tell which copy produced which result.</p>
 <p>The everyday benefit is more immediate. With commits behind you, code can be deleted rather than kept: the half-finished approach and the two hundred lines you replaced can both go, the file stays readable, and any of it can be recovered with one command. Without version control the safer option is to keep everything, and scripts grow accordingly.</p>
 <p>Three commands cover the everyday cycle:</p>
@@ -404,8 +404,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>add</code> chooses what goes into the next snapshot, <code>commit</code> takes the snapshot with a message attached, and <code>push</code> sends it to a machine that is not your laptop. The rest of Git can wait until a situation calls for it.</p>
 <p>Commit code, the lockfile, and small data files. Keep outputs out: rendered HTML, large intermediate files, and anything else that can be regenerated from what is already committed. The <code>.gitignore</code> file lists the patterns Git should not track, and this book’s repository ignores its rendered site for exactly that reason. Because a project carries its <code>.Rproj</code> file and builds its paths with <code>here()</code>, a fresh clone on a new machine runs without any path being edited; the habits from <a href="import.html" class="quarto-xref"><span>Chapter 4</span></a> are what make the clone runnable.</p>
-</section><section id="the-checklist" class="level2" data-number="14.9"><h2 data-number="14.9" class="anchored" data-anchor-id="the-checklist">
-<span class="header-section-number">14.9</span> The checklist</h2>
+</section><section id="the-checklist" class="level2" data-number="13.9"><h2 data-number="13.9" class="anchored" data-anchor-id="the-checklist">
+<span class="header-section-number">13.9</span> The checklist</h2>
 <p>The habits on this page, in one screen.</p>
 <table class="table">
 <caption>The working habits gathered on this page.</caption>
@@ -923,13 +923,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../chapters/next-steps.html" class="pagination-link" aria-label="Where to go next">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></span>
+      <a href="../chapters/capstone.html" class="pagination-link" aria-label="A monthly situation report">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../appendices/solutions.html" class="pagination-link" aria-label="Worked solutions">
-        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/next-steps.html" class="pagination-link" aria-label="Where to go next">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

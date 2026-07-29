@@ -281,14 +281,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,7 +385,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><p>The good-practice page near the end of the book (<a href="../chapters/good-practice.html" class="quarto-xref"><span>Chapter 14</span></a>) makes a case for projects, relative paths, a locked set of package versions and a build anyone else can reproduce. The book itself follows the same arrangement, and this appendix describes how it is put together. Where the arrangement is awkward, or where a choice is a judgement rather than a rule, that is stated explicitly.</p>
+</header><p>The good-practice page near the end of the book (<a href="../chapters/good-practice.html" class="quarto-xref"><span>Chapter 13</span></a>) makes a case for projects, relative paths, a locked set of package versions and a build anyone else can reproduce. The book itself follows the same arrangement, and this appendix describes how it is put together. Where the arrangement is awkward, or where a choice is a judgement rather than a rule, that is stated explicitly.</p>
 <p>None of this is needed to work through the book; it is needed to rebuild the book, to fork it for another course, or to work out why a render failed.</p>
 <section id="the-repository" class="level2" data-number="C.1"><h2 data-number="C.1" class="anchored" data-anchor-id="the-repository">
 <span class="header-section-number">C.1</span> The repository</h2>
@@ -460,8 +460,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">part</span><span class="kw">:</span><span class="at"> </span><span class="st">"Putting it together"</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">chapters</span><span class="kw">:</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/capstone.qmd</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/next-steps.qmd</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/good-practice.qmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/good-practice.qmd</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> chapters/next-steps.qmd</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The parts are headings in the sidebar and nothing else; they carry no files of their own. <code>index.qmd</code> sits outside any part because a book’s front page is not a chapter.</p>
 <p><code>appendices:</code> is a separate list, and Quarto numbers it separately: chapters get 1, 2, 3, appendices get A, B, C, D. The <code>crossref: appendix-title: "Appendix"</code> setting at the bottom of the file is what makes a reference to one of them read “Appendix B” rather than just “B”.</p>
 </section><section id="page-footer" class="level3" data-number="C.2.4"><h3 data-number="C.2.4" class="anchored" data-anchor-id="page-footer">
