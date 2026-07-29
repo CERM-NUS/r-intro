@@ -89,7 +89,7 @@ Metadata first: title, subtitle, author, `date: today` with an explicit `date-fo
 
 Then the reading conveniences: `search: true`, `reader-mode: true` (the button that collapses both sidebars), `page-navigation: true` and `back-to-top-navigation: true`.
 
-The sidebar is docked rather than floating, collapsed to one level so the parts are visible but the sections are not, and carries two tools: a link to the source on GitHub, and a direct download link for the CSV. The download link points at `raw.githubusercontent.com`, not at the repository page, so it downloads the file instead of showing a preview of it.
+The sidebar is docked rather than floating, collapsed to one level so the parts are visible but the sections are not. `repo-url` puts Quarto's built-in source link in it, and `repo-actions` adds the per-page edit, issue and source links in the right margin; the one custom tool is a direct download link for the CSV, pointing at `raw.githubusercontent.com` rather than the repository page so it downloads the file instead of showing a preview of it.
 
 ### `chapters:` and `appendices:`
 

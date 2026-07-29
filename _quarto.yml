@@ -48,9 +48,9 @@ book:
     background: light
     collapse-level: 1
     tools:
-      - icon: github
-        href: https://github.com/CERM-NUS/r-intro
-        text: "Source on GitHub"
+      # No repository link here: repo-url above already puts Quarto's built-in
+      # "Source Code" icon in the sidebar, and a second one pointed at the
+      # same place. repo-actions adds the per-page edit/issue/source links.
       - icon: file-earmark-spreadsheet
         href: https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv
         text: "Download the data"
