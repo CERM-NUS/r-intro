@@ -5,7 +5,7 @@
 <meta name="generator" content="quarto-1.6.42">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="description" content="A hands-on introduction to R and the tidyverse for public health students, built around a single real dataset: every day of Singapore’s 2020 COVID-19 epidemic. Written for SPH5421 at the NUS Saw Swee Hock School of Public Health.">
-<title>14&nbsp; Where to go next – An Introduction to R</title>
+<title>13&nbsp; Where to go next – An Introduction to R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,8 +61,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../appendices/solutions.html" rel="next">
-<link href="../chapters/good-practice.html" rel="prev">
+<link href="../chapters/good-practice.html" rel="next">
+<link href="../chapters/capstone.html" rel="prev">
 <link href="../assets/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/next-steps.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/next-steps.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -281,14 +281,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
+  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/next-steps.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></a>
+  <a href="../chapters/good-practice.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></span></a>
   </div>
 </li>
       </ul>
@@ -336,23 +336,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
    
   <ul>
-<li><a href="#what-the-rest-of-the-course-does-with-all-this" id="toc-what-the-rest-of-the-course-does-with-all-this" class="nav-link active" data-scroll-target="#what-the-rest-of-the-course-does-with-all-this"><span class="header-section-number">14.1</span> What the rest of the course does with all this</a></li>
-  <li><a href="#five-things-worth-reading" id="toc-five-things-worth-reading" class="nav-link" data-scroll-target="#five-things-worth-reading"><span class="header-section-number">14.2</span> Five things worth reading</a></li>
+<li><a href="#what-the-rest-of-the-course-does-with-all-this" id="toc-what-the-rest-of-the-course-does-with-all-this" class="nav-link active" data-scroll-target="#what-the-rest-of-the-course-does-with-all-this"><span class="header-section-number">13.1</span> What the rest of the course does with all this</a></li>
+  <li><a href="#five-things-worth-reading" id="toc-five-things-worth-reading" class="nav-link" data-scroll-target="#five-things-worth-reading"><span class="header-section-number">13.2</span> Five things worth reading</a></li>
   <li>
-<a href="#when-something-breaks" id="toc-when-something-breaks" class="nav-link" data-scroll-target="#when-something-breaks"><span class="header-section-number">14.3</span> When something breaks</a>
+<a href="#when-something-breaks" id="toc-when-something-breaks" class="nav-link" data-scroll-target="#when-something-breaks"><span class="header-section-number">13.3</span> When something breaks</a>
   <ul class="collapse">
-<li><a href="#read-the-whole-error-message" id="toc-read-the-whole-error-message" class="nav-link" data-scroll-target="#read-the-whole-error-message"><span class="header-section-number">14.3.1</span> Read the whole error message</a></li>
-  <li><a href="#traceback-for-errors-that-do-not-say-where-they-occurred" id="toc-traceback-for-errors-that-do-not-say-where-they-occurred" class="nav-link" data-scroll-target="#traceback-for-errors-that-do-not-say-where-they-occurred"><span class="header-section-number">14.3.2</span> <code>traceback()</code>, for errors that do not say where they occurred</a></li>
-  <li><a href="#browser-for-inspecting-a-function-as-it-runs" id="toc-browser-for-inspecting-a-function-as-it-runs" class="nav-link" data-scroll-target="#browser-for-inspecting-a-function-as-it-runs"><span class="header-section-number">14.3.3</span> <code>browser()</code>, for inspecting a function as it runs</a></li>
-  <li><a href="#failures-that-produce-no-error" id="toc-failures-that-produce-no-error" class="nav-link" data-scroll-target="#failures-that-produce-no-error"><span class="header-section-number">14.3.4</span> Failures that produce no error</a></li>
+<li><a href="#read-the-whole-error-message" id="toc-read-the-whole-error-message" class="nav-link" data-scroll-target="#read-the-whole-error-message"><span class="header-section-number">13.3.1</span> Read the whole error message</a></li>
+  <li><a href="#traceback-for-errors-that-do-not-say-where-they-occurred" id="toc-traceback-for-errors-that-do-not-say-where-they-occurred" class="nav-link" data-scroll-target="#traceback-for-errors-that-do-not-say-where-they-occurred"><span class="header-section-number">13.3.2</span> <code>traceback()</code>, for errors that do not say where they occurred</a></li>
+  <li><a href="#browser-for-inspecting-a-function-as-it-runs" id="toc-browser-for-inspecting-a-function-as-it-runs" class="nav-link" data-scroll-target="#browser-for-inspecting-a-function-as-it-runs"><span class="header-section-number">13.3.3</span> <code>browser()</code>, for inspecting a function as it runs</a></li>
+  <li><a href="#failures-that-produce-no-error" id="toc-failures-that-produce-no-error" class="nav-link" data-scroll-target="#failures-that-produce-no-error"><span class="header-section-number">13.3.4</span> Failures that produce no error</a></li>
   </ul>
 </li>
-  <li><a href="#how-to-ask-a-question-that-gets-answered" id="toc-how-to-ask-a-question-that-gets-answered" class="nav-link" data-scroll-target="#how-to-ask-a-question-that-gets-answered"><span class="header-section-number">14.4</span> How to ask a question that gets answered</a></li>
+  <li><a href="#how-to-ask-a-question-that-gets-answered" id="toc-how-to-ask-a-question-that-gets-answered" class="nav-link" data-scroll-target="#how-to-ask-a-question-that-gets-answered"><span class="header-section-number">13.4</span> How to ask a question that gets answered</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/CERM-NUS/r-intro/edit/main/chapters/next-steps.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/CERM-NUS/r-intro/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/CERM-NUS/r-intro/blob/main/chapters/next-steps.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/next-steps.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></a></li></ol></nav><div class="quarto-title">
-<h1 class="title"><span id="sec-next-steps" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Where to go next</span></span></h1>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/capstone.html">Putting it together</a></li><li class="breadcrumb-item"><a href="../chapters/next-steps.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="sec-next-steps" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Where to go next</span></span></h1>
 </div>
 
 
@@ -367,8 +367,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 </header><p>A week of R gets you a working vocabulary. You can read a file, check it, reshape it, summarise it by group, plot it, and write a function when the same six lines show up for the third time. What you do not yet have is the accumulated set of small recoveries that make an error message an inconvenience rather than a stopping point. Those come from hours at the keyboard, and no chapter can supply them. This last chapter describes where those hours are best spent: how the modelling weeks build on what you have learned, what to read next, what to do when code fails, and how to ask a question that gets answered.</p>
-<section id="what-the-rest-of-the-course-does-with-all-this" class="level2" data-number="14.1"><h2 data-number="14.1" class="anchored" data-anchor-id="what-the-rest-of-the-course-does-with-all-this">
-<span class="header-section-number">14.1</span> What the rest of the course does with all this</h2>
+<section id="what-the-rest-of-the-course-does-with-all-this" class="level2" data-number="13.1"><h2 data-number="13.1" class="anchored" data-anchor-id="what-the-rest-of-the-course-does-with-all-this">
+<span class="header-section-number">13.1</span> What the rest of the course does with all this</h2>
 <p>The modelling weeks turn the direction of travel around. Everything so far started with data and went looking for a description. A compartmental model starts with a description, some assumptions about how people move between states, and produces data you can compare with the real thing.</p>
 <p>The mechanics are less exotic than they sound. You divide a population into compartments, susceptible, infectious, recovered in the simplest case. You write down the rate at which people leave each compartment and enter the next. Then you hand those rates to a solver, which steps them forward in small increments and hands back a trajectory.</p>
 <p>In R the solver is usually <a href="https://cran.r-project.org/package=deSolve">deSolve</a>, and its main function is <code>ode()</code>. The shape of the code is this.</p>
@@ -395,20 +395,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The second is that you will want to run the model more than once. Sweeping over ten values of beta, or a hundred, is the iteration chapter’s problem exactly: write the model run as a function of the parameter you are varying, then map over the values and bind the results, rather than copying the call ten times with a number changed.</p>
 <p>Once your models get big enough that speed matters, or you are running thousands of stochastic replicates, R’s own loop overhead starts to hurt. <a href="https://cran.r-project.org/package=odin">odin</a> is the usual answer: you write the equations in a small R-like language and it generates and compiles C for you. The equations look much like the ones above. The habits of writing them carefully, naming parameters properly and checking a trajectory before believing it are the same habits.</p>
 <p>Fitting a model to Singapore’s 2020 curve is where the two halves of the course meet, and it is also where the caveats from the capstone come back. You would be fitting to reported cases, which are a function of testing as well as transmission, over a period when the national count was dominated by the dormitory outbreak. A model fitted to that series without a term for either will absorb both into its transmission parameters.</p>
-</section><section id="five-things-worth-reading" class="level2" data-number="14.2"><h2 data-number="14.2" class="anchored" data-anchor-id="five-things-worth-reading">
-<span class="header-section-number">14.2</span> Five things worth reading</h2>
+</section><section id="five-things-worth-reading" class="level2" data-number="13.2"><h2 data-number="13.2" class="anchored" data-anchor-id="five-things-worth-reading">
+<span class="header-section-number">13.2</span> Five things worth reading</h2>
 <p>The list is deliberately short, and each entry states what the book covers and when it is worth reading.</p>
 <p><a href="https://r4ds.hadley.nz/"><strong>R for Data Science</strong>, 2nd edition</a>, by Wickham, Çetinkaya-Rundel and Grolemund. Free online. This is the book this course is a one-week introduction to. The chapters on data transformation and visualisation cover the same ground with more room, and the chapters on joins, factors, strings and dates cover the topics this book leaves out. If you read one item from this list, make it this one, and work through it at the keyboard.</p>
 <p><a href="https://epirhandbook.com/en/"><strong>The Epidemiologist R Handbook</strong></a>, by Neale Batra and a large group of contributors. Free online. This is a recipe book rather than a textbook, written by field epidemiologists for field epidemiologists, and it is the fastest route from “I need an epi curve with a moving average and a case fatality ratio by age group” to working code. Its examples use outbreak data. Use it when you know what you want but not which function produces it.</p>
-<p><a href="https://happygitwithr.com/"><strong>Happy Git and GitHub for the useR</strong></a>, by Jenny Bryan. Free online. Version control repays the effort of learning it quickly, and this is the book that gets R users past the initial difficulty of git. Read the first eight or so chapters and get one project under version control; that is enough for now. You do not need to understand rebasing. The everyday Git cycle is set out in <a href="good-practice.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
+<p><a href="https://happygitwithr.com/"><strong>Happy Git and GitHub for the useR</strong></a>, by Jenny Bryan. Free online. Version control repays the effort of learning it quickly, and this is the book that gets R users past the initial difficulty of git. Read the first eight or so chapters and get one project under version control; that is enough for now. You do not need to understand rebasing. The everyday Git cycle is set out in <a href="good-practice.html" class="quarto-xref"><span>Chapter 14</span></a>.</p>
 <p><a href="https://style.tidyverse.org/"><strong>The tidyverse style guide</strong></a>, by Hadley Wickham. It takes an afternoon to read and much of it can be skimmed. It is where the conventions this book uses come from: spaces around <code>&lt;-</code>, lowercase names with underscores, one dplyr verb per line. Consistency earns its keep because it lets you read your own code from three months ago without decoding it first.</p>
 <p><a href="https://adv-r.hadley.nz/"><strong>Advanced R</strong>, 2nd edition</a>, by Hadley Wickham. Free online. This one is not for now; bookmark it and return to it when you find yourself asking why something behaves as it does rather than how to make it work. The chapters on environments and on functionals are the ones that explain the odd corners of R that this book has been telling you to accept.</p>
 <p>Two kinds of book are deliberately absent from this list: there is no reference manual, because R’s own help pages are the reference manual and <code><a href="https://dplyr.tidyverse.org/reference/filter.html">?filter</a></code> is faster than any book; and there is no book on statistics in R, because the statistics course covers the statistics and the R involved in it is the straightforward part.</p>
-</section><section id="when-something-breaks" class="level2" data-number="14.3"><h2 data-number="14.3" class="anchored" data-anchor-id="when-something-breaks">
-<span class="header-section-number">14.3</span> When something breaks</h2>
+</section><section id="when-something-breaks" class="level2" data-number="13.3"><h2 data-number="13.3" class="anchored" data-anchor-id="when-something-breaks">
+<span class="header-section-number">13.3</span> When something breaks</h2>
 <p>When something breaks, work through the steps in this section in the order given.</p>
-<section id="read-the-whole-error-message" class="level3" data-number="14.3.1"><h3 data-number="14.3.1" class="anchored" data-anchor-id="read-the-whole-error-message">
-<span class="header-section-number">14.3.1</span> Read the whole error message</h3>
+<section id="read-the-whole-error-message" class="level3" data-number="13.3.1"><h3 data-number="13.3.1" class="anchored" data-anchor-id="read-the-whole-error-message">
+<span class="header-section-number">13.3.1</span> Read the whole error message</h3>
 <p>R’s error messages have improved a great deal, and the tidyverse ones in particular are built to be read from top to bottom rather than skimmed for the first line. The code below produces one deliberately.</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">month_start</span><span class="op">)</span> <span class="op">{</span></span>
@@ -434,8 +434,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>When you read an error, work out which line names <em>your</em> code and which lines name the machinery underneath it. The fix is almost always at the boundary between them.</p>
 <p>If you are working in RStudio you will also see <code>Run rlang::last_trace() to see where the error occurred.</code>, and you should run it. It prints the full chain of calls with your own function at the top and the failing one at the bottom, and for a pipeline buried inside a function it is often the quickest way to find which of your six lines broke.</p>
-</section><section id="traceback-for-errors-that-do-not-say-where-they-occurred" class="level3" data-number="14.3.2"><h3 data-number="14.3.2" class="anchored" data-anchor-id="traceback-for-errors-that-do-not-say-where-they-occurred">
-<span class="header-section-number">14.3.2</span> <code>traceback()</code>, for errors that do not say where they occurred</h3>
+</section><section id="traceback-for-errors-that-do-not-say-where-they-occurred" class="level3" data-number="13.3.2"><h3 data-number="13.3.2" class="anchored" data-anchor-id="traceback-for-errors-that-do-not-say-where-they-occurred">
+<span class="header-section-number">13.3.2</span> <code>traceback()</code>, for errors that do not say where they occurred</h3>
 <p>Base R errors are terser, as in this example from a function calling another function.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> daily_mean <span class="ot">&lt;-</span> <span class="cf">function</span>(x, i, k) <span class="fu">mean</span>(x[(i <span class="sc">-</span> k)<span class="sc">:</span>(i <span class="sc">+</span> k)])</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> smooth_at <span class="ot">&lt;-</span> <span class="cf">function</span>(data, i) <span class="fu">daily_mean</span>(data<span class="sc">$</span>daily_cases, i, <span class="dv">3</span>)</span>
@@ -448,8 +448,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span> <span class="fu">smooth_at</span>(covid, <span class="st">"100"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Read it from the bottom. Line 1 is the call you typed. Line 2 is what it called. Line 3 is where it died. So <code>smooth_at()</code> passed the string <code>"100"</code> straight through to <code>daily_mean()</code>, which tried to subtract 3 from it. The <code>at #1</code> is the line number in the source; when your functions live in a file rather than being typed at the console, you get something like <code>at report.R#12</code>, which is the number you want.</p>
 <p>RStudio puts a “Show Traceback” button next to errors in the console, which does the same thing in one click.</p>
-</section><section id="browser-for-inspecting-a-function-as-it-runs" class="level3" data-number="14.3.3"><h3 data-number="14.3.3" class="anchored" data-anchor-id="browser-for-inspecting-a-function-as-it-runs">
-<span class="header-section-number">14.3.3</span> <code>browser()</code>, for inspecting a function as it runs</h3>
+</section><section id="browser-for-inspecting-a-function-as-it-runs" class="level3" data-number="13.3.3"><h3 data-number="13.3.3" class="anchored" data-anchor-id="browser-for-inspecting-a-function-as-it-runs">
+<span class="header-section-number">13.3.3</span> <code>browser()</code>, for inspecting a function as it runs</h3>
 <p>When the traceback tells you which function died but not why, put <code><a href="https://rdrr.io/r/base/browser.html">browser()</a></code> on the line before the trouble and run the call again. R stops there and hands you a prompt with the function’s own variables in scope.</p>
 <div class="cell">
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">month_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">month_start</span><span class="op">)</span> <span class="op">{</span></span>
@@ -471,8 +471,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>Browse[<span class="dv">1</span>]<span class="sc">&gt;</span> Q</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Three questions identify the bug: you are comparing a character against a Date. Type <code>Q</code> to quit the browser, <code>n</code> to run the next line, <code>c</code> to let it finish. Then remove the <code><a href="https://rdrr.io/r/base/browser.html">browser()</a></code> call. Left in place, it produces a script that keeps stopping at the same line for no visible reason.</p>
 <p><code>debugonce(month_summary)</code> does the same thing without editing the function, which is preferable when the function belongs to a package.</p>
-</section><section id="failures-that-produce-no-error" class="level3" data-number="14.3.4"><h3 data-number="14.3.4" class="anchored" data-anchor-id="failures-that-produce-no-error">
-<span class="header-section-number">14.3.4</span> Failures that produce no error</h3>
+</section><section id="failures-that-produce-no-error" class="level3" data-number="13.3.4"><h3 data-number="13.3.4" class="anchored" data-anchor-id="failures-that-produce-no-error">
+<span class="header-section-number">13.3.4</span> Failures that produce no error</h3>
 <p>An error is the easier case, because R stops and reports what went wrong. The failures that cause more trouble are the ones that return a number, because nothing marks them as wrong.</p>
 <div class="cell">
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covid</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.min.html">which.max</a></span><span class="op">(</span><span class="va">covid</span><span class="op">$</span><span class="va">daily_case</span><span class="op">)</span><span class="op">]</span></span>
@@ -489,8 +489,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Singapore recorded 29 COVID-19 deaths in 2020. Differencing the cumulative column recovers 27 of them, because <code>deaths</code> has 59 leading missing values and the first number that appears is already 2, on 21 March. The two missing deaths are hidden inside that first observation. Neither line above produces an error or a warning. One of them is the wrong answer to the question “how many people died”, and which one depends on how that question is meant.</p>
 <p>What catches these is arithmetic against something you already know. Check the total against a number you have from another source. Check that the number of rows matches the number of days. Check that the maximum lands on the date you expected. Each of those is a line of code, and each catches mistakes that reading the code will not.</p>
-</section></section><section id="how-to-ask-a-question-that-gets-answered" class="level2" data-number="14.4"><h2 data-number="14.4" class="anchored" data-anchor-id="how-to-ask-a-question-that-gets-answered">
-<span class="header-section-number">14.4</span> How to ask a question that gets answered</h2>
+</section></section><section id="how-to-ask-a-question-that-gets-answered" class="level2" data-number="13.4"><h2 data-number="13.4" class="anchored" data-anchor-id="how-to-ask-a-question-that-gets-answered">
+<span class="header-section-number">13.4</span> How to ask a question that gets answered</h2>
 <p>You will get stuck in a way that fifteen minutes of your own effort will not fix. When that happens, how the question is put makes a large difference to how quickly it gets answered.</p>
 <p>A question that gets answered has four parts: what you were trying to do, stated in terms of the result you wanted; the code you ran, as text; what happened, with the error message copied exactly; and what you have already tried, so the answers you get start from where you stopped.</p>
 <p>The exact error text matters more than anything else in that list. Post the code and the error text rather than describing them. “It says something about a non-numeric argument” cannot be searched for. <code>non-numeric argument to binary operator</code> can, and the search will usually find other people who have had the same problem. Before you ask anyone, put the message in a search engine with the word <code>r</code> and the name of the package. That resolves a large share of problems on its own.</p>
@@ -966,13 +966,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../chapters/good-practice.html" class="pagination-link" aria-label="Good practice">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Good practice</span></span>
+      <a href="../chapters/capstone.html" class="pagination-link" aria-label="A monthly situation report">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">A monthly situation report</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../appendices/solutions.html" class="pagination-link" aria-label="Worked solutions">
-        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Worked solutions</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../chapters/good-practice.html" class="pagination-link" aria-label="Good practice">
+        <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Good practice</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
