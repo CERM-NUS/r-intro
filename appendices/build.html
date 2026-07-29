@@ -120,7 +120,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="sidebar-title mb-0 py-0">
       <a href="../">An Introduction to R</a> 
         <div class="sidebar-tools-main tools-wide">
-    <a href="https://github.com/CERM-NUS/r-intro" title="Source on GitHub" class="quarto-navigation-tool px-1" aria-label="Source on GitHub"><i class="bi bi-github"></i></a>
     <a href="https://raw.githubusercontent.com/CERM-NUS/r-intro/main/data/sg_covid_data.csv" title="Download the data" class="quarto-navigation-tool px-1" aria-label="Download the data"><i class="bi bi-file-earmark-spreadsheet"></i></a>
     <a href="https://github.com/CERM-NUS/r-intro" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
   <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
@@ -448,7 +447,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>site-url</code> and <code>repo-url</code> together are what make the “Edit this page”, “Report an issue” and “View source” links work. <code>repo-actions: [edit, issue, source]</code> turns all three on. They appear in the right-hand margin of every page, and they cost nothing to maintain. A student who spots a wrong number is two clicks from reporting it, and one of those clicks lands them in a text editor with the offending line in front of them.</p>
 <p><code>repo-branch: main</code> matters because Quarto builds the edit URL from it. Point it at a branch that does not exist and every edit link 404s, on every page, silently.</p>
 <p>Then the reading conveniences: <code>search: true</code>, <code>reader-mode: true</code> (the button that collapses both sidebars), <code>page-navigation: true</code> and <code>back-to-top-navigation: true</code>.</p>
-<p>The sidebar is docked rather than floating, collapsed to one level so the parts are visible but the sections are not, and carries two tools: a link to the source on GitHub, and a direct download link for the CSV. The download link points at <code>raw.githubusercontent.com</code>, not at the repository page, so it downloads the file instead of showing a preview of it.</p>
+<p>The sidebar is docked rather than floating, collapsed to one level so the parts are visible but the sections are not. <code>repo-url</code> puts Quarto’s built-in source link in it, and <code>repo-actions</code> adds the per-page edit, issue and source links in the right margin; the one custom tool is a direct download link for the CSV, pointing at <code>raw.githubusercontent.com</code> rather than the repository page so it downloads the file instead of showing a preview of it.</p>
 </section><section id="chapters-and-appendices" class="level3" data-number="C.2.3"><h3 data-number="C.2.3" class="anchored" data-anchor-id="chapters-and-appendices">
 <span class="header-section-number">C.2.3</span> <code>chapters:</code> and <code>appendices:</code>
 </h3>
