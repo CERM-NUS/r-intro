@@ -296,7 +296,7 @@ Build the table first and generate the sentence from it. If the sentence is the 
 
 September's mean daily cases can be computed twice: once with `mean()`, and once with a loop that adds the values up and divides by 30. Both give the same answer, and both would go on agreeing if `daily_cases` had been computed wrongly, because they perform the same arithmetic on the same column. A check that uses the same inputs as the calculation it is checking cannot detect an error in those inputs.
 
-An independent check is available. `confirmed` is cumulative and we have not modified it. The check relies on exactly that: the source file stays untouched, and every derivation from it happens in code. September's new cases must therefore equal the cumulative total on 30 September minus the total on 31 August, whatever our `lag()` did or did not do. If `daily_cases` were wrong, the two figures would disagree.
+An independent check is available. `confirmed` is cumulative and has not been modified. The check relies on exactly that: the source file stays untouched, and every derivation from it happens in code. September's new cases must therefore equal the cumulative total on 30 September minus the total on 31 August, whatever `lag()` did or did not do. If `daily_cases` were wrong, the two figures would disagree.
 
 ```{r}
 september <- covid %>% filter(month == as.Date("2020-09-01"))

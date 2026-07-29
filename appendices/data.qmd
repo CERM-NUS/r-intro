@@ -81,7 +81,7 @@ covid %>%
 count(covid, administrative_area_level_1)
 ```
 
-It is kept because dropping it would hide the fact that the Hub's schema has a geography column at all, and because pulling three countries later and forgetting to group by this column produces a national total that silently pools them.
+It is kept because dropping it would hide that the Hub's schema has a geography column at all, and because pulling three countries later and forgetting to group by this column produces a national total that silently pools them.
 
 ## The counts are cumulative
 

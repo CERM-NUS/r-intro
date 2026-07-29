@@ -44,7 +44,7 @@ week_one[2:7] - week_one[1:6]
 
 The differences are one, two, zero, one, one and two, so day four had no new cases at all. This is the same arithmetic that `lag()` performs across all 345 rows of the real file, written out small enough to see.
 
-What this does *not* give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with `lag(confirmed, default = 0)`, which is defensible here because `confirmed[1]` really is 0.
+What this does *not* give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with `lag(confirmed, default = 0)`, which is defensible here because `confirmed[1]` is 0.
 
 Part three. Add a label to the front:
 
@@ -612,7 +612,7 @@ One month changes: August, "Watch" under the day-count rule and "Alert" under th
 
 The rule that is easier to defend is the day-count rule, and not because it is kinder to August. A count of days above a threshold cannot be moved by one extreme value, and 5 August is an extreme value with a known cause. MOH attributed the day's numbers to clearance testing in the dormitories picking up past infections, 903 of the 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. A rule that escalates a whole month on the strength of one day of retrospective testing is a rule that will escalate again the next time a backlog clears.
 
-The honest version of the answer is to report both columns and let the meeting see the disagreement. A single status column hides the fact that August is classified one way by one measure and the other way by another.
+The honest version of the answer is to report both columns and let the meeting see the disagreement. A single status column hides that August is classified one way by one measure and the other way by another.
 
 ## Cross-check a month that is not September {#sec-sol-september}
 
