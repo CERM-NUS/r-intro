@@ -407,7 +407,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt; [1] 1 2 0 1 1 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The differences are one, two, zero, one, one and two, so day four had no new cases at all. This is the same arithmetic that <code><a href="https://rdrr.io/r/stats/lag.html">lag()</a></code> performs across all 345 rows of the real file, written out small enough to see.</p>
-<p>What this does <em>not</em> give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with <code>lag(confirmed, default = 0)</code>, which is defensible here because <code>confirmed[1]</code> really is 0.</p>
+<p>What this does <em>not</em> give you is a number for day one. There is no day zero to subtract, so six differences come out of seven values. In the full dataset the book handles that with <code>lag(confirmed, default = 0)</code>, which is defensible here because <code>confirmed[1]</code> is 0.</p>
 <p>Part three. Add a label to the front:</p>
 <div class="cell">
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">labelled</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"week one"</span>, <span class="va">week_one</span><span class="op">)</span></span>
@@ -1041,7 +1041,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>One month changes: August, “Watch” under the day-count rule and “Alert” under the rate rule. August had 4 High days and a mean of 148.6, and the mean is being pulled up by 5 August, which recorded 908 cases against a monthly median of 91. Recompute August’s mean without that single day and it falls to 123.3, still above 100 but by much less.</p>
 <p>The rule that is easier to defend is the day-count rule, and not because it is kinder to August. A count of days above a threshold cannot be moved by one extreme value, and 5 August is an extreme value with a known cause. MOH attributed the day’s numbers to clearance testing in the dormitories picking up past infections, 903 of the 908 were dormitory residents, and 581 were linked to a single cluster at Acacia Lodge. A rule that escalates a whole month on the strength of one day of retrospective testing is a rule that will escalate again the next time a backlog clears.</p>
-<p>The honest version of the answer is to report both columns and let the meeting see the disagreement. A single status column hides the fact that August is classified one way by one measure and the other way by another.</p>
+<p>The honest version of the answer is to report both columns and let the meeting see the disagreement. A single status column hides that August is classified one way by one measure and the other way by another.</p>
 </section><section id="sec-sol-september" class="level2" data-number="A.11"><h2 data-number="A.11" class="anchored" data-anchor-id="sec-sol-september">
 <span class="header-section-number">A.11</span> Cross-check a month that is not September</h2>
 <blockquote class="blockquote">

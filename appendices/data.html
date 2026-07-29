@@ -436,7 +436,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   &lt;chr&gt;                       &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 Singapore                     345</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>It is kept because dropping it would hide the fact that the Hub’s schema has a geography column at all, and because pulling three countries later and forgetting to group by this column produces a national total that silently pools them.</p>
+<p>It is kept because dropping it would hide that the Hub’s schema has a geography column at all, and because pulling three countries later and forgetting to group by this column produces a national total that silently pools them.</p>
 </section><section id="the-counts-are-cumulative" class="level2" data-number="B.3"><h2 data-number="B.3" class="anchored" data-anchor-id="the-counts-are-cumulative">
 <span class="header-section-number">B.3</span> The counts are cumulative</h2>
 <p><code>confirmed</code> and <code>deaths</code> are running totals, not daily counts. Every day’s value includes every previous day’s.</p>
