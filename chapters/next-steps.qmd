@@ -19,10 +19,9 @@ inconvenience rather than a stopping point. Those come from hours at the keyboar
 can supply them. This last chapter describes where those hours are best spent: what to read
 next, what to do when code fails, and how to ask a question that gets answered.
 
-## Five things worth reading
+## Five references
 
-The list is deliberately short, and each entry states what the book covers and when it is worth
-reading.
+The list is deliberately short, and each entry states what it covers and when to read it.
 
 [**R for Data Science**, 2nd edition](https://r4ds.hadley.nz/), by Wickham, Çetinkaya-Rundel and
 Grolemund. Free online. This is the book this course is a one-week introduction to. The chapters on
