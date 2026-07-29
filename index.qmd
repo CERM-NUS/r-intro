@@ -78,4 +78,4 @@ Every page has an "Edit this page" link that goes to its source on GitHub, and t
 
 ## Acknowledgement
 
-Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data; responsibility for the final text rests with the author.
+Written by Swapnil Mishra, working with Claude Code (Anthropic, Opus 5 model), which helped draft the text, convert the original base-R worksheet to the tidyverse, and check the numbers against the data. A later revision — the reorganisation of the sources, the restructuring of the good-practice material, and the language passes across the chapters — was made with Kimi Code (Moonshot AI, K3 model). Responsibility for the final text rests with the author.
