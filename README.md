@@ -71,7 +71,7 @@ The front page, `index.qmd`, sets out the dataset and how to use the book.
 |:--|:--|
 | `capstone.qmd` | Produce a monthly situation report from the raw file, with no scaffolding |
 | `good-practice.qmd` | The working habits gathered in one place, plus the two no chapter covers: Git and renv |
-| `next-steps.qmd` | What the rest of the module does with all this, what to read, and how to ask a question that gets answered |
+| `next-steps.qmd` | What to read next, what to do when code fails, and how to ask a question that gets answered |
 
 **Appendices**
 
